@@ -43,21 +43,39 @@ class Predictor(BasePredictor):
             learning_rate: float = Input(default=None, description="Learning rate. If using Prodigy Optimizer, set to 1.0"),
             lr_warmup_steps: int = Input(default=0, description="Number of steps for the warmup in the lr scheduler."),
             learning_rate_te1: float = Input(default=None, description="Learning rate for text encoder 1."),
-            learning_rate_te2: float = Input(default=None, description="Learning rate for text encoder 2.")
+            learning_rate_te2: float = Input(default=None, description="Learning rate for text encoder 2."),
+
+            # Advanced Configurations.
+
+            clip_skip: int = Input(default=1, description="Use output of nth layer from back of text encoder."),
+            max_token_length: int = Input(default=225, description="Max token length of text encoder.", choices=[
+                "75", "150", "225"
+            ]),
+            min_snr_gamma: float = Input(default=None, description="gamma for reducing the weight of high loss timesteps."),
+            no_half_vae: bool = Input(default=True, description="Do not use fp16/bf16 VAE in mixed precision (use float VAE)."),
+            bucket_no_upscale: bool = Input(default=True, description="Make bucket for each image without upscaling."),
+            xformers: bool = Input(default=True, description="Use xformers for CrossAttention."),
+            multires_noise_iterations: int = Input(default=0, description="Enable multires noise with this number of iterations."),
+            multires_noise_discount: float = Input(default=None, description="Set discount value for multires noise."),
+            shuffle_caption: bool = Input(default=True, description="Shuffle separated caption.")
     ) -> Path:
         # Extract zipped training data contents into a temp directory.
+
         train_data_dir = tempfile.mkdtemp()
         with zipfile.ZipFile(train_data_zip, 'r') as zip_ref:
             zip_ref.extractall(train_data_dir)
 
         # Create an output directory.
+
         output_dir = Path(tempfile.mkdtemp())
 
         # Set up parser for SD_Scripts
+
         parser = setup_parser()
         args = parser.parse_args()
 
         # Assign arguments.
+
         args.output_dir = output_dir
 
         args.pretrained_model_name_or_path = pretrained_model_name_or_path
@@ -78,5 +96,16 @@ class Predictor(BasePredictor):
         args.lr_warmup_steps = lr_warmup_steps
         args.learning_rate_te1 = learning_rate_te1
         args.learning_rate_te2 = learning_rate_te2
+        args.clip_skip = clip_skip
+        args.max_token_length = max_token_length
+        args.min_snr_gamma = min_snr_gamma
+        args.no_half_vae = no_half_vae
+        args.bucket_no_upscale = bucket_no_upscale
+        args.xformers = xformers
+        args.multires_noise_iterations = multires_noise_iterations
+        args.multires_noise_discount = multires_noise_discount
+        args.shuffle_caption = shuffle_caption
+
+        train(args)
 
         return output_dir
