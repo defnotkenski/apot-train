@@ -18,5 +18,4 @@ __pycache__
 /venv
 
 # Misc
-/datasets
 dreambooth_config.json
