@@ -1,4 +1,6 @@
 import argparse
+import numpy as np
+
 
 parser = argparse.ArgumentParser()
 
@@ -12,3 +14,5 @@ if __name__ == "__main__":
     print(args.positional)
     print(args.testing)
     print(args.boolean)
+
+    print(np.__version__)

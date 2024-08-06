@@ -8,8 +8,10 @@ from sd_scripts.sdxl_train import setup_parser, train
 
 
 class Predictor(BasePredictor):
-    def setup(self) -> None:
-        pass
+    def setup(self):
+        # Don't really know what to put here.
+
+        print("Starting setup.")
 
     def predict(
             self,

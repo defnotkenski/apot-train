@@ -20,6 +20,7 @@ build:
 
   # commands run after the environment is set up
   run:
+    - pip install "numpy<2"
 #     - "echo env is ready!"
 #     - "echo another command if needed"
 
