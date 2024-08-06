@@ -17,7 +17,7 @@ class Predictor(BasePredictor):
             # Basic Configurations.
 
             pretrained_model_name_or_path: str = Input(default="stabilityai/stable-diffusion-xl-base-1.0", description="Model to be fine-tuned with."),
-            output_name: str = Input(default="oberg_dream", description="Trained model output name."),
+            output_name: str = Input(default="oberg_dreambooth", description="Trained model output name."),
             save_model_as: str = Input(default="safetensors", description="Format to save the model in.", choices=[
                 "ckpt", "diffusers", "safetensors", "diffusers_safetensors"
             ]),
