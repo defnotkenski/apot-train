@@ -17,33 +17,32 @@ class Predictor(BasePredictor):
             # Basic Configurations.
 
             pretrained_model_name_or_path: Path = Input(default=None, description="Model to be fine-tuned with."),
-            output_name: str = Input(default=None, description="Trained model output name."),
+            output_name: str = Input(default="oberg_dream", description="Trained model output name."),
             save_model_as: str = Input(default="safetensors", description="Format to save the model in.", choices=[
                 "ckpt", "diffusers", "safetensors", "diffusers_safetensors"
             ]),
-            save_precision: str = Input(default=None, description="Precision in saving.", choices=[
+            save_precision: str = Input(default="float", description="Precision in saving.", choices=[
                 "float", "fp16", "bf16"
             ]),
-            max_train_epochs: int = Input(default=0, description="Training epochs."),
-            max_train_steps: int = Input(default=0, description="Training steps."),
+            max_train_epochs: int = Input(default=150, description="Training epochs."),
             resolution: str = Input(default="1024,1024", description="Resolution in training"),
             enable_bucket: bool = Input(default=True, description="Enable buckets for multi aspect ratio training."),
             save_every_n_epochs: int = Input(default=None, description="Save checkpoint every N epochs."),
-            cache_latents: bool = Input(default=False, description="Cache latents to main memory to reduce VRAM usage."),
+            cache_latents: bool = Input(default=True, description="Cache latents to main memory to reduce VRAM usage."),
             train_data_zip: Path = Input(default=None, description="Directory containing training images."),
-            optimizer_type: str = Input(default=None, description="Optimizer to use.", choices=[
+            optimizer_type: str = Input(default="Prodigy", description="Optimizer to use.", choices=[
                 "AdamW", "PagedAdamW", "PagedAdamW8bit", "PagedAdamW32bit", "Lion8bit", "PagedLion8bit", "Lion", "SGDNesterov", "SGDNesterov8bit",
                 "DAdaptation(DAdaptAdamPreprint)", "DAdaptAdaGrad", "DAdaptAdam", "DAdaptAdan", "DAdaptAdanIP", "DAdaptLion", "DAdaptSGD",
                 "AdaFactor", "Prodigy"
             ]),
             optimizer_args: str = Input(default=None, description="Additional arguments for the optimizer."),
-            lr_scheduler: str = Input(default=None, description="Scheduler to use for learning rate.", choices=[
+            lr_scheduler: str = Input(default="cosine", description="Scheduler to use for learning rate.", choices=[
                 "linear", "cosine", "cosine_with_restarts", "polynomial", "constant (default)", "constant_with_warmup", "adafactor"
             ]),
-            learning_rate: float = Input(default=None, description="Learning rate. If using Prodigy Optimizer, set to 1.0"),
+            learning_rate: float = Input(default=1.0, description="Learning rate. If using Prodigy Optimizer, set to 1.0"),
             lr_warmup_steps: int = Input(default=0, description="Number of steps for the warmup in the lr scheduler."),
-            learning_rate_te1: float = Input(default=None, description="Learning rate for text encoder 1."),
-            learning_rate_te2: float = Input(default=None, description="Learning rate for text encoder 2."),
+            learning_rate_te1: float = Input(default=0, description="Learning rate for text encoder 1."),
+            learning_rate_te2: float = Input(default=0, description="Learning rate for text encoder 2."),
 
             # Advanced Configurations.
 
@@ -51,12 +50,12 @@ class Predictor(BasePredictor):
             max_token_length: int = Input(default=225, description="Max token length of text encoder.", choices=[
                 "75", "150", "225"
             ]),
-            min_snr_gamma: float = Input(default=None, description="gamma for reducing the weight of high loss timesteps."),
+            min_snr_gamma: float = Input(default=5, description="gamma for reducing the weight of high loss timesteps."),
             no_half_vae: bool = Input(default=True, description="Do not use fp16/bf16 VAE in mixed precision (use float VAE)."),
             bucket_no_upscale: bool = Input(default=True, description="Make bucket for each image without upscaling."),
             xformers: bool = Input(default=True, description="Use xformers for CrossAttention."),
-            multires_noise_iterations: int = Input(default=0, description="Enable multires noise with this number of iterations."),
-            multires_noise_discount: float = Input(default=None, description="Set discount value for multires noise."),
+            multires_noise_iterations: int = Input(default=6, description="Enable multires noise with this number of iterations."),
+            multires_noise_discount: float = Input(default=0.1, description="Set discount value for multires noise."),
             shuffle_caption: bool = Input(default=True, description="Shuffle separated caption.")
     ) -> Path:
         # Extract zipped training data contents into a temp directory.
@@ -83,7 +82,6 @@ class Predictor(BasePredictor):
         args.save_model_as = save_model_as
         args.save_precision = save_precision
         args.max_train_epochs = max_train_epochs
-        args.max_train_steps = max_train_steps
         args.resolution = resolution
         args.enable_bucket = enable_bucket
         args.save_every_n_epochs = save_every_n_epochs
