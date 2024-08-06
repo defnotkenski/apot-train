@@ -14,4 +14,9 @@ __pycache__
 .ruff_cache
 
 # Exclude Python virtual environment
+.venv
 /venv
+
+# Misc
+/datasets
+dreambooth_config.json
