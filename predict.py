@@ -16,7 +16,7 @@ class Predictor(BasePredictor):
 
             # Basic Configurations.
 
-            pretrained_model_name_or_path: Path = Input(default=None, description="Model to be fine-tuned with."),
+            pretrained_model_name_or_path: str = Input(default="stabilityai/stable-diffusion-xl-base-1.0", description="Model to be fine-tuned with."),
             output_name: str = Input(default="oberg_dream", description="Trained model output name."),
             save_model_as: str = Input(default="safetensors", description="Format to save the model in.", choices=[
                 "ckpt", "diffusers", "safetensors", "diffusers_safetensors"
@@ -35,7 +35,7 @@ class Predictor(BasePredictor):
                 "DAdaptation(DAdaptAdamPreprint)", "DAdaptAdaGrad", "DAdaptAdam", "DAdaptAdan", "DAdaptAdanIP", "DAdaptLion", "DAdaptSGD",
                 "AdaFactor", "Prodigy"
             ]),
-            optimizer_args: str = Input(default=None, description="Additional arguments for the optimizer."),
+            optimizer_args: str = Input(default="decouple=True weight_decay=0.01 d_coef=0.8 use_bias_correction=True safeguard_warmup=True betas=0.9,0.99", description="Additional arguments for the optimizer."),
             lr_scheduler: str = Input(default="cosine", description="Scheduler to use for learning rate.", choices=[
                 "linear", "cosine", "cosine_with_restarts", "polynomial", "constant (default)", "constant_with_warmup", "adafactor"
             ]),
