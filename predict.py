@@ -27,7 +27,7 @@ class Predictor(BasePredictor):
             max_train_epochs: int = Input(default=150, description="Training epochs."),
             resolution: str = Input(default="1024,1024", description="Resolution in training"),
             enable_bucket: bool = Input(default=True, description="Enable buckets for multi aspect ratio training."),
-            save_every_n_epochs: int = Input(default=None, description="Save checkpoint every N epochs."),
+            save_every_n_epochs: int = Input(default=0, description="Save checkpoint every N epochs."),
             cache_latents: bool = Input(default=True, description="Cache latents to main memory to reduce VRAM usage."),
             train_data_zip: Path = Input(default=None, description="Directory containing training images."),
             optimizer_type: str = Input(default="Prodigy", description="Optimizer to use.", choices=[
