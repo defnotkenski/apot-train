@@ -17,5 +17,7 @@ build:
   # commands run after the environment is set up
   run:
     - pip install "numpy<2"
+    - git submodule add https://github.com/kohya-ss/sd-scripts.git
+    - mv sd-scripts sd_scripts
 
 predict: "predict.py:Predictor"
