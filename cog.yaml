@@ -9,9 +9,12 @@ build:
   # a list of ubuntu apt packages to install
   system_packages:
     - "libgl1"
+    - "git"
 #    - "libgl1-mesa-glx"
 #    - "libglib2.0-0"
 
+  python_packages:
+    - "git+https://github.com/kohya-ss/sd-scripts.git"
 
   # python version in the form '3.11' or '3.11.4'
   python_version: "3.10"
