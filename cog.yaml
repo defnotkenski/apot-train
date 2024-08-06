@@ -24,7 +24,8 @@ build:
   python_requirements: requirements.txt
 
   # commands run after the environment is setup
-  # run:
+  run:
+    - "pip install xformers==0.0.16"
   #   - "echo env is ready!"
   #   - "echo another command if needed"
 
