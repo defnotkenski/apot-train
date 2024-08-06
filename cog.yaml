@@ -2,7 +2,6 @@
 # Reference: https://cog.run/yaml
 
 build:
-  # set to true if your model requires a GPU
   gpu: true
   cuda: "11.8"
 
@@ -10,13 +9,7 @@ build:
   system_packages:
     - "libgl1"
     - "git"
-#    - "libgl1-mesa-glx"
-#    - "libglib2.0-0"
 
-  python_packages:
-    - "git+https://github.com/kohya-ss/sd-scripts.git"
-
-  # python version in the form '3.11' or '3.11.4'
   python_version: "3.10"
 
   python_requirements: requirements.txt
@@ -24,8 +17,5 @@ build:
   # commands run after the environment is set up
   run:
     - pip install "numpy<2"
-#     - "echo env is ready!"
-#     - "echo another command if needed"
 
-# predict.py defines how predictions are run on your model
 predict: "predict.py:Predictor"
