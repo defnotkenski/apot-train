@@ -1,4 +1,5 @@
-torch==2.1.2 torchvision==0.16.2 --index-url https://download.pytorch.org/whl/cu118
+torch==2.1.2 --index-url https://download.pytorch.org/whl/cu118
+torchvision==0.16.2 --index-url https://download.pytorch.org/whl/cu118
 xformers==0.0.23.post1 --index-url https://download.pytorch.org/whl/cu118
 
 accelerate==0.25.0
@@ -13,7 +14,6 @@ prodigyopt==1.0
 lion-pytorch==0.0.6
 tensorboard
 safetensors==0.4.2
-# gradio==3.16.2
 altair==4.2.2
 easygui==0.98.3
 toml==0.10.2
