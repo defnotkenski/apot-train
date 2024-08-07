@@ -29,7 +29,7 @@ class Predictor(BasePredictor):
             max_train_epochs: int = Input(default=150, description="Training epochs."),
             resolution: str = Input(default="1024,1024", description="Resolution in training"),
             enable_bucket: bool = Input(default=True, description="Enable buckets for multi aspect ratio training."),
-            save_every_n_epochs: int = Input(default=0, description="Save checkpoint every N epochs."),
+            save_every_n_epochs: int = Input(default=None, description="Save checkpoint every N epochs."),
             cache_latents: bool = Input(default=True, description="Cache latents to main memory to reduce VRAM usage."),
             train_data_zip: Path = Input(default=None, description="Directory containing training images."),
             optimizer_type: str = Input(default="Prodigy", description="Optimizer to use.", choices=[
@@ -37,7 +37,6 @@ class Predictor(BasePredictor):
                 "DAdaptation(DAdaptAdamPreprint)", "DAdaptAdaGrad", "DAdaptAdam", "DAdaptAdan", "DAdaptAdanIP", "DAdaptLion", "DAdaptSGD",
                 "AdaFactor", "Prodigy"
             ]),
-            # optimizer_args: str = Input(default="decouple=True weight_decay=0.01 d_coef=0.8 use_bias_correction=True safeguard_warmup=True betas=0.9,0.99", description="Additional arguments for the optimizer."),
             lr_scheduler: str = Input(default="cosine", description="Scheduler to use for learning rate.", choices=[
                 "linear", "cosine", "cosine_with_restarts", "polynomial", "constant (default)", "constant_with_warmup", "adafactor"
             ]),
@@ -90,7 +89,6 @@ class Predictor(BasePredictor):
         args.cache_latents = cache_latents
         args.train_data_dir = train_data_dir
         args.optimizer_type = optimizer_type
-        # args.optimizer_args = optimizer_args
         args.lr_scheduler = lr_scheduler
         args.learning_rate = learning_rate
         args.lr_warmup_steps = lr_warmup_steps
@@ -105,6 +103,9 @@ class Predictor(BasePredictor):
         args.multires_noise_iterations = multires_noise_iterations
         args.multires_noise_discount = multires_noise_discount
         args.shuffle_caption = shuffle_caption
+
+        if optimizer_type == "Prodigy":
+            args.optimizer_args = ["decouple=True", "weight_decay=0.01", "d_coef=0.8", "use_bias_correction=True", "safeguard_warmup=True", "betas=0.9,0.99"]
 
         train(args)
 
