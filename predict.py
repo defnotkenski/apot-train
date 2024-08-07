@@ -37,7 +37,7 @@ class Predictor(BasePredictor):
                 "DAdaptation(DAdaptAdamPreprint)", "DAdaptAdaGrad", "DAdaptAdam", "DAdaptAdan", "DAdaptAdanIP", "DAdaptLion", "DAdaptSGD",
                 "AdaFactor", "Prodigy"
             ]),
-            optimizer_args: str = Input(default="decouple=True weight_decay=0.01 d_coef=0.8 use_bias_correction=True safeguard_warmup=True betas=0.9,0.99", description="Additional arguments for the optimizer."),
+            # optimizer_args: str = Input(default="decouple=True weight_decay=0.01 d_coef=0.8 use_bias_correction=True safeguard_warmup=True betas=0.9,0.99", description="Additional arguments for the optimizer."),
             lr_scheduler: str = Input(default="cosine", description="Scheduler to use for learning rate.", choices=[
                 "linear", "cosine", "cosine_with_restarts", "polynomial", "constant (default)", "constant_with_warmup", "adafactor"
             ]),
@@ -90,7 +90,7 @@ class Predictor(BasePredictor):
         args.cache_latents = cache_latents
         args.train_data_dir = train_data_dir
         args.optimizer_type = optimizer_type
-        args.optimizer_args = optimizer_args
+        # args.optimizer_args = optimizer_args
         args.lr_scheduler = lr_scheduler
         args.learning_rate = learning_rate
         args.lr_warmup_steps = lr_warmup_steps
