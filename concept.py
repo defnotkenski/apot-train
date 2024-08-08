@@ -21,7 +21,7 @@ def setup_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser()
 
     parser.add_argument("--output_dir", default=None, help="Path of output directory.")
-    parser.add_argument("--train_data_zip", default=None, help="Path or training data.")
+    parser.add_argument("--train_data_dir", default=None, help="Path or training data.")
     parser.add_argument("--max_train_epochs", default=None, help="Number of epochs for training.")
     parser.add_argument("--pretrained_model_name_or_path", default="stabilityai/stable-diffusion-xl-base-1.0", help="Model to be trained with.")
 
@@ -106,8 +106,8 @@ def train_sdxl(args) -> None:
     run_cmd.append("--pretrained_model_name_or_path")
     run_cmd.append(rf"{args.pretrained_model_name_or_path}")
 
-    run_cmd.append("--train_data_zip")
-    run_cmd.append(rf"{args.train_data_zip}")
+    run_cmd.append("--train_data_dir")
+    run_cmd.append(rf"{args.train_data_dir}")
 
     run_cmd.append("--max_train_epochs")
     run_cmd.append(rf"{args.max_train_epochs}")
