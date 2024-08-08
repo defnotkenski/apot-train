@@ -72,8 +72,8 @@ def execute_cmd(run_cmd: list) -> None:
     # Execute the command
     global process
 
-    # process = subprocess.run(run_cmd)
-    # print("Command executed.")
+    process = subprocess.run(run_cmd)
+    print("Command executed.")
 
 
 def train_sdxl(args) -> None:
