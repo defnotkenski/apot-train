@@ -72,7 +72,7 @@ def execute_cmd(run_cmd: list) -> None:
     # Execute the command
     global process
 
-    process = subprocess.run(run_cmd)
+    process = subprocess.Popen(["ls", "-l"])
     print("Command executed.")
 
 
