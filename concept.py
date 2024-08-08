@@ -6,6 +6,14 @@ import argparse
 import zipfile
 import tempfile
 
+# TODO List ========================
+
+# TODO: Automatically configure accelerate config.
+# TODO: Upload JSON config file instead of TOML (wtf).
+# TODO: Capture when subprocess is done (Maybe polling can work?).
+
+# TODO List ========================
+
 # Get the absolute path of the DIRECTORY containing THIS script
 script_dir = os.path.dirname(os.path.abspath(__file__))
 
