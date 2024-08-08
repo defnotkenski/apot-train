@@ -3,16 +3,14 @@ import os
 import subprocess
 import sys
 import argparse
-
+import zipfile
+import tempfile
 
 # Get the absolute path of the DIRECTORY containing THIS script
 script_dir = os.path.dirname(os.path.abspath(__file__))
 
 # Insert SD_Scripts into PYTHONPATH
 sys.path.insert(0, os.path.join(script_dir, "sd_scripts"))
-
-# Setup
-process = None
 
 
 def setup_parser() -> argparse.ArgumentParser:
@@ -21,7 +19,7 @@ def setup_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser()
 
     parser.add_argument("--output_dir", default=None, help="Path of output directory.")
-    parser.add_argument("--train_data_dir", default=None, help="Path or training data.")
+    parser.add_argument("--train_data_zip", default=None, help="Path or training data in zip format.")
     parser.add_argument("--max_train_epochs", default=None, help="Number of epochs for training.")
     parser.add_argument("--pretrained_model_name_or_path", default="stabilityai/stable-diffusion-xl-base-1.0", help="Model to be trained with.")
 
@@ -70,20 +68,30 @@ def execute_cmd(run_cmd: list) -> None:
     print(f"Executing command: {command_to_run}")
 
     # Execute the command
-    global process
+    process = subprocess.Popen(run_cmd)
 
-    process = subprocess.Popen(run_cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-    print("Command executed.")
-    while True:
-        line = process.stdout.readline()
-        if not line and process.poll() is not None:
-            break
-        print(line.decode(), end="")
+    # while True:
+    #     line = process.stdout.readline()
+    #     if not line and process.poll() is not None:
+    #         break
+    #     print(line.decode(), end="")
+
+    # Remember, a return of None means the child process has not been terminated (wtf)
+    if process.poll() is not None:
+        print("Command could not be executed.")
+
+    print("Command executed & running.")
 
 
 def train_sdxl(args) -> None:
     # Begin actual training.
 
+    # Extract zip file contents and empty into temp directory
+    train_data_dir = tempfile.mkdtemp()
+    with zipfile.ZipFile(args.train_data_zip, "r") as zip_ref:
+        zip_ref.extractall(train_data_dir)
+
+    # Find the accelerate executable path
     accelerate_path = get_executable_path("accelerate")
     if accelerate_path == "":
         print("Accelerate executable not found.")
@@ -107,7 +115,7 @@ def train_sdxl(args) -> None:
     run_cmd.append(rf"{args.pretrained_model_name_or_path}")
 
     run_cmd.append("--train_data_dir")
-    run_cmd.append(rf"{args.train_data_dir}")
+    run_cmd.append(rf"{train_data_dir}")
 
     run_cmd.append("--max_train_epochs")
     run_cmd.append(rf"{args.max_train_epochs}")
