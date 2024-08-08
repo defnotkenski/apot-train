@@ -115,6 +115,8 @@ def train_sdxl(args) -> None:
     run_cmd.append("--output_dir")
     run_cmd.append(rf"{args.output_dir}")
 
+    run_cmd.append("--no_half_vae")
+
     execute_cmd(run_cmd=run_cmd)
 
 
