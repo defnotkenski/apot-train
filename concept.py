@@ -72,8 +72,13 @@ def execute_cmd(run_cmd: list) -> None:
     # Execute the command
     global process
 
-    process = subprocess.Popen(["ls", "-l"])
+    process = subprocess.Popen(run_cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
     print("Command executed.")
+    while True:
+        line = process.stdout.readline()
+        if not line and process.poll() is not None:
+            break
+        print(line.decode(), end="")
 
 
 def train_sdxl(args) -> None:
