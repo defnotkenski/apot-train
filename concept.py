@@ -115,7 +115,7 @@ def train_sdxl(args) -> None:
     run_cmd.append(rf"{args.pretrained_model_name_or_path}")
 
     run_cmd.append("--train_data_dir")
-    run_cmd.append(rf"{args.train_data_zip}")
+    run_cmd.append(rf"{train_data_dir}")
 
     run_cmd.append("--max_train_epochs")
     run_cmd.append(rf"{args.max_train_epochs}")
