@@ -99,7 +99,7 @@ def train_sdxl(args) -> None:
     # print(run_cmd)
 
     run_cmd.append("--config_file")
-    run_cmd.append(rf"{script_dir}/config.toml")
+    run_cmd.append(rf"{script_dir}/config_dreambooth.toml")
     # print(run_cmd)
 
     # Add SDXL script arguments
