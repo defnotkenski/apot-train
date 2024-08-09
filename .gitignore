@@ -1,8 +1,6 @@
 # Custom
 config_dreambooth.json
 config_dreambooth_args.json
-requirements_v2.txt
-utils.py
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
