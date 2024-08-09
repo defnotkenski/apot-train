@@ -5,6 +5,8 @@ import sys
 import argparse
 import zipfile
 import tempfile
+import json
+import toml
 
 # TODO List ========================
 
@@ -26,10 +28,9 @@ def setup_parser() -> argparse.ArgumentParser:
 
     parser = argparse.ArgumentParser()
 
-    parser.add_argument("--output_dir", default=None, help="Path of output directory.")
+    parser.add_argument("--json_config_file", default=None, help="JSON configuration file path.")
     parser.add_argument("--train_data_zip", default=None, help="Path or training data in zip format.")
-    parser.add_argument("--max_train_epochs", default=None, help="Number of epochs for training.")
-    parser.add_argument("--pretrained_model_name_or_path", default="stabilityai/stable-diffusion-xl-base-1.0", help="Model to be trained with.")
+    parser.add_argument("--output_dir", default=None, help="Path of output directory.")
 
     return parser
 
@@ -91,6 +92,25 @@ def execute_cmd(run_cmd: list) -> None:
     print("Command executed & running.")
 
 
+def begin_json_config(config_path) -> str:
+    # Remove blank lines from JSON config and convert to a TOML file
+
+    _, tmp_toml_path = tempfile.mkstemp(suffix=".toml")
+
+    with open(config_path, "r") as json_config_read, open(tmp_toml_path, "w", encoding="utf-8") as toml_write:
+        json_dict = json.load(json_config_read)
+        # print(json_dict)
+
+        cleaned_json_dict = {
+            key: json_dict[key] for key in json_dict if json_dict[key] not in [""]
+        }
+        # print(f"Parsed JSON:\n{cleaned_json_dict}")
+
+        toml.dump(cleaned_json_dict, toml_write)
+
+    return tmp_toml_path
+
+
 def train_sdxl(args) -> None:
     # Begin actual training.
 
@@ -106,32 +126,22 @@ def train_sdxl(args) -> None:
         return
 
     run_cmd = [f"{accelerate_path}", "launch"]
-    # print(run_cmd)
 
     run_cmd = accelerate_config_cmd(run_cmd=run_cmd)
-    # print(run_cmd)
 
     run_cmd.append(rf"{script_dir}/sd_scripts/sdxl_train.py")
-    # print(run_cmd)
 
+    # Add TOML config argument
+    toml_config_path = begin_json_config(rf"{args.json_config_file}")
     run_cmd.append("--config_file")
-    run_cmd.append(rf"{script_dir}/config_dreambooth.toml")
-    # print(run_cmd)
+    run_cmd.append(rf"{toml_config_path}")
 
-    # Add SDXL script arguments
-    run_cmd.append("--pretrained_model_name_or_path")
-    run_cmd.append(rf"{args.pretrained_model_name_or_path}")
-
+    # Add extra SDXL script arguments
     run_cmd.append("--train_data_dir")
     run_cmd.append(rf"{train_data_dir}")
 
-    run_cmd.append("--max_train_epochs")
-    run_cmd.append(rf"{args.max_train_epochs}")
-
     run_cmd.append("--output_dir")
     run_cmd.append(rf"{args.output_dir}")
-
-    run_cmd.append("--no_half_vae")
 
     execute_cmd(run_cmd=run_cmd)
 

@@ -14,4 +14,4 @@ def sort_json(json_path, output_name):
 if __name__ == "__main__":
     # Remember to change path
 
-    print(sort_json("config_dreambooth_args.json", "config_dreambooth"))
+    print(sort_json("config_dreambooth.json", "config_dreambooth"))
