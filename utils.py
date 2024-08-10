@@ -1,4 +1,17 @@
 import json
+import logging
+
+
+def setup_logger() -> logging.Logger:
+    logger = logging.getLogger(__name__)
+    logger.setLevel(logging.DEBUG)
+    console_handler = logging.StreamHandler()
+    logger.addHandler(console_handler)
+
+    formatter = logging.Formatter("{asctime} - {levelname} - {message}", style="{", datefmt="%Y-%m-%d %H:%M")
+    console_handler.setFormatter(formatter)
+
+    return logger
 
 
 def sort_json(json_path, output_name):
@@ -14,4 +27,5 @@ def sort_json(json_path, output_name):
 if __name__ == "__main__":
     # Remember to change path
 
-    print(sort_json("config_dreambooth.json", "config_dreambooth"))
+    # print(sort_json("config_dreambooth.json", "config_dreambooth"))
+    test_logger = setup_logger()
