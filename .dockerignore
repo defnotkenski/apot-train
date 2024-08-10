@@ -18,4 +18,5 @@ __pycache__
 /venv
 
 # Misc
-dreambooth_config.json
+config_dreambooth.json
+/datasets
