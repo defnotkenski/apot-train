@@ -104,7 +104,7 @@
   "output_dir": "",
   "output_name": "oberg_dreambooth",
   "persistent_data_loader_workers": "",
-  "pretrained_model_name_or_path": "stabilityai/stable-diffusion-xl-base-1.0",
+  "pretrained_model_name_or_path": "stabilityai/stable-diffusion-xl-base-1.0/sd_xl_base_1.0_0.9vae.safetensors",
   "random_crop": "",
   "reg_data_dir": "",
   "resolution": "1024,1024",

@@ -176,11 +176,12 @@ def train_sdxl(args) -> None:
 
     executed_subprocess = execute_cmd(run_cmd=run_cmd)
 
-    if is_finished_training(executed_subprocess) is True:
-        # Make sure that all subprocesses are terminated after completion
+    # Check to see if subprocess is finished yet
+    is_finished_training(executed_subprocess)
 
-        print("Training has ended.")
-        terminate_subprocesses(executed_subprocess)
+    # Once finished, make sure that all subprocesses are terminated after completion
+    print("Training has ended.")
+    terminate_subprocesses(executed_subprocess)
 
 
 if __name__ == "__main__":
