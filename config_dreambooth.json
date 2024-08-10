@@ -77,7 +77,7 @@
   "max_grad_norm": "",
   "max_timestep": "",
   "max_token_length": 225,
-  "max_train_epochs": 120,
+  "max_train_epochs": 2,
   "max_train_steps": 0,
   "mem_eff_attn": "",
   "metadata_author": "",

@@ -3,9 +3,12 @@ import os
 import subprocess
 import sys
 import argparse
+import time
 import zipfile
 import tempfile
 import json
+
+import psutil
 import toml
 
 # TODO List ========================
@@ -69,7 +72,7 @@ def accelerate_config_cmd(run_cmd: list) -> list:
     return run_cmd
 
 
-def execute_cmd(run_cmd: list) -> None:
+def execute_cmd(run_cmd: list) -> subprocess.Popen:
     # Execute the training command
 
     # Reformat for user friendly display
@@ -90,6 +93,7 @@ def execute_cmd(run_cmd: list) -> None:
         print("Command could not be executed.")
 
     print("Command executed & running.")
+    return process
 
 
 def begin_json_config(config_path) -> str:
@@ -109,6 +113,33 @@ def begin_json_config(config_path) -> str:
         toml.dump(cleaned_json_dict, toml_write)
 
     return tmp_toml_path
+
+
+def is_finished_training(process: subprocess.Popen) -> bool:
+    # Continuously check if subprocesses are finished
+
+    while process.poll() is None:
+        time.sleep(2)
+
+    return True
+
+
+def terminate_subprocesses(process: subprocess.Popen) -> None:
+    # Kill all processes that are currently running
+
+    if process.poll() is None:
+        try:
+            parent = psutil.Process(process.pid)
+            for child in parent.children(recursive=True):
+                child.kill()
+            parent.kill()
+            print("Running process has been killed.")
+        except psutil.NoSuchProcess:
+            print("This process does not exist anymore.")
+        except Exception as e:
+            print(f"Error terminating process: {e}")
+    else:
+        print("There is no process to kill.")
 
 
 def train_sdxl(args) -> None:
@@ -143,7 +174,10 @@ def train_sdxl(args) -> None:
     run_cmd.append("--output_dir")
     run_cmd.append(rf"{args.output_dir}")
 
-    execute_cmd(run_cmd=run_cmd)
+    executed_subprocess = execute_cmd(run_cmd=run_cmd)
+
+    if is_finished_training(executed_subprocess) is True:
+        print("Training has ended.")
 
 
 if __name__ == "__main__":
