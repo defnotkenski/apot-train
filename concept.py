@@ -13,9 +13,10 @@ from utils import setup_logger
 
 # TODO List ========================
 
-# TODO: Automatically configure accelerate config.
-# TODO: Upload JSON config file instead of TOML (wtf).
-# TODO: Capture when subprocess is done (Maybe polling can work?).
+# DONE: Automatically configure accelerate config.
+# DONE: Upload JSON config file instead of TOML (wtf).
+# DONE: Capture when subprocess is done (Maybe polling can work?).
+# TODO: See if a temp output can work.
 
 # TODO List ========================
 

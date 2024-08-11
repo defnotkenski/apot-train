@@ -1,15 +1,29 @@
 import json
 import logging
+from rich.logging import RichHandler
+from rich.console import Console
+from rich.theme import Theme
 
 
 def setup_logger() -> logging.Logger:
-    logger = logging.getLogger(__name__)
-    logger.setLevel(logging.DEBUG)
-    console_handler = logging.StreamHandler()
-    logger.addHandler(console_handler)
+    # Set up the logger with pertyyy Rich logging
 
-    formatter = logging.Formatter("{asctime} - {levelname} - {message}", style="{", datefmt="%Y-%m-%d %H:%M")
-    console_handler.setFormatter(formatter)
+    rich_console = Console(stderr=True)
+
+    rh = RichHandler(
+        show_time=True,
+        omit_repeated_times=False,
+        show_level=True,
+        show_path=False,
+        markup=True,
+        rich_tracebacks=True,
+        log_time_format="%H:%M:%S-%f",
+        level=logging.DEBUG,
+        console=rich_console,
+    )
+
+    logger = logging.getLogger(__name__)
+    logger.addHandler(rh)
 
     return logger
 
@@ -28,4 +42,6 @@ if __name__ == "__main__":
     # Remember to change path
 
     # print(sort_json("config_dreambooth.json", "config_dreambooth"))
+
     test_logger = setup_logger()
+    test_logger.warning("Ayyye")
