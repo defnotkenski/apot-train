@@ -20,6 +20,9 @@ from utils import setup_logger
 
 # TODO List ========================
 
+# Set up logging
+log = setup_logger()
+
 # Get the absolute path of the DIRECTORY containing THIS script
 script_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -78,7 +81,7 @@ def execute_cmd(run_cmd: list) -> subprocess.Popen:
 
     # Reformat for user friendly display
     command_to_run = " ".join(run_cmd)
-    logger.info(f"Executing command: {command_to_run}")
+    log.info(f"Executing command: {command_to_run}")
 
     # Execute the command
     process = subprocess.Popen(run_cmd)
@@ -91,9 +94,9 @@ def execute_cmd(run_cmd: list) -> subprocess.Popen:
 
     # Remember, a return of None means the child process has not been terminated (wtf)
     if process.poll() is not None:
-        logger.error("Command could not be executed.")
+        log.error("Command could not be executed.")
 
-    logger.info("Command executed & running.")
+    log.info("Command executed & running.")
     return process
 
 
@@ -134,13 +137,13 @@ def terminate_subprocesses(process: subprocess.Popen) -> None:
             for child in parent.children(recursive=True):
                 child.kill()
             parent.kill()
-            logger.info("Running process has been killed.")
+            log.info("Running process has been killed.")
         except psutil.NoSuchProcess:
-            logger.info("This process does not exist anymore.")
+            log.info("This process does not exist anymore.")
         except Exception as e:
-            logger.error(f"Error terminating process: {e}")
+            log.error(f"Error terminating process: {e}")
     else:
-        logger.info("There is no process to kill.")
+        log.info("There is no process to kill.")
 
 
 def train_sdxl(args) -> None:
@@ -154,7 +157,7 @@ def train_sdxl(args) -> None:
     # Find the accelerate executable path
     accelerate_path = get_executable_path("accelerate")
     if accelerate_path == "":
-        logger.error("Accelerate executable not found.")
+        log.error("Accelerate executable not found.")
         return
 
     run_cmd = [f"{accelerate_path}", "launch"]
@@ -181,15 +184,15 @@ def train_sdxl(args) -> None:
     is_finished_training(executed_subprocess)
 
     # Once finished, make sure that all subprocesses are terminated after completion
-    logger.info("Training has ended.")
+    log.info("Training has ended.")
     terminate_subprocesses(executed_subprocess)
 
 
 if __name__ == "__main__":
-    logger = setup_logger()
-
+    # Set up parser for CLI
     configured_parser = setup_parser()
     parsed_args = configured_parser.parse_args()
 
-    logger.info("Starting training for SDXL Dreambooth niggaaa!")
+    # Now, begin inference
+    log.info("Starting training for SDXL Dreambooth niggaaa!")
     train_sdxl(args=parsed_args)
