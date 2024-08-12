@@ -1,12 +1,11 @@
 # Prediction interface for Cog ⚙️
 # https://cog.run/python
-import logging
-import os.path
 
 from cog import BasePredictor, Input, Path
 import tempfile
 import zipfile
 from concept import train_sdxl, setup_parser
+import json
 
 
 class Predictor(BasePredictor):
@@ -20,7 +19,11 @@ class Predictor(BasePredictor):
             json_config: Path = Input(default=None, description="JSON Config for training."),
             train_data_zip: Path = Input(default=None, description="Training data in zip format.")
     ) -> Path:
-        # Run model inference
+        # Run model training
+
+        # Extract output name from JSON configuration file
+        with open(json_config, "r") as read_config:
+            json_config = json.load(read_config)
 
         # Extract zipped training data contents into a temp directory
         train_data_dir = tempfile.mkdtemp()
@@ -29,6 +32,7 @@ class Predictor(BasePredictor):
 
         # Create an output directory
         output_dir = Path(tempfile.mkdtemp())
+        output = output_dir.joinpath("oberg_dreambooth.safetensors")
 
         # Set up parser
         parser = setup_parser()
@@ -41,4 +45,4 @@ class Predictor(BasePredictor):
         # Run training
         train_sdxl(args=args)
 
-        return output_dir
+        return output
