@@ -8,22 +8,31 @@ from rich.theme import Theme
 def setup_logger() -> logging.Logger:
     # Set up the logger with pertyyy Rich logging
 
-    rich_console = Console(stderr=True)
+    rich_console = Console(stderr=True, theme=Theme({
+        "log.time": "dim magenta",
+        "logging.level.debug": "bold cyan1",
+        "logging.level.info": "bold cyan1",
+        "logging.level.warning": "bold yellow1",
+        "logging.level.error": "bold yellow1",
+        "logging.level.critical": "bold reverse yellow1",
+        "log.message": "pink1"
+    }))
 
     rh = RichHandler(
         show_time=True,
         omit_repeated_times=False,
         show_level=True,
         show_path=False,
-        markup=True,
+        markup=False,
         rich_tracebacks=True,
-        log_time_format="%H:%M:%S-%f",
+        log_time_format="%H:%M:%S",
         level=logging.DEBUG,
         console=rich_console,
     )
 
     logger = logging.getLogger(__name__)
     logger.addHandler(rh)
+    logger.setLevel(logging.DEBUG)
 
     return logger
 
@@ -44,4 +53,9 @@ if __name__ == "__main__":
     # print(sort_json("config_dreambooth.json", "config_dreambooth"))
 
     test_logger = setup_logger()
+
+    test_logger.debug("This shit buggin")
+    test_logger.info({"test": 12})
     test_logger.warning("Ayyye")
+    test_logger.error("This shit errored.")
+    test_logger.critical("This shit critical.")
