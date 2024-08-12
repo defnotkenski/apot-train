@@ -119,13 +119,15 @@ def begin_json_config(config_path) -> str:
     return tmp_toml_path
 
 
-def is_finished_training(process: subprocess.Popen) -> bool:
+def is_finished_training(process: subprocess.Popen) -> None:
     # Continuously check if subprocesses are finished
 
     while process.poll() is None:
         time.sleep(2)
 
-    return True
+    log.info("Training has ended.")
+
+    return
 
 
 def terminate_subprocesses(process: subprocess.Popen) -> None:
@@ -145,9 +147,11 @@ def terminate_subprocesses(process: subprocess.Popen) -> None:
     else:
         log.info("There is no process to kill.")
 
+    return
+
 
 def train_sdxl(args) -> None:
-    # Begin actual training.
+    # Begin actual training
 
     # Extract zip file contents and empty into temp directory
     train_data_dir = tempfile.mkdtemp()
@@ -174,7 +178,6 @@ def train_sdxl(args) -> None:
     # Add extra SDXL script arguments
     run_cmd.append("--train_data_dir")
     run_cmd.append(rf"{train_data_dir}")
-
     run_cmd.append("--output_dir")
     run_cmd.append(rf"{args.output_dir}")
 
@@ -184,8 +187,9 @@ def train_sdxl(args) -> None:
     is_finished_training(executed_subprocess)
 
     # Once finished, make sure that all subprocesses are terminated after completion
-    log.info("Training has ended.")
     terminate_subprocesses(executed_subprocess)
+
+    return
 
 
 if __name__ == "__main__":

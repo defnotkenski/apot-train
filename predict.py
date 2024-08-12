@@ -1,5 +1,7 @@
 # Prediction interface for Cog ⚙️
 # https://cog.run/python
+import logging
+import os.path
 
 from cog import BasePredictor, Input, Path
 import tempfile
@@ -36,6 +38,7 @@ class Predictor(BasePredictor):
         args.train_data_zip = train_data_zip
         args.output_dir = output_dir
 
+        # Run training
         train_sdxl(args=args)
 
         return output_dir
