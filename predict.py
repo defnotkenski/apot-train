@@ -5,7 +5,6 @@ from cog import BasePredictor, Input, Path
 import tempfile
 import zipfile
 from concept import train_sdxl, setup_parser
-import json
 
 
 class Predictor(BasePredictor):
@@ -29,6 +28,7 @@ class Predictor(BasePredictor):
         # Create an output directory
         output_dir = Path(tempfile.mkdtemp())
         output = output_dir.joinpath("oberg_dreambooth.safetensors")
+        output_zip = output_dir.joinpath("oberg_dreambooth.zip")
 
         # Set up parser
         parser = setup_parser()
@@ -40,5 +40,9 @@ class Predictor(BasePredictor):
 
         # Run training
         train_sdxl(args=args)
+
+        # Zip the safetensors file
+        with zipfile.ZipFile(output, "w") as output_zip:
+            output_zip.write("oberg_dreambooth")
 
         return output
