@@ -5,7 +5,7 @@ from rich.console import Console
 from rich.theme import Theme
 
 
-def setup_logger() -> logging.Logger:
+def setup_logging() -> logging.Logger:
     # Set up the logger with pertyyy Rich logging
 
     rich_console = Console(stderr=True, theme=Theme({

@@ -9,7 +9,7 @@ import tempfile
 import json
 import psutil
 import toml
-from utils import setup_logger
+from utils import setup_logging
 
 # TODO List ========================
 
@@ -21,7 +21,7 @@ from utils import setup_logger
 # TODO List ========================
 
 # Set up logging
-log = setup_logger()
+log = setup_logging()
 
 # Get the absolute path of the DIRECTORY containing THIS script
 script_dir = os.path.dirname(os.path.abspath(__file__))
