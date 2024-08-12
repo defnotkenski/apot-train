@@ -16,16 +16,16 @@ class Predictor(BasePredictor):
     def predict(
             self,
             json_config: Path = Input(default=None, description="JSON Config for training."),
-            training_zip: Path = Input(default=None, description="Training data in zip format.")
+            train_data_zip: Path = Input(default=None, description="Training data in zip format.")
     ) -> Path:
-        # Extract zipped training data contents into a temp directory.
+        # Run model inference
 
+        # Extract zipped training data contents into a temp directory.
         train_data_dir = tempfile.mkdtemp()
-        with zipfile.ZipFile(training_zip, 'r') as zip_ref:
+        with zipfile.ZipFile(train_data_zip, 'r') as zip_ref:
             zip_ref.extractall(train_data_dir)
 
         # Create an output directory.
-
         output_dir = Path(tempfile.mkdtemp())
 
         return output_dir

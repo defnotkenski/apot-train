@@ -33,7 +33,7 @@ def setup_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser()
 
     parser.add_argument("--json_config", default=None, help="JSON configuration file path.")
-    parser.add_argument("--train_zip", default=None, help="Path or training data in zip format.")
+    parser.add_argument("--train_data_zip", default=None, help="Path or training data in zip format.")
     # parser.add_argument("--output_dir", default=None, help="Path of output directory.")
 
     return parser
@@ -148,7 +148,7 @@ def train_sdxl(args) -> None:
 
     # Extract zip file contents and empty into temp directory
     train_data_dir = tempfile.mkdtemp()
-    with zipfile.ZipFile(args.train_zip, "r") as zip_ref:
+    with zipfile.ZipFile(args.train_data_zip, "r") as zip_ref:
         zip_ref.extractall(train_data_dir)
 
     # TODO: Create output dir
