@@ -34,7 +34,7 @@ def setup_parser() -> argparse.ArgumentParser:
 
     parser.add_argument("--json_config", default=None, help="JSON configuration file path.")
     parser.add_argument("--train_data_zip", default=None, help="Path or training data in zip format.")
-    # parser.add_argument("--output_dir", default=None, help="Path of output directory.")
+    parser.add_argument("--output_dir", default=None, help="Path of output directory.")
 
     return parser
 
@@ -151,9 +151,6 @@ def train_sdxl(args) -> None:
     with zipfile.ZipFile(args.train_data_zip, "r") as zip_ref:
         zip_ref.extractall(train_data_dir)
 
-    # TODO: Create output dir
-    temp_output_dir = tempfile.mkdtemp()
-
     # Find the accelerate executable path
     accelerate_path = get_executable_path("accelerate")
     if accelerate_path == "":
@@ -176,16 +173,16 @@ def train_sdxl(args) -> None:
     run_cmd.append(rf"{train_data_dir}")
 
     run_cmd.append("--output_dir")
-    run_cmd.append(rf"{temp_output_dir}")
+    run_cmd.append(rf"{args.output_dir}")
 
-    executed_subprocess = execute_cmd(run_cmd=run_cmd)
+    # executed_subprocess = execute_cmd(run_cmd=run_cmd)
 
     # Check to see if subprocess is finished yet
-    is_finished_training(executed_subprocess)
+    # is_finished_training(executed_subprocess)
 
     # Once finished, make sure that all subprocesses are terminated after completion
     logger.info("Training has ended.")
-    terminate_subprocesses(executed_subprocess)
+    # terminate_subprocesses(executed_subprocess)
 
 
 if __name__ == "__main__":
@@ -195,4 +192,4 @@ if __name__ == "__main__":
     parsed_args = configured_parser.parse_args()
 
     logger.info("Starting training for SDXL Dreambooth niggaaa!")
-    train_sdxl(parsed_args)
+    train_sdxl(args=parsed_args)

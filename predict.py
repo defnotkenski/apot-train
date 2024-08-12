@@ -4,7 +4,7 @@
 from cog import BasePredictor, Input, Path
 import tempfile
 import zipfile
-from concept import train_sdxl
+from concept import train_sdxl, setup_parser
 
 
 class Predictor(BasePredictor):
@@ -27,5 +27,15 @@ class Predictor(BasePredictor):
 
         # Create an output directory.
         output_dir = Path(tempfile.mkdtemp())
+
+        # Set up parser
+        parser = setup_parser()
+        args = parser.parse_args()
+
+        args.json_config = json_config
+        args.train_data_zip = train_data_zip
+        args.output_dir = output_dir
+
+        train_sdxl(args=args)
 
         return output_dir
