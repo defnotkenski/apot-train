@@ -9,7 +9,7 @@ from concept import train_sdxl, setup_parser
 
 class Predictor(BasePredictor):
     def setup(self):
-        # Don't really know what to put here.
+        # Set up goes here
 
         print("Starting setup.")
 
@@ -20,12 +20,12 @@ class Predictor(BasePredictor):
     ) -> Path:
         # Run model inference
 
-        # Extract zipped training data contents into a temp directory.
+        # Extract zipped training data contents into a temp directory
         train_data_dir = tempfile.mkdtemp()
         with zipfile.ZipFile(train_data_zip, 'r') as zip_ref:
             zip_ref.extractall(train_data_dir)
 
-        # Create an output directory.
+        # Create an output directory
         output_dir = Path(tempfile.mkdtemp())
 
         # Set up parser

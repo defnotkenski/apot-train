@@ -175,14 +175,14 @@ def train_sdxl(args) -> None:
     run_cmd.append("--output_dir")
     run_cmd.append(rf"{args.output_dir}")
 
-    # executed_subprocess = execute_cmd(run_cmd=run_cmd)
+    executed_subprocess = execute_cmd(run_cmd=run_cmd)
 
     # Check to see if subprocess is finished yet
-    # is_finished_training(executed_subprocess)
+    is_finished_training(executed_subprocess)
 
     # Once finished, make sure that all subprocesses are terminated after completion
     logger.info("Training has ended.")
-    # terminate_subprocesses(executed_subprocess)
+    terminate_subprocesses(executed_subprocess)
 
 
 if __name__ == "__main__":
