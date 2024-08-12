@@ -21,10 +21,6 @@ class Predictor(BasePredictor):
     ) -> Path:
         # Run model training
 
-        # Extract output name from JSON configuration file
-        with open(json_config, "r") as read_config:
-            json_config = json.load(read_config)
-
         # Extract zipped training data contents into a temp directory
         train_data_dir = tempfile.mkdtemp()
         with zipfile.ZipFile(train_data_zip, 'r') as zip_ref:
