@@ -5,6 +5,7 @@ from rich.console import Console
 from rich.theme import Theme
 import os
 from pathlib import Path
+import tempfile
 
 
 def setup_logging() -> logging.Logger:
@@ -65,4 +66,7 @@ if __name__ == "__main__":
     # test_logger.critical("This shit critical.")
 
     # Testing misc.
-    test_logger.info(Path("tmp", "hello", "bitch"))
+    tmp_test = tempfile.mkdtemp()
+    test_logger.info(type(Path(tmp_test, "hi")))
+    test_logger.info(type(tmp_test))
+    test_logger.info(type(os.path.join(tmp_test, "hi")))

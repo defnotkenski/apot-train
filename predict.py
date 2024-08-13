@@ -44,7 +44,7 @@ class Predictor(BasePredictor):
         train_sdxl(args=args)
 
         # Zip the safetensors file
-        with zipfile.ZipFile(Path(output_dir, "oberg_dreambooth.zip"), "w") as zip_write:
-            zip_write.write(output_file)
+        # with zipfile.ZipFile(Path(output_dir, "oberg_dreambooth.zip"), "w") as zip_write:
+        #     zip_write.write(output_file)
 
-        return Path(output_dir, "oberg_dreambooth.zip")
+        return output_file
