@@ -67,6 +67,4 @@ if __name__ == "__main__":
 
     # Testing misc.
     tmp_test = tempfile.mkdtemp()
-    test_logger.info(type(Path(tmp_test, "hi")))
-    test_logger.info(type(tmp_test))
-    test_logger.info(type(os.path.join(tmp_test, "hi")))
+    test_logger.info(Path("dreambooth"))
