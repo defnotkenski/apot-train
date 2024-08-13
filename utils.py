@@ -3,12 +3,17 @@ import logging
 from rich.logging import RichHandler
 from rich.console import Console
 from rich.theme import Theme
+import os
 
 
 def setup_logging() -> logging.Logger:
     # Set up the logger with pertyyy Rich logging
 
-    rich_console = Console(stderr=True, theme=Theme({
+    # Trying to prevent logs from being squished af in Docker environments
+    terminal_size = os.get_terminal_size()
+    width = terminal_size.columns if terminal_size.columns != 0 else None
+
+    rich_console = Console(stderr=True, width=width, theme=Theme({
         "log.time": "dim magenta",
         "logging.level.debug": "bold cyan1",
         "logging.level.info": "bold cyan1",
