@@ -52,7 +52,7 @@ if __name__ == "__main__":
 
     # print(sort_json("config_dreambooth.json", "config_dreambooth"))
 
-    test_logger = setup_logger()
+    test_logger = setup_logging()
 
     test_logger.debug("This shit buggin")
     test_logger.info({"test": 12})
