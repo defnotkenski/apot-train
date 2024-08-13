@@ -28,9 +28,10 @@ class Predictor(BasePredictor):
         with zipfile.ZipFile(train_data_zip, 'r') as zip_ref:
             zip_ref.extractall(train_data_dir)
 
-        # Create an output directory
+        # Create output directories
         output_dir = tempfile.mkdtemp()
-        output_file = Path(output_dir, "oberg_dreambooth.safetensors")
+        output_tensors = Path(output_dir).joinpath("oberg_dreambooth.safetensors")
+        output_zip = Path(output_dir).joinpath("oberg_dreambooth.zip")
 
         # Set up parser
         parser = setup_parser()
@@ -44,9 +45,7 @@ class Predictor(BasePredictor):
         train_sdxl(args=args)
 
         # Zip the safetensors file
-        with zipfile.ZipFile(Path(output_dir, "oberg_dreambooth.zip"), "w") as zip_write:
-            zip_write.write(output_file)
-
-        output_zip = Path(output_dir, "oberg_dreambooth.zip")
+        with zipfile.ZipFile(output_zip, "w") as zip_write:
+            zip_write.write(output_tensors)
 
         return output_zip

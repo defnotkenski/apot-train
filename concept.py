@@ -10,6 +10,7 @@ import json
 import psutil
 import toml
 from utils import setup_logging
+from pathlib import Path
 
 # TODO List ========================
 
@@ -24,10 +25,12 @@ from utils import setup_logging
 log = setup_logging()
 
 # Get the absolute path of the DIRECTORY containing THIS script
-script_dir = os.path.dirname(os.path.abspath(__file__))
+# script_dir = os.path.dirname(os.path.abspath(__file__))
+script_dir = Path.cwd()
 
 # Insert SD_Scripts into PYTHONPATH
-sys.path.insert(0, os.path.join(script_dir, "sd_scripts"))
+# sys.path.insert(0, os.path.join(script_dir, "sd_scripts"))
+sys.path.insert(0, str(script_dir.joinpath("sd_scripts")))
 
 
 def setup_parser() -> argparse.ArgumentParser:
@@ -168,7 +171,7 @@ def train_sdxl(args) -> None:
 
     run_cmd = accelerate_config_cmd(run_cmd=run_cmd)
 
-    run_cmd.append(rf"{script_dir}/sd_scripts/sdxl_train.py")
+    run_cmd.append(str(script_dir.joinpath("sd_scripts", "sdxl_train.py")))
 
     # Add TOML config argument
     toml_config_path = begin_json_config(rf"{args.json_config}")

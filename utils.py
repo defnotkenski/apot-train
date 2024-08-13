@@ -3,7 +3,6 @@ import logging
 from rich.logging import RichHandler
 from rich.console import Console
 from rich.theme import Theme
-import os
 from pathlib import Path
 import tempfile
 
@@ -66,5 +65,4 @@ if __name__ == "__main__":
     # test_logger.critical("This shit critical.")
 
     # Testing misc.
-    tmp_test = tempfile.mkdtemp()
-    test_logger.info(Path("dreambooth"))
+    test_logger.info(Path.cwd())
