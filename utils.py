@@ -4,6 +4,7 @@ from rich.logging import RichHandler
 from rich.console import Console
 from rich.theme import Theme
 import os
+from pathlib import Path
 
 
 def setup_logging() -> logging.Logger:
@@ -53,14 +54,19 @@ def sort_json(json_path, output_name):
 
 
 if __name__ == "__main__":
-    # Remember to change path
+    # Entry point to file
 
+    # Sorting JSON file by keyname
     # print(sort_json("config_dreambooth.json", "config_dreambooth"))
 
+    # Testing the logger
     test_logger = setup_logging()
 
-    test_logger.debug("This shit buggin")
-    test_logger.info({"test": 12})
-    test_logger.warning("Ayyye")
-    test_logger.error("This shit errored.")
-    test_logger.critical("This shit critical.")
+    # test_logger.debug("This shit buggin")
+    # test_logger.info({"test": 12})
+    # test_logger.warning("Ayyye")
+    # test_logger.error("This shit errored.")
+    # test_logger.critical("This shit critical.")
+
+    # Testing misc.
+    test_logger.info(Path("tmp", "hello", "bitch"))

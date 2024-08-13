@@ -5,6 +5,9 @@ from cog import BasePredictor, Input, Path
 import tempfile
 import zipfile
 from concept import train_sdxl, setup_parser
+import mimetypes
+
+mimetypes.add_type("application/octet-stream", ".safetensors")
 
 
 class Predictor(BasePredictor):
