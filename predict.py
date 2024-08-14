@@ -31,14 +31,17 @@ class Predictor(BasePredictor):
                 zip_ref.extractall(train_data_dir)
 
             # Create output directories
+            print("Creating the output dirs.")
             output_dir = tempfile.mkdtemp()
             output_tensors = Path(output_dir).joinpath("oberg_dreambooth.safetensors")
             output_zip = Path(output_dir).joinpath("oberg_dreambooth.zip")
 
             # Set up parser
+            print("Setting up the parsers.")
             parser = setup_parser()
             args = parser.parse_args()
 
+            print("Assigning arguments to parsers.")
             args.json_config = json_config
             args.train_data_zip = train_data_zip
             args.output_dir = output_dir
