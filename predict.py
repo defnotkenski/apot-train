@@ -34,8 +34,11 @@ class Predictor(BasePredictor):
             # Create output directories
             print("Creating the output dirs.")
             output_dir = tempfile.mkdtemp()
+            print("1")
             output_tensors = Path(output_dir).joinpath("oberg_dreambooth.safetensors")
+            print("2")
             output_zip = Path(output_dir).joinpath("oberg_dreambooth.zip")
+            print("3")
 
             # Set up parser
             print("Setting up the parsers.")
