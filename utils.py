@@ -65,4 +65,6 @@ if __name__ == "__main__":
     # test_logger.critical("This shit critical.")
 
     # Testing misc.
-    test_logger.info(Path.cwd())
+    temp = tempfile.mkdtemp()
+
+    test_logger.info(Path(temp).joinpath("hi"))
