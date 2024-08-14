@@ -40,6 +40,7 @@ class Predictor(BasePredictor):
             # Set up parser
             print("Setting up the parsers.")
             parser = setup_parser()
+            print("Parsing args.")
             args = parser.parse_args()
 
             print("Assigning arguments to parsers.")
