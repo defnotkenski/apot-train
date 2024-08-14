@@ -1,7 +1,8 @@
 # Prediction interface for Cog ⚙️
 # https://cog.run/python
 
-from cog import BasePredictor, Input, Path
+from cog import BasePredictor, Input, Path as cogPath
+from pathlib import Path
 import tempfile
 import zipfile
 from concept import train_sdxl, setup_parser
@@ -17,9 +18,9 @@ class Predictor(BasePredictor):
 
     def predict(
             self,
-            json_config: Path = Input(default=None, description="JSON Config for training."),
-            train_data_zip: Path = Input(default=None, description="Training data in zip format.")
-    ) -> Path:
+            json_config: cogPath = Input(default=None, description="JSON Config for training."),
+            train_data_zip: cogPath = Input(default=None, description="Training data in zip format.")
+    ) -> cogPath:
         # Run model training
 
         print("Starting model training nigga.")
