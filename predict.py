@@ -45,6 +45,7 @@ class Predictor(BasePredictor):
             parser = setup_parser()
             print("Parsing args.")
             args = parser.parse_args()
+            print("Done parsing args.")
 
             print("Assigning arguments to parsers.")
             args.json_config = json_config
