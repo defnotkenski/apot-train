@@ -7,7 +7,6 @@ import tempfile
 import zipfile
 from concept import train_sdxl, setup_parser
 import mimetypes
-from utils import just_print
 
 
 class Predictor(BasePredictor):
@@ -35,10 +34,6 @@ class Predictor(BasePredictor):
             # Create output directories
             print("Creating the output dirs.")
             output_dir = tempfile.mkdtemp()
-
-            # DEBUG
-            print("Printing.")
-            just_print()
 
             # Set up parser
             print("Setting up the parsers.")

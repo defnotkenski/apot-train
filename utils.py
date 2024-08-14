@@ -7,11 +7,6 @@ from pathlib import Path
 import tempfile
 
 
-def just_print() -> None:
-    print("Function reached.")
-    return
-
-
 def setup_logging() -> logging.Logger:
     # Set up the logger with pertyyy Rich logging
 

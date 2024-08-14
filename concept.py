@@ -36,15 +36,16 @@ sys.path.insert(0, str(script_dir.joinpath("sd_scripts")))
 def setup_parser() -> argparse.ArgumentParser:
     # Set up and add arguments for the parser
 
-    print("Line 39 - concept.py")
     parser = argparse.ArgumentParser()
 
-    print("Line 42 - concept.py")
     parser.add_argument("--json_config", default=None, help="JSON configuration file path.")
     parser.add_argument("--train_data_zip", default=None, help="Path or training data in zip format.")
     parser.add_argument("--output_dir", default=None, help="Path of output directory.")
 
-    print("Line 47 - concept.py")
+    # DEBUG
+    parser.add_argument("--await-explicit-shutdown", default=None, help="Fucking Replicate.")
+    parser.add_argument("--upload-url", default=None, help="Fucking Replicate.")
+
     return parser
 
 
