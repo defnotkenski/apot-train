@@ -34,11 +34,6 @@ class Predictor(BasePredictor):
             # Create output directories
             print("Creating the output dirs.")
             output_dir = tempfile.mkdtemp()
-            print("1")
-            output_tensors = cogPath(output_dir).joinpath("oberg_dreambooth.safetensors")
-            print("2")
-            output_zip = Path(output_dir).joinpath("oberg_dreambooth.zip")
-            print("3")
 
             # Set up parser
             print("Setting up the parsers.")
@@ -52,9 +47,16 @@ class Predictor(BasePredictor):
             args.output_dir = output_dir
 
             # Run training
+            print("Running training.")
             train_sdxl(args=args)
 
+            print("Adding path to safetensors.")
+            output_tensors = Path(output_dir).joinpath("oberg_dreambooth.safetensors")
+            print("Adding path to zip file.")
+            output_zip = Path(output_dir).joinpath("oberg_dreambooth.zip")
+
             # Zip the safetensors file
+            print("Zipping safetensors file.")
             with zipfile.ZipFile(output_zip, "w") as zip_write:
                 zip_write.write(output_tensors)
 
