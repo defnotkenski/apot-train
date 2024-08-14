@@ -22,8 +22,10 @@ class Predictor(BasePredictor):
     ) -> Path:
         # Run model training
 
+        print("Starting model training nigga.")
         try:
             # Extract zipped training data contents into a temp directory
+            print("Extracting zip file contents into a temp dir.")
             train_data_dir = tempfile.mkdtemp()
             with zipfile.ZipFile(train_data_zip, 'r') as zip_ref:
                 zip_ref.extractall(train_data_dir)
