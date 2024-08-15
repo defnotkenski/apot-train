@@ -6,11 +6,11 @@ from cog import BasePredictor, Input, Path as cogPath
 from pathlib import Path
 import tempfile
 import zipfile
-from concept import train_sdxl, setup_parser
-import mimetypes
+from concept import train_sdxl
 import torch
 from subprocess import check_call
 from argparse import Namespace
+import psutil
 
 
 class Predictor(BasePredictor):
@@ -22,8 +22,6 @@ class Predictor(BasePredictor):
         time.sleep(10)
         check_call("nvidia-smi", shell=True)
         assert torch.cuda.is_available()
-
-        # mimetypes.add_type("application/octet-stream", ".safetensors")
 
     def predict(
             self,
@@ -43,6 +41,9 @@ class Predictor(BasePredictor):
         # Create output directories
         print("Creating the output dirs.")
         output_dir = tempfile.mkdtemp()
+
+        # Log system usages
+        print(f"RAM USAGE: {psutil.virtual_memory().percent}")
 
         # Set up parser
         # print("Setting up the parsers.")
