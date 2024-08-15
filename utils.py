@@ -32,7 +32,7 @@ def setup_logging() -> logging.Logger:
         console=rich_console,
     )
 
-    logger = logging.getLogger(__name__)
+    logger = logging.getLogger("banana_nut")
     logger.addHandler(rh)
     logger.setLevel(logging.DEBUG)
 
@@ -50,21 +50,7 @@ def sort_json(json_path, output_name):
 
 
 if __name__ == "__main__":
-    # Entry point to file
-
     # Sorting JSON file by keyname
     # print(sort_json("config_dreambooth.json", "config_dreambooth"))
 
-    # Testing the logger
-    test_logger = setup_logging()
-
-    # test_logger.debug("This shit buggin")
-    # test_logger.info({"test": 12})
-    # test_logger.warning("Ayyye")
-    # test_logger.error("This shit errored.")
-    # test_logger.critical("This shit critical.")
-
-    # Testing misc.
-    temp = tempfile.mkdtemp()
-
-    test_logger.info(Path(temp).joinpath("hi"))
+    pass

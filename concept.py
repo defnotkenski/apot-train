@@ -1,5 +1,4 @@
 import shutil
-import os
 import subprocess
 import sys
 import argparse
@@ -41,10 +40,6 @@ def setup_parser() -> argparse.ArgumentParser:
     parser.add_argument("--json_config", default=None, help="JSON configuration file path.")
     parser.add_argument("--train_data_zip", default=None, help="Path or training data in zip format.")
     parser.add_argument("--output_dir", default=None, help="Path of output directory.")
-
-    # DEBUG
-    parser.add_argument("--await-explicit-shutdown", default=None, help="Fucking Replicate.")
-    parser.add_argument("--upload-url", default=None, help="Fucking Replicate.")
 
     return parser
 

@@ -11,13 +11,17 @@ import torch
 from subprocess import check_call
 from argparse import Namespace
 import psutil
+import gc
+from utils import setup_logging
+
+log = setup_logging()
 
 
 class Predictor(BasePredictor):
     def setup(self):
         # Wait a little bit for instance to be ready and run set up
 
-        print("Starting setup.")
+        log.info("Starting setup.")
 
         time.sleep(10)
         check_call("nvidia-smi", shell=True)
@@ -30,21 +34,21 @@ class Predictor(BasePredictor):
     ) -> cogPath:
         # Run model training
 
-        print("Starting model training nigga.")
+        log.info("Starting model training nigga.")
 
         # Extract zipped training data contents into a temp directory
-        print("Extracting zip file contents into a temp dir.")
+        log.info("Extracting zip file contents into a temp dir.")
         train_data_dir = tempfile.mkdtemp()
         with zipfile.ZipFile(train_data_zip, 'r') as zip_ref:
             zip_ref.extractall(train_data_dir)
 
         # Create output directories
-        print("Creating the output dirs.")
+        log.info("Creating the output dirs.")
         output_dir = tempfile.mkdtemp()
 
         # Log system usages
-        print(f"RAM USAGE: {psutil.virtual_memory().percent}")
-        print(check_call("nvidia-smi", shell=True))
+        log.info(f"RAM USAGE: {psutil.virtual_memory().percent}")
+        log.info(check_call("nvidia-smi", shell=True))
 
         # Set up parser
         # print("Setting up the parsers.")
@@ -58,7 +62,7 @@ class Predictor(BasePredictor):
         # args.train_data_zip = train_data_zip
         # args.output_dir = output_dir
 
-        print("Assigning args to Namespace.")
+        log.info("Assigning args to Namespace.")
         args = {
             "json_config": json_config,
             "train_data_zip": train_data_zip,
@@ -69,18 +73,22 @@ class Predictor(BasePredictor):
 
         # Run training
         try:
-            print("Running training.")
+            log.info("Running training.")
             train_sdxl(args=args)
         except Exception as e:
-            print(f"An exception occured when running training script: {e}")
+            log.info(f"An exception occured when running training script: {e}")
 
-        print("Adding path to safetensors.")
+        # Clean shit up
+        gc.collect()
+        torch.cuda.empty_cache()
+
+        log.info("Adding path to safetensors.")
         output_tensors = Path(output_dir).joinpath("oberg_dreambooth.safetensors")
-        print("Adding path to zip file.")
+        log.info("Adding path to zip file.")
         output_zip = Path(output_dir).joinpath("oberg_dreambooth.zip")
 
         # Zip the safetensors file
-        print("Zipping safetensors file.")
+        log.info("Zipping safetensors file.")
         with zipfile.ZipFile(output_zip, "w") as zip_write:
             zip_write.write(output_tensors)
 

@@ -1,6 +1,7 @@
 # Custom
 config_dreambooth_args.json
 /datasets
+experiments.py
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

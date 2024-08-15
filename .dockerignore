@@ -20,3 +20,4 @@ __pycache__
 # Misc
 config_dreambooth.json
 /datasets
+experiments.py
