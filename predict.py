@@ -44,6 +44,7 @@ class Predictor(BasePredictor):
 
         # Log system usages
         print(f"RAM USAGE: {psutil.virtual_memory().percent}")
+        print(check_call("nvidia-smi", shell=True))
 
         # Set up parser
         # print("Setting up the parsers.")
