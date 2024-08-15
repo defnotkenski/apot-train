@@ -42,17 +42,16 @@ class Predictor(BasePredictor):
         with zipfile.ZipFile(train_data_zip, 'r') as zip_ref:
             zip_ref.extractall(train_data_dir)
 
-        # Create output directories
-        log.info("Creating the output dirs.")
+        # Create temporary output directory
+        log.info("Creating the output directory.")
         output_dir = tempfile.mkdtemp()
 
-        # Adding rest of output directories
-        log.info("Adding path to safetensors.")
+        # Add paths to the safetensors file and zip by appending output dir
+        log.info("Creating path to safetensors and zipfile.")
         output_tensors = Path(output_dir).joinpath("oberg_dreambooth.safetensors")
-        log.info("Adding path to zip file.")
         output_zip = Path(output_dir).joinpath("oberg_dreambooth.zip")
 
-        log.info("Assigning args to Namespace.")
+        # Assign args to argparse Namespace
         args = {
             "json_config": json_config,
             "train_data_zip": train_data_zip,
@@ -61,14 +60,14 @@ class Predictor(BasePredictor):
 
         args = Namespace(**args)
 
-        # Run training
+        # Run training script from submodule
         try:
-            log.info("Running training.")
+            log.info("Running training script from submodule.")
             train_sdxl(args=args)
         except Exception as e:
             log.info(f"An exception occured when running training script: {e}")
 
-        # Clean shit up
+        # Clean shit up and free up resources
         log.info("Cleaning shit up.")
         gc.collect()
         torch.cuda.empty_cache()
