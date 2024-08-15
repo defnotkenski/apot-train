@@ -3,8 +3,6 @@ import logging
 from rich.logging import RichHandler
 from rich.console import Console
 from rich.theme import Theme
-from pathlib import Path
-import tempfile
 
 
 def setup_logging() -> logging.Logger:
@@ -33,6 +31,10 @@ def setup_logging() -> logging.Logger:
     )
 
     logger = logging.getLogger("banana_nut")
+
+    if logger.hasHandlers():
+        logger.handlers.clear()
+
     logger.addHandler(rh)
     logger.setLevel(logging.DEBUG)
 

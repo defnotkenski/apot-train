@@ -46,21 +46,11 @@ class Predictor(BasePredictor):
         log.info("Creating the output dirs.")
         output_dir = tempfile.mkdtemp()
 
-        # Log system usages
-        log.info(f"RAM USAGE: {psutil.virtual_memory().percent}")
-        log.info(check_call("nvidia-smi", shell=True))
-
-        # Set up parser
-        # print("Setting up the parsers.")
-        # parser = setup_parser()
-        # print("Parsing args.")
-        # args = parser.parse_args()
-        # print("Done parsing args.")
-
-        # print("Assigning arguments to parsers.")
-        # args.json_config = json_config
-        # args.train_data_zip = train_data_zip
-        # args.output_dir = output_dir
+        # Adding rest of output directories
+        log.info("Adding path to safetensors.")
+        output_tensors = Path(output_dir).joinpath("oberg_dreambooth.safetensors")
+        log.info("Adding path to zip file.")
+        output_zip = Path(output_dir).joinpath("oberg_dreambooth.zip")
 
         log.info("Assigning args to Namespace.")
         args = {
@@ -79,13 +69,9 @@ class Predictor(BasePredictor):
             log.info(f"An exception occured when running training script: {e}")
 
         # Clean shit up
+        log.info("Cleaning shit up.")
         gc.collect()
         torch.cuda.empty_cache()
-
-        log.info("Adding path to safetensors.")
-        output_tensors = Path(output_dir).joinpath("oberg_dreambooth.safetensors")
-        log.info("Adding path to zip file.")
-        output_zip = Path(output_dir).joinpath("oberg_dreambooth.zip")
 
         # Zip the safetensors file
         log.info("Zipping safetensors file.")
