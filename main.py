@@ -8,15 +8,12 @@ import tempfile
 import json
 import psutil
 import toml
-from utils import setup_logging
+from utils import setup_logging, are_models_verified
 from pathlib import Path
 
 # TODO List ========================
 
-# DONE: Automatically configure accelerate config.
-# DONE: Upload JSON config file instead of TOML (wtf).
-# DONE: Capture when subprocess is done (Maybe polling can work?).
-# DONE: See if a temp output can work.
+# TODO: Add lora extraction.
 
 # TODO List ========================
 
@@ -39,7 +36,7 @@ def setup_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser()
 
     # Dreambooth arguments
-    parser.add_argument("--json_config", default=None, required=True, help="JSON configuration file path for Dreambooth.")
+    parser.add_argument("--dream_config", default=None, required=True, help="JSON configuration file path for Dreambooth.")
     parser.add_argument("--train_data_zip", default=None, required=True, help="Path or training data in zip format.")
     parser.add_argument("--output_dir", default=None, required=True, help="Path of output directory.")
 
@@ -178,7 +175,7 @@ def train_sdxl(args: argparse.Namespace) -> None:
     run_cmd.append(str(script_dir.joinpath("sd_scripts", "sdxl_train.py")))
 
     # Add TOML config argument
-    toml_config_path = begin_json_config(args.json_config)
+    toml_config_path = begin_json_config(args.dream_config)
     run_cmd.append("--config_file")
     run_cmd.append(toml_config_path)
 
@@ -282,6 +279,9 @@ if __name__ == "__main__":
 
     # Now, begin training
     log.info("Starting training for SDXL Dreambooth nigga!")
+
+    if not are_models_verified(log):
+        sys.exit()
 
     train_sdxl(args=parsed_args)
     extract_lora(args=parsed_args)

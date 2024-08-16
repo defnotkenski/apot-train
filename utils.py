@@ -3,6 +3,32 @@ import logging
 from rich.logging import RichHandler
 from rich.console import Console
 from rich.theme import Theme
+from pathlib import Path
+
+BASE_SDXL_MODEL_NAME = "sdxl_base_1.0_0.9_vae.safetensors"
+BASE_FINE_TUNED = "epicrealism_v8.safetensors"
+
+
+def are_models_verified(log: logging.Logger) -> bool:
+    # Verify that the correct models exist in the correct directory.
+
+    models_dir = Path.cwd().joinpath("models")
+    base_sdxl_file = models_dir.joinpath(BASE_SDXL_MODEL_NAME)
+    base_fine_tuned_file = models_dir.joinpath(BASE_FINE_TUNED)
+
+    if not models_dir.exists():
+        log.error("Models directory does not exist.")
+        return False
+
+    if not base_sdxl_file.exists() and base_sdxl_file.suffix == ".safetensors":
+        log.error("Check your base SDXL file in models directory does not exist.")
+        return False
+
+    if not base_fine_tuned_file.exists() and base_fine_tuned_file.suffix == ".safetensors":
+        log.error("Check your base fine-tuned file in models directory.")
+        return False
+
+    return True
 
 
 def setup_logging() -> logging.Logger:
