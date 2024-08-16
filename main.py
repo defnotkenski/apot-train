@@ -33,6 +33,9 @@ def setup_parser() -> argparse.ArgumentParser:
 
     parser = argparse.ArgumentParser()
 
+    # General arguments
+    parser.add_argument("--session_name", default=None, required=True, help="Name of this training session.")
+
     # Dreambooth arguments
     parser.add_argument("--dream_config", default=None, required=True, help="JSON configuration file path for Dreambooth.")
     parser.add_argument("--train_data_zip", default=None, required=True, help="Path or training data in zip format.")
@@ -186,6 +189,8 @@ def train_sdxl(args: argparse.Namespace) -> None:
     run_cmd.append(str(base_sdxl_file_path))
     run_cmd.append("--output_dir")
     run_cmd.append(args.output_dir)
+    run_cmd.append("--output_name")
+    run_cmd.append(f"{args.session_name}_dreambooth")
 
     executed_subprocess = execute_cmd(run_cmd=run_cmd)
 
@@ -213,8 +218,8 @@ def extract_lora(args: argparse.Namespace) -> None:
 
     # Create paths to appropriate files
     base_sdxl_file_path = script_dir.joinpath("models", BASE_SDXL_MODEL_NAME)
-    dreambooth_file_path = Path(args.output_dir).joinpath("dreambooth.safetensors")
-    save_to_path = Path(args.output_dir).joinpath("xlora.safetensors")
+    dreambooth_file_path = Path(args.output_dir).joinpath(f"{args.session_name}_dreambooth.safetensors")
+    save_to_path = Path(args.output_dir).joinpath(f"{args.session_name}_xlora.safetensors")
 
     # Establish argument paths in run command
     run_cmd = [
@@ -255,11 +260,12 @@ if __name__ == "__main__":
     configured_parser = setup_parser()
     parsed_args = configured_parser.parse_args()
 
-    # Now, begin training
-    log.info("Starting training for SDXL Dreambooth nigga!")
-
+    # Now begin training pipeline
     if not are_models_verified(log):
         sys.exit()
 
+    log.info("\nStarting training for Dreambooth nigga.\n")
     train_sdxl(args=parsed_args)
+
+    log.info("\nStarting lora extraction.\n")
     extract_lora(args=parsed_args)

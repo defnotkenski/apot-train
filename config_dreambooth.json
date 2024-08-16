@@ -102,7 +102,7 @@
   "optimizer_type": "Prodigy",
   "output_config": "",
   "output_dir": "",
-  "output_name": "dreambooth",
+  "output_name": "",
   "persistent_data_loader_workers": "",
   "pretrained_model_name_or_path": "",
   "random_crop": "",
