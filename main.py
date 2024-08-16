@@ -240,10 +240,7 @@ def extract_lora(args: argparse.Namespace) -> None:
             if cleaned_xlora_config[key] is not True:
                 run_cmd.append(str(cleaned_xlora_config[key]))
 
-    # Excute the command
-    pretty_run_cmd = " ".join(run_cmd)
-    log.info(f"{pretty_run_cmd}")
-
+    # Execute the command
     executed_subprocess = execute_cmd(run_cmd=run_cmd)
 
     # Check to see if the subprocess has finished yet
@@ -264,8 +261,11 @@ if __name__ == "__main__":
     if not are_models_verified(log):
         sys.exit()
 
-    log.info("\nStarting training for Dreambooth nigga.\n")
+    log.info("[reverse cornflower_blue]Starting training for Dreambooth nigga.", extra={"markup": True})
     train_sdxl(args=parsed_args)
 
-    log.info("\nStarting lora extraction.\n")
+    log.info("[reverse cornflower_blue]Starting lora extraction.", extra={"markup": True})
     extract_lora(args=parsed_args)
+
+    # Training session complete
+    log.info("[reverse cornflower_blue]Training session is now complete.", extra={"markup": True})
