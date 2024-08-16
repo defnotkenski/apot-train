@@ -39,12 +39,12 @@ def setup_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser()
 
     # Dreambooth arguments
-    parser.add_argument("--json_config", default=None, help="JSON configuration file path for Dreambooth.")
-    parser.add_argument("--train_data_zip", default=None, help="Path or training data in zip format.")
-    parser.add_argument("--output_dir", default=None, help="Path of output directory.")
+    parser.add_argument("--json_config", default=None, required=True, help="JSON configuration file path for Dreambooth.")
+    parser.add_argument("--train_data_zip", default=None, required=True, help="Path or training data in zip format.")
+    parser.add_argument("--output_dir", default=None, required=True, help="Path of output directory.")
 
     # Lora Extraction arguments
-    parser.add_argument("--xlora_config", default=None, help="JSON configuration file path for lora extraction.")
+    parser.add_argument("--xlora_config", default=None, required=True, help="JSON configuration file path for lora extraction.")
 
     return parser
 
@@ -83,7 +83,7 @@ def accelerate_config_cmd(run_cmd: list) -> list:
     return run_cmd
 
 
-def execute_cmd(run_cmd: list) -> subprocess.Popen:
+def execute_cmd(run_cmd: list[str]) -> subprocess.Popen:
     # Execute the training command
 
     # Reformat for user friendly display
