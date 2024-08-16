@@ -12,7 +12,7 @@ build:
 
   python_version: "3.10"
 
-  python_requirements: requirements_v1.txt
+  python_requirements: requirements.txt
 
   # commands run after the environment is set up
   run:
