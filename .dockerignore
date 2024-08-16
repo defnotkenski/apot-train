@@ -22,5 +22,5 @@ config_dreambooth.json
 config_xlora.json
 config_dreambooth_args.json
 config_xlora_args.json
-/datasets
 experiments.py
+/datasets
