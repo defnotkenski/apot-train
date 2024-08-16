@@ -1,0 +1,18 @@
+{
+  "v2": "",
+  "v_parameterization": "",
+  "sdxl": "",
+  "load_precision": "",
+  "save_precision": "",
+  "model_org": "",
+  "model_tuned": "",
+  "save_to": "",
+  "dim": "",
+  "conv_dim": "",
+  "device": "",
+  "clamp_quantile": "",
+  "min_diff": "",
+  "no_metadata": "",
+  "load_original_model_to": "",
+  "load_tuned_model_to": ""
+}

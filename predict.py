@@ -6,7 +6,7 @@ from cog import BasePredictor, Input, Path as cogPath
 from pathlib import Path
 import tempfile
 import zipfile
-from concept import train_sdxl
+from main import train_sdxl
 import torch
 from subprocess import check_call
 from argparse import Namespace
@@ -46,7 +46,7 @@ class Predictor(BasePredictor):
         log.info("Creating the output directory.")
         output_dir = tempfile.mkdtemp()
 
-        # Add paths to the safetensors file and zip by appending output dir
+        # Add paths to the safetensors file and zip by appending output directory
         log.info("Creating path to safetensors and zipfile.")
         output_tensors = Path(output_dir).joinpath("oberg_dreambooth.safetensors")
         output_zip = Path(output_dir).joinpath("oberg_dreambooth.zip")

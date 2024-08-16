@@ -102,7 +102,7 @@
   "optimizer_type": "Prodigy",
   "output_config": "",
   "output_dir": "",
-  "output_name": "oberg_dreambooth",
+  "output_name": "dreambooth",
   "persistent_data_loader_workers": "",
   "pretrained_model_name_or_path": "stabilityai/stable-diffusion-xl-base-1.0",
   "random_crop": "",
