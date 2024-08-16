@@ -8,7 +8,7 @@ import tempfile
 import json
 import psutil
 import toml
-from utils import setup_logging, are_models_verified
+from utils import setup_logging, are_models_verified, BASE_SDXL_MODEL_NAME, BASE_FINE_TUNED
 from pathlib import Path
 
 # TODO List ========================
@@ -21,12 +21,10 @@ from pathlib import Path
 log = setup_logging()
 
 # Get the absolute path of the DIRECTORY containing THIS script
-# script_dir = os.path.dirname(os.path.abspath(__file__))
 script_dir = Path.cwd()
 PYTHON = sys.executable
 
 # Insert SD_Scripts into PYTHONPATH
-# sys.path.insert(0, os.path.join(script_dir, "sd_scripts"))
 sys.path.insert(0, str(script_dir.joinpath("sd_scripts")))
 
 
@@ -157,6 +155,10 @@ def terminate_subprocesses(process: subprocess.Popen) -> None:
 def train_sdxl(args: argparse.Namespace) -> None:
     # Begin actual training
 
+    # Create paths to files
+    base_sdxl_file_path = script_dir.joinpath("models", BASE_SDXL_MODEL_NAME)
+    script_file_path = script_dir.joinpath("sd_scripts", "sdxl_train.py")
+
     # Extract zip file contents and empty into temp directory
     train_data_dir = tempfile.mkdtemp()
     with zipfile.ZipFile(args.train_data_zip, "r") as zip_ref:
@@ -169,10 +171,8 @@ def train_sdxl(args: argparse.Namespace) -> None:
         return
 
     run_cmd = [accelerate_path, "launch"]
-
     run_cmd = accelerate_config_cmd(run_cmd=run_cmd)
-
-    run_cmd.append(str(script_dir.joinpath("sd_scripts", "sdxl_train.py")))
+    run_cmd.append(str(script_file_path))
 
     # Add TOML config argument
     toml_config_path = begin_json_config(args.dream_config)
@@ -182,6 +182,8 @@ def train_sdxl(args: argparse.Namespace) -> None:
     # Add extra SDXL script arguments
     run_cmd.append("--train_data_dir")
     run_cmd.append(train_data_dir)
+    run_cmd.append("--pretrained_model_name_or_path")
+    run_cmd.append(str(base_sdxl_file_path))
     run_cmd.append("--output_dir")
     run_cmd.append(args.output_dir)
 
@@ -210,10 +212,8 @@ def extract_lora(args: argparse.Namespace) -> None:
     # log.debug(cleaned_xlora_config)
 
     # Create paths to appropriate files
-    original_model_path = script_dir.joinpath("models", "sdxl_base_1.0_0.9_vae.safetensors")
-    # tuned_model_path = script_dir.joinpath("models", "dreambooth.safetensors")
-    tuned_model_path = Path(args.output_dir).joinpath("dreambooth.safetensors")
-    # save_to_path = script_dir.joinpath("models", "xlora.safetensors")
+    base_sdxl_file_path = script_dir.joinpath("models", BASE_SDXL_MODEL_NAME)
+    dreambooth_file_path = Path(args.output_dir).joinpath("dreambooth.safetensors")
     save_to_path = Path(args.output_dir).joinpath("xlora.safetensors")
 
     # Establish argument paths in run command
@@ -221,23 +221,11 @@ def extract_lora(args: argparse.Namespace) -> None:
         rf"{PYTHON}",
         str(script_dir.joinpath("sd_scripts", "networks", "extract_lora_from_models.py")),
         "--model_org",
-        str(original_model_path),
+        str(base_sdxl_file_path),
         "--model_tuned",
-        str(tuned_model_path),
+        str(dreambooth_file_path),
         "--save_to",
         str(save_to_path),
-        # "--load_precision",
-        # cleaned_xlora_config["load_precision"],
-        # "--save_precision",
-        # cleaned_xlora_config["save_precision"],
-        # "--dim",
-        # cleaned_xlora_config["dim"],
-        # "--device",
-        # cleaned_xlora_config["device"],
-        # "--clamp_quantile",
-        # cleaned_xlora_config["clamp_quantile"],
-        # "--min_diff",
-        # cleaned_xlora_config["min_diff"]
     ]
 
     # add_run_cmd = []
@@ -246,16 +234,6 @@ def extract_lora(args: argparse.Namespace) -> None:
             run_cmd.append(f"--{key}")
             if cleaned_xlora_config[key] is not True:
                 run_cmd.append(str(cleaned_xlora_config[key]))
-
-    # if cleaned_xlora_config["v2"] != "":
-    #     run_cmd.append("--v2")
-    #
-    # if cleaned_xlora_config["sdxl"] != "":
-    #     run_cmd.append("--sdxl")
-    #     run_cmd.append("--load_original_model_to")
-    #     run_cmd.append(cleaned_xlora_config["load_original_model_to"])
-    #     run_cmd.append("--load_tuned_model_to")
-    #     run_cmd.append(cleaned_xlora_config["load_tuned_model_to"])
 
     # Excute the command
     pretty_run_cmd = " ".join(run_cmd)

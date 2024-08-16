@@ -28,6 +28,7 @@ def are_models_verified(log: logging.Logger) -> bool:
         log.error("Check your base fine-tuned file in models directory.")
         return False
 
+    log.info("Base models have been verified.")
     return True
 
 
