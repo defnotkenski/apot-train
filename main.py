@@ -13,18 +13,22 @@ from pathlib import Path
 
 # TODO List ========================
 
-# TODO: Add lora extraction.
+# Done: Add lora extraction.
+# Done: Add lora merging.
 
 # TODO List ========================
 
-# Set up logging
+# Set up logging.
 log = setup_logging()
 
-# Get the absolute path of the DIRECTORY containing THIS script
+# Create temp output directory.
+temp_output_dir = Path(tempfile.mkdtemp(prefix="outputs_"))
+
+# Get the absolute path of the DIRECTORY containing THIS script.
 script_dir = Path.cwd()
 PYTHON = sys.executable
 
-# Insert SD_Scripts into PYTHONPATH
+# Insert SD_Scripts into PYTHONPATH.
 sys.path.insert(0, str(script_dir.joinpath("sd_scripts")))
 
 
@@ -189,7 +193,7 @@ def train_sdxl(args: argparse.Namespace) -> None:
     run_cmd.append("--pretrained_model_name_or_path")
     run_cmd.append(str(base_sdxl_file_path))
     run_cmd.append("--output_dir")
-    run_cmd.append(args.output_dir)
+    run_cmd.append(str(temp_output_dir))
     run_cmd.append("--output_name")
     run_cmd.append(f"{args.session_name}_dreambooth")
 
@@ -219,8 +223,8 @@ def extract_lora(args: argparse.Namespace) -> None:
 
     # Create paths to appropriate files
     base_sdxl_file_path = script_dir.joinpath("models", BASE_SDXL_MODEL_NAME)
-    dreambooth_file_path = Path(args.output_dir).joinpath(f"{args.session_name}_dreambooth.safetensors")
-    save_to_path = Path(args.output_dir).joinpath(f"{args.session_name}_xlora.safetensors")
+    dreambooth_file_path = temp_output_dir.joinpath(f"{args.session_name}_dreambooth.safetensors")
+    save_to_path = temp_output_dir.joinpath(f"{args.session_name}_xlora.safetensors")
 
     # Establish argument paths in run command
     run_cmd = [
@@ -269,8 +273,8 @@ def merge_lora(args: argparse.PARSER) -> None:
 
     # Create appropriate paths for files
     base_fine_tuned_model = script_dir.joinpath("models", BASE_FINE_TUNED_NAME)
-    extracted_lora_model = script_dir.joinpath("outputs", f"{args.session_name}_xlora.safetensors")
-    output_path = script_dir.joinpath("outputs", f"{args.session_name}_final.safetensors")
+    extracted_lora_model = temp_output_dir.joinpath(f"{args.session_name}_xlora.safetensors")
+    output_path = Path(args.output_dir).joinpath(f"{args.session_name}_final.safetensors")
 
     # Create the run command to be executed with paths as the foundation
     run_cmd = [
@@ -310,12 +314,22 @@ if __name__ == "__main__":
     parsed_args = configured_parser.parse_args()
 
     # Now begin training pipeline.
-    log.info("[reverse cornflower_blue]Starting training for Dreambooth nigga.", extra={"markup": True})
+    log.info("[reverse cornflower_blue]Starting training session.", extra={"markup": True})
+
+    # Create the temp output directory to be used by the scripts. Note: Moved to top-level code.
+    # output_dir = tempfile.mkdtemp(prefix="outputs_")
 
     # Check if the correct base models are in the models directory.
     if not are_models_verified(log):
         sys.exit()
 
+    # Check if the temp output directory exists.
+    if not temp_output_dir.exists():
+        log.error("Temporary output directory was not established.")
+        sys.exit()
+
+    # Begin training script executions.
+    log.info("[reverse cornflower_blue]Starting Dreambooth training.", extra={"markup": True})
     train_sdxl(args=parsed_args)
 
     log.info("[reverse cornflower_blue]Starting lora extraction.", extra={"markup": True})
