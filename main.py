@@ -305,15 +305,17 @@ def merge_lora(args: argparse.PARSER) -> None:
 
 
 if __name__ == "__main__":
-    # Set up parser for CLI
+    # Set up parser for CLI.
     configured_parser = setup_parser()
     parsed_args = configured_parser.parse_args()
 
-    # Now begin training pipeline
+    # Now begin training pipeline.
+    log.info("[reverse cornflower_blue]Starting training for Dreambooth nigga.", extra={"markup": True})
+
+    # Check if the correct base models are in the models directory.
     if not are_models_verified(log):
         sys.exit()
 
-    log.info("[reverse cornflower_blue]Starting training for Dreambooth nigga.", extra={"markup": True})
     train_sdxl(args=parsed_args)
 
     log.info("[reverse cornflower_blue]Starting lora extraction.", extra={"markup": True})
@@ -322,5 +324,5 @@ if __name__ == "__main__":
     log.info("[reverse cornflower_blue]Starting lora merging.", extra={"markup": True})
     merge_lora(args=parsed_args)
 
-    # Training session complete
+    # Training session complete.
     log.info("[reverse cornflower_blue]Training session is now complete.", extra={"markup": True})
