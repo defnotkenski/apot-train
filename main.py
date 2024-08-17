@@ -10,11 +10,13 @@ import psutil
 import toml
 from utils import setup_logging, are_models_verified, BASE_SDXL_MODEL_NAME, BASE_FINE_TUNED_NAME
 from pathlib import Path
+from huggingface_hub import HfApi
 
 # TODO List ========================
 
 # Done: Add lora extraction.
 # Done: Add lora merging.
+# TODO: Add Huggingface support.
 
 # TODO List ========================
 
@@ -48,6 +50,7 @@ def setup_parser() -> argparse.ArgumentParser:
     # Lora Extraction arguments
     parser.add_argument("--xlora_config", default=None, required=True, help="JSON configuration file path for lora extraction.")
     parser.add_argument("--mlora_config", default=None, required=True, help="JSON configuration file path for lora merging.")
+    parser.add_argument("--upload", default=None, help="Whether or not to upload to Huggingface Hub or save locally using token.")
 
     return parser
 
@@ -258,25 +261,25 @@ def extract_lora(args: argparse.Namespace) -> None:
 
 
 def merge_lora(args: argparse.PARSER) -> None:
-    # Merge lora into SDXL base fine-tuned model
+    # Merge lora into SDXL base fine-tuned model.
 
-    # Load JSON configuration to a dictionary
+    # Load JSON configuration to a dictionary.
     with open(args.mlora_config, "r") as read_xlora_config:
         mlora_config = json.load(read_xlora_config)
         # log.debug(mlora_config)
 
-    # Remove unset lines in configuration
+    # Remove unset lines in configuration.
     cleaned_mlora_config = {
         key: mlora_config[key] for key in mlora_config if mlora_config[key] not in [""]
     }
     # log.debug(cleaned_mlora_config)
 
-    # Create appropriate paths for files
+    # Create appropriate paths for files.
     base_fine_tuned_model = script_dir.joinpath("models", BASE_FINE_TUNED_NAME)
     extracted_lora_model = temp_output_dir.joinpath(f"{args.session_name}_xlora.safetensors")
     output_path = Path(args.output_dir).joinpath(f"{args.session_name}_final.safetensors")
 
-    # Create the run command to be executed with paths as the foundation
+    # Create the run command to be executed with paths as the foundation.
     run_cmd = [
         rf"{PYTHON}",
         str(script_dir.joinpath("sd_scripts", "networks", "sdxl_merge_lora.py")),
@@ -288,7 +291,7 @@ def merge_lora(args: argparse.PARSER) -> None:
         str(output_path)
     ]
 
-    # Append addition arguments to the run command from JSON configuration
+    # Append addition arguments to the run command from JSON configuration.
     for key in cleaned_mlora_config:
         if key not in ["sd_model", "model", "save_to"]:
             run_cmd.append(rf"--{key}")
@@ -296,14 +299,29 @@ def merge_lora(args: argparse.PARSER) -> None:
             if cleaned_mlora_config[key] is not True:
                 run_cmd.append(str(cleaned_mlora_config[key]))
 
-    # Execute the command
+    # Execute the command.
     executed_subprocess = execute_cmd(run_cmd=run_cmd)
 
-    # Check to see if subprocess is still running
+    # Check to see if subprocess is still running.
     is_finished_training(executed_subprocess)
 
-    # Make sure all subprocesses are gone before continuing
+    # Make sure all subprocesses are gone before continuing.
     terminate_subprocesses(executed_subprocess)
+
+    # If --upload is set, upload to Huggingface Hub. The user must pass in the HF token!
+    try:
+        if args.upload is not None:
+            log.info("Uploading to Huggingface Hub.")
+
+            hf_api = HfApi()
+            hf_api.upload_file(
+                token=args.upload,
+                path_or_fileobj=output_path,
+                path_in_repo=output_path.name,
+                repo_id="notkenski/apothecary-dev"
+            )
+    except Exception as e:
+        log.error(f"Exception during Huggingface upload: {e}")
 
     return
 
