@@ -14,7 +14,7 @@ def are_models_verified(log: logging.Logger) -> bool:
 
     models_dir = Path.cwd().joinpath("models")
     base_sdxl_file = models_dir.joinpath(BASE_SDXL_MODEL_NAME)
-    base_fine_tuned_file = models_dir.joinpath(BASE_FINE_TUNED)
+    base_fine_tuned_file = models_dir.joinpath(BASE_FINE_TUNED_NAME)
 
     if not models_dir.exists():
         log.error("Models directory does not exist.")
