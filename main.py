@@ -327,6 +327,8 @@ if __name__ == "__main__":
     if not temp_output_dir.exists():
         log.error("Temporary output directory was not established.")
         sys.exit()
+    else:
+        log.info("Temporary output directory verified.")
 
     # Begin training script executions.
     log.info("[reverse cornflower_blue]Starting Dreambooth training.", extra={"markup": True})
