@@ -52,7 +52,7 @@ def setup_logging() -> logging.Logger:
         show_path=False,
         markup=False,
         rich_tracebacks=True,
-        log_time_format="[ %Y-%m-%d %H:%M:%S ]",
+        log_time_format="%Y-%m-%d %H:%M:%S",
         level=logging.DEBUG,
         console=rich_console,
     )
