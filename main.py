@@ -308,21 +308,6 @@ def merge_lora(args: argparse.PARSER) -> None:
     # Make sure all subprocesses are gone before continuing.
     terminate_subprocesses(executed_subprocess)
 
-    # If --upload is set, upload to Huggingface Hub. The user must pass in the HF token!
-    try:
-        if args.upload is not None:
-            log.info("Uploading to Huggingface Hub.")
-
-            hf_api = HfApi()
-            hf_api.upload_file(
-                token=args.upload,
-                path_or_fileobj=output_path,
-                path_in_repo=output_path.name,
-                repo_id="notkenski/apothecary-dev"
-            )
-    except Exception as e:
-        log.error(f"Exception during Huggingface upload: {e}")
-
     return
 
 
@@ -332,10 +317,7 @@ if __name__ == "__main__":
     parsed_args = configured_parser.parse_args()
 
     # Now begin training pipeline.
-    log.info("[reverse cornflower_blue]Starting training session.", extra={"markup": True})
-
-    # Create the temp output directory to be used by the scripts. Note: Moved to top-level code.
-    # output_dir = tempfile.mkdtemp(prefix="outputs_")
+    log.info("[reverse cyan1]Starting training session.", extra={"markup": True})
 
     # Check if the correct base models are in the models directory.
     if not are_models_verified(log):
@@ -349,14 +331,30 @@ if __name__ == "__main__":
         log.info("Temporary output directory verified.")
 
     # Begin training script executions.
-    log.info("[reverse cornflower_blue]Starting Dreambooth training.", extra={"markup": True})
+    log.info("[reverse cyan1]Starting Dreambooth training.", extra={"markup": True})
     train_sdxl(args=parsed_args)
 
-    log.info("[reverse cornflower_blue]Starting lora extraction.", extra={"markup": True})
+    log.info("[reverse cyan1]Starting lora extraction.", extra={"markup": True})
     extract_lora(args=parsed_args)
 
-    log.info("[reverse cornflower_blue]Starting lora merging.", extra={"markup": True})
+    log.info("[reverse cyan1]Starting lora merging.", extra={"markup": True})
     merge_lora(args=parsed_args)
 
+    # Upload file to Huggingface Hub if set in CLI.
+    try:
+        if parsed_args.upload is not None:
+            log.info("[reverse cyan1]Starting upload to Huggingface Hub.", extra={"markup": True})
+
+            hf_api = HfApi()
+            upload_output_path = Path(parsed_args.output_dir).joinpath(f"{parsed_args.session_name}_final.safetensors")
+            hf_api.upload_file(
+                token=parsed_args.upload,
+                path_or_fileobj=upload_output_path,
+                path_in_repo=upload_output_path.name,
+                repo_id="notkenski/apothecary-dev"
+            )
+    except Exception as e:
+        log.error(f"Exception during Huggingface upload: {e}")
+
     # Training session complete.
-    log.info("[reverse cornflower_blue]Training session is now complete.", extra={"markup": True})
+    log.info("[reverse cyan1]Training session is now complete.", extra={"markup": True})
