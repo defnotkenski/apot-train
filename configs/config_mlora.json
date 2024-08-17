@@ -1,0 +1,11 @@
+{
+  "save_precision": "float",
+  "precision": "float",
+  "sd_model": "",
+  "save_to": "",
+  "models": "",
+  "ratios": 1.0,
+  "no_metadata": "",
+  "concat": "",
+  "shuffle": ""
+}

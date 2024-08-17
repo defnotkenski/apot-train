@@ -8,7 +8,7 @@ import tempfile
 import json
 import psutil
 import toml
-from utils import setup_logging, are_models_verified, BASE_SDXL_MODEL_NAME, BASE_FINE_TUNED
+from utils import setup_logging, are_models_verified, BASE_SDXL_MODEL_NAME, BASE_FINE_TUNED_NAME
 from pathlib import Path
 
 # TODO List ========================
@@ -43,6 +43,7 @@ def setup_parser() -> argparse.ArgumentParser:
 
     # Lora Extraction arguments
     parser.add_argument("--xlora_config", default=None, required=True, help="JSON configuration file path for lora extraction.")
+    parser.add_argument("--mlora_config", default=None, required=True, help="JSON configuration file path for lora merging.")
 
     return parser
 
@@ -252,6 +253,57 @@ def extract_lora(args: argparse.Namespace) -> None:
     return
 
 
+def merge_lora(args: argparse.PARSER) -> None:
+    # Merge lora into SDXL base fine-tuned model
+
+    # Load JSON configuration to a dictionary
+    with open(args.mlora_config, "r") as read_xlora_config:
+        mlora_config = json.load(read_xlora_config)
+        # log.debug(mlora_config)
+
+    # Remove unset lines in configuration
+    cleaned_mlora_config = {
+        key: mlora_config[key] for key in mlora_config if mlora_config[key] not in [""]
+    }
+    # log.debug(cleaned_mlora_config)
+
+    # Create appropriate paths for files
+    base_fine_tuned_model = script_dir.joinpath("models", BASE_FINE_TUNED_NAME)
+    extracted_lora_model = script_dir.joinpath("outputs", f"{args.session_name}_xlora.safetensors")
+    output_path = script_dir.joinpath("outputs", f"{args.session_name}_final.safetensors")
+
+    # Create the run command to be executed with paths as the foundation
+    run_cmd = [
+        rf"{PYTHON}",
+        str(script_dir.joinpath("sd_scripts", "networks", "sdxl_merge_lora.py")),
+        rf"--sd_model",
+        str(base_fine_tuned_model),
+        rf"--model",
+        str(extracted_lora_model),
+        rf"--save_to",
+        str(output_path)
+    ]
+
+    # Append addition arguments to the run command from JSON configuration
+    for key in cleaned_mlora_config:
+        if key not in ["sd_model", "model", "save_to"]:
+            run_cmd.append(rf"--{key}")
+
+            if cleaned_mlora_config[key] is not True:
+                run_cmd.append(str(cleaned_mlora_config[key]))
+
+    # Execute the command
+    executed_subprocess = execute_cmd(run_cmd=run_cmd)
+
+    # Check to see if subprocess is still running
+    is_finished_training(executed_subprocess)
+
+    # Make sure all subprocesses are gone before continuing
+    terminate_subprocesses(executed_subprocess)
+
+    return
+
+
 if __name__ == "__main__":
     # Set up parser for CLI
     configured_parser = setup_parser()
@@ -266,6 +318,9 @@ if __name__ == "__main__":
 
     log.info("[reverse cornflower_blue]Starting lora extraction.", extra={"markup": True})
     extract_lora(args=parsed_args)
+
+    log.info("[reverse cornflower_blue]Starting lora merging.", extra={"markup": True})
+    merge_lora(args=parsed_args)
 
     # Training session complete
     log.info("[reverse cornflower_blue]Training session is now complete.", extra={"markup": True})
