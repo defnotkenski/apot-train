@@ -80,6 +80,5 @@ def sort_json(json_path, output_name):
 
 if __name__ == "__main__":
     # Sorting JSON file by keyname
-    # print(sort_json("config_dreambooth.json", "config_dreambooth"))
 
     pass
