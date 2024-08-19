@@ -7,5 +7,5 @@
   "ratios": 1.0,
   "no_metadata": "",
   "concat": "",
-  "shuffle": ""
+  "shuffle": true
 }
