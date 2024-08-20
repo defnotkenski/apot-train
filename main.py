@@ -29,6 +29,7 @@ temp_output_dir = Path(tempfile.mkdtemp(prefix="outputs_"))
 # Get the absolute path of the DIRECTORY containing THIS script.
 script_dir = Path.cwd()
 PYTHON = sys.executable
+REPLICATE_REPO_ID = "notkenski/apothecary-dev"
 
 # Insert SD_Scripts into PYTHONPATH.
 sys.path.insert(0, str(script_dir.joinpath("sd_scripts")))
@@ -169,6 +170,7 @@ def train_sdxl(args: argparse.Namespace) -> None:
     # Create paths to files
     base_sdxl_file_path = script_dir.joinpath("models", BASE_SDXL_MODEL_NAME)
     script_file_path = script_dir.joinpath("sd_scripts", "sdxl_train.py")
+    accelerate_config_path = script_dir.joinpath("configs", "accelerate.yaml")
 
     # Extract zip file contents and empty into temp directory
     train_data_dir = tempfile.mkdtemp()
@@ -181,7 +183,7 @@ def train_sdxl(args: argparse.Namespace) -> None:
         log.error("Accelerate executable not found.")
         return
 
-    run_cmd = [accelerate_path, "launch"]
+    run_cmd = [accelerate_path, "--config_file", accelerate_config_path, "launch"]
     run_cmd = accelerate_config_cmd(run_cmd=run_cmd)
     run_cmd.append(str(script_file_path))
 
@@ -351,7 +353,7 @@ if __name__ == "__main__":
                 token=parsed_args.upload,
                 path_or_fileobj=upload_output_path,
                 path_in_repo=upload_output_path.name,
-                repo_id="notkenski/apothecary-dev"
+                repo_id=REPLICATE_REPO_ID
             )
     except Exception as e:
         log.error(f"Exception during Huggingface upload: {e}")

@@ -6,7 +6,7 @@ from rich.theme import Theme
 from pathlib import Path
 
 BASE_SDXL_MODEL_NAME = "sdxl_base_1.0_0.9_vae.safetensors"
-BASE_FINE_TUNED_NAME = "epicrealism_v8.safetensors"
+BASE_FINE_TUNED_NAME = "epicrealism_v7.safetensors"
 
 
 def are_models_verified(log: logging.Logger) -> bool:
@@ -80,5 +80,4 @@ def sort_json(json_path, output_name):
 
 if __name__ == "__main__":
     # Sorting JSON file by keyname
-
     pass
