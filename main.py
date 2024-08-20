@@ -183,7 +183,7 @@ def train_sdxl(args: argparse.Namespace) -> None:
         log.error("Accelerate executable not found.")
         return
 
-    run_cmd = [accelerate_path, "--config_file", accelerate_config_path, "launch"]
+    run_cmd = [accelerate_path, "--config_file", str(accelerate_config_path), "launch"]
     run_cmd = accelerate_config_cmd(run_cmd=run_cmd)
     run_cmd.append(str(script_file_path))
 
