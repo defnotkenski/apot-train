@@ -20,6 +20,7 @@ toml==0.10.2
 voluptuous==0.13.1
 huggingface-hub==0.20.1
 imagesize==1.4.1
-rich==13.7.0
+rich==13.*
+psutil==6.*
 
 git+https://github.com/kohya-ss/sd-scripts.git

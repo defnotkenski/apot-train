@@ -16,7 +16,8 @@ from huggingface_hub import HfApi
 
 # Done: Add lora extraction.
 # Done: Add lora merging.
-# TODO: Add Huggingface support.
+# Done: Add Huggingface support.
+# TODO: Add Flux.1 [dev] Dreambooth support.
 
 # TODO List ========================
 
