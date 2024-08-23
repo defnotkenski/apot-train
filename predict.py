@@ -6,7 +6,7 @@ from cog import BasePredictor, Input, Path as cogPath
 from pathlib import Path
 import tempfile
 import zipfile
-from main import train_sdxl
+from sdxl_main import train_sdxl
 import torch
 from subprocess import check_call
 from argparse import Namespace
