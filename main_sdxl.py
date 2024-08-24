@@ -79,14 +79,14 @@ def accelerate_config_cmd(run_cmd: list) -> list:
     run_cmd.append("--mixed_precision")
     run_cmd.append("bf16")
 
-    run_cmd.append("--num_processes")
-    run_cmd.append("1")
+    # run_cmd.append("--num_processes")
+    # run_cmd.append("1")
 
     # run_cmd.append("--num_machines")
     # run_cmd.append("1")
 
-    run_cmd.append("--num_cpu_threads_per_process")
-    run_cmd.append("2")
+    # run_cmd.append("--num_cpu_threads_per_process")
+    # run_cmd.append("2")
 
     return run_cmd
 
