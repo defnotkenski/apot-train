@@ -175,7 +175,7 @@
   "fused_optimizer_groups": "",
   "blockwise_fused_optimizers": true,
   "skip_latents_validity_check": "",
-  "double_blocks_to_swap": 6,
+  "double_blocks_to_swap": "",
   "single_blocks_to_swap": "",
   "cpu_offload_checkpointing": true
 }
