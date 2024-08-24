@@ -173,9 +173,9 @@
   "discrete_flow_shift": "",
   "mem_eff_save": "",
   "fused_optimizer_groups": "",
-  "blockwise_fused_optimizers": "",
+  "blockwise_fused_optimizers": true,
   "skip_latents_validity_check": "",
   "double_blocks_to_swap": "",
   "single_blocks_to_swap": "",
-  "cpu_offload_checkpointing": ""
+  "cpu_offload_checkpointing": true
 }
