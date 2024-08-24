@@ -77,7 +77,7 @@ def accelerate_config_cmd(run_cmd: list) -> list:
     run_cmd.append("default")
 
     run_cmd.append("--mixed_precision")
-    run_cmd.append("fp16")
+    run_cmd.append("bf16")
 
     run_cmd.append("--num_processes")
     run_cmd.append("1")

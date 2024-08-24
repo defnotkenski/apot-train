@@ -56,6 +56,9 @@ def train_flux(args: argparse.Namespace) -> None:
     run_cmd = accelerate_config_cmd(run_cmd=run_cmd)
     run_cmd.append(str(path_to_script))
 
+    run_cmd.append("--mixed_precision")
+    run_cmd.append("bf16")
+
     # Add TOML config argument.
     toml_config_path = begin_json_config(args.flux_config)
     run_cmd.append("--config_file")
