@@ -37,7 +37,7 @@ sys.path.insert(0, str(script_dir.joinpath("sd_scripts")))
 
 
 def setup_parser() -> argparse.ArgumentParser:
-    # Set up and add arguments for the parser
+    # Set up and add arguments for the parser.
 
     parser = argparse.ArgumentParser()
 
@@ -166,34 +166,35 @@ def terminate_subprocesses(process: subprocess.Popen) -> None:
 
 
 def train_sdxl(args: argparse.Namespace) -> None:
-    # Begin actual training
+    # Begin actual training.
 
-    # Create paths to files
+    # Create paths to files.
     base_sdxl_file_path = script_dir.joinpath("models", BASE_SDXL_MODEL_NAME)
     script_file_path = script_dir.joinpath("sd_scripts", "sdxl_train.py")
     accelerate_config_path = script_dir.joinpath("configs", "accelerate.yaml")
 
-    # Extract zip file contents and empty into temp directory
+    # Extract zip file contents and empty into temp directory.
     train_data_dir = tempfile.mkdtemp()
     with zipfile.ZipFile(args.train_data_zip, "r") as zip_ref:
         zip_ref.extractall(train_data_dir)
 
-    # Find the accelerate executable path
+    # Find the accelerate executable path.
     accelerate_path = get_executable_path("accelerate")
     if accelerate_path == "":
         log.error("Accelerate executable not found.")
         return
 
+    # Begin formulating the run command.
     run_cmd = [accelerate_path, "launch", "--config_file", str(accelerate_config_path)]
     run_cmd = accelerate_config_cmd(run_cmd=run_cmd)
     run_cmd.append(str(script_file_path))
 
-    # Add TOML config argument
+    # Add TOML config argument.
     toml_config_path = begin_json_config(args.dream_config)
     run_cmd.append("--config_file")
     run_cmd.append(toml_config_path)
 
-    # Add extra SDXL script arguments
+    # Add extra SDXL script arguments.
     run_cmd.append("--train_data_dir")
     run_cmd.append(train_data_dir)
     run_cmd.append("--pretrained_model_name_or_path")
@@ -203,12 +204,13 @@ def train_sdxl(args: argparse.Namespace) -> None:
     run_cmd.append("--output_name")
     run_cmd.append(f"{args.session_name}_dreambooth")
 
+    # Execute the command.
     executed_subprocess = execute_cmd(run_cmd=run_cmd)
 
-    # Check to see if subprocess is finished yet
+    # Check to see if subprocess is finished yet.
     is_finished_training(executed_subprocess)
 
-    # Once finished, make sure that all subprocesses are terminated after completion
+    # Once finished, make sure that all subprocesses are terminated after completion.
     terminate_subprocesses(executed_subprocess)
 
     return

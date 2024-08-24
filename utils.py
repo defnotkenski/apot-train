@@ -8,6 +8,44 @@ from pathlib import Path
 BASE_SDXL_MODEL_NAME = "sdxl_base_1.0_0.9_vae.safetensors"
 BASE_FINE_TUNED_NAME = "epicrealism_v8.safetensors"
 
+BASE_FLUX_DEV_MODEL_NAME = "flux1-dev.safetensors"
+BASE_FLUX_DEV_CLIP_NAME = "clip_large.safetensors"
+BASE_FLUX_DEV_T5_NAME = "t5_xxl_fp16.safetensors"
+BASE_FLUX_DEV_AE_NAME = "flux1-dev-ae.safetensors"
+
+
+def are_models_verified_flux(log: logging.Logger) -> bool:
+    # Verify that the correct Flux models are in the correct directories.
+
+    models_dir = Path.cwd().joinpath("models", "flux_base_models")
+    path_to_flux_dev_model = models_dir.joinpath(BASE_FLUX_DEV_MODEL_NAME)
+    path_to_flux_dev_clip = models_dir.joinpath(BASE_FLUX_DEV_CLIP_NAME)
+    path_to_flux_dev_t5 = models_dir.joinpath(BASE_FLUX_DEV_T5_NAME)
+    path_to_flux_dev_ae = models_dir.joinpath(BASE_FLUX_DEV_AE_NAME)
+
+    if not models_dir.exists():
+        log.error("The Flux directory under models does not exist.")
+        return False
+
+    if not path_to_flux_dev_model.exists() and path_to_flux_dev_model.suffix == ".safetensors":
+        log.error("The base Flux.1 [dev] model does not exist.")
+        return False
+
+    if not path_to_flux_dev_clip.exists() and path_to_flux_dev_clip.suffix == ".safetensors":
+        log.error("The base Flux.1 [dev] clip_l model does not exist.")
+        return False
+
+    if not path_to_flux_dev_t5.exists() and path_to_flux_dev_t5.suffix == ".safetensors":
+        log.error("The base Flux.1 [dev] t5 model does not exist.")
+        return False
+
+    if not path_to_flux_dev_ae.exists() and path_to_flux_dev_ae.suffix == ".safetensors":
+        log.error("The base Flux.1 [dev] ae model does not exist.")
+        return False
+
+    log.info("All Flux models have been verified.")
+    return True
+
 
 def are_models_verified(log: logging.Logger) -> bool:
     # Verify that the correct models exist in the correct directory.
