@@ -52,9 +52,9 @@ def train_flux(args: argparse.Namespace) -> None:
         return
 
     # Formulate the run command.
-    run_cmd = [accelerate_exec, "launch", "--config_file", path_to_accelerate_config]
+    run_cmd = [accelerate_exec, "launch", "--config_file", str(path_to_accelerate_config)]
     run_cmd = accelerate_config_cmd(run_cmd=run_cmd)
-    run_cmd.append(path_to_script)
+    run_cmd.append(str(path_to_script))
 
     # Add TOML config argument.
     toml_config_path = begin_json_config(args.flux_config)
