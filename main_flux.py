@@ -35,7 +35,7 @@ def train_flux(args: argparse.Namespace) -> None:
     # Begin training of the Flux model using Dreambooth.
 
     # Create appropriate paths to files.
-    path_to_base_flux_model = script_dir.joinpath("models", BASE_FLUX_DEV_MODEL_NAME)
+    path_to_base_flux_model = script_dir.joinpath("models", "flux_base_models", BASE_FLUX_DEV_MODEL_NAME)
     path_to_script = script_dir.joinpath("sd_scripts_flux", "flux_train.py")
     path_to_accelerate_config = script_dir.joinpath("configs", "accelerate.yaml")
 
