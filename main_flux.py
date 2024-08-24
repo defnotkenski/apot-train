@@ -53,7 +53,7 @@ def train_flux(args: argparse.Namespace) -> None:
 
     # Formulate the run command.
     run_cmd = [accelerate_exec, "launch", "--config_file", str(path_to_accelerate_config)]
-    # run_cmd = accelerate_config_cmd(run_cmd=run_cmd)
+    run_cmd = accelerate_config_cmd(run_cmd=run_cmd)
     run_cmd.append(str(path_to_script))
 
     run_cmd.append("--mixed_precision")
