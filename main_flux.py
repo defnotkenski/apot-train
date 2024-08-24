@@ -100,7 +100,11 @@ if __name__ == "__main__":
     log.info("Beginning Flux.1 [dev] Dreambooth training.")
 
     # Check if the base models are in the correct directory.
-    are_models_verified_flux(log=log)
+    model_status = are_models_verified_flux(log=log)
+
+    if not model_status:
+        log.info("Exiting due to a complication.")
+        sys.exit()
 
     # Begin training.
     train_flux(args=train_args)
