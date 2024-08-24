@@ -10,7 +10,7 @@ BASE_FINE_TUNED_NAME = "epicrealism_v8.safetensors"
 
 BASE_FLUX_DEV_MODEL_NAME = "flux1-dev.safetensors"
 BASE_FLUX_DEV_CLIP_NAME = "clip_l.safetensors"
-BASE_FLUX_DEV_T5_NAME = "t5_xxl_fp16.safetensors"
+BASE_FLUX_DEV_T5_NAME = "t5xxl_fp16.safetensors"
 BASE_FLUX_DEV_AE_NAME = "ae.safetensors"
 
 
