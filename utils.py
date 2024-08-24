@@ -9,9 +9,9 @@ BASE_SDXL_MODEL_NAME = "sdxl_base_1.0_0.9_vae.safetensors"
 BASE_FINE_TUNED_NAME = "epicrealism_v8.safetensors"
 
 BASE_FLUX_DEV_MODEL_NAME = "flux1-dev.safetensors"
-BASE_FLUX_DEV_CLIP_NAME = "clip_large.safetensors"
+BASE_FLUX_DEV_CLIP_NAME = "clip_l.safetensors"
 BASE_FLUX_DEV_T5_NAME = "t5_xxl_fp16.safetensors"
-BASE_FLUX_DEV_AE_NAME = "flux1-dev-ae.safetensors"
+BASE_FLUX_DEV_AE_NAME = "ae.safetensors"
 
 
 def are_models_verified_flux(log: logging.Logger) -> bool:
