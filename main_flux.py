@@ -42,7 +42,7 @@ def train_flux(args: argparse.Namespace) -> None:
     # Unzip file and store in temp directory.
     temp_train_dir = tempfile.mkdtemp()
     with zipfile.ZipFile(args.train_data_dir, "r") as zip_ref:
-        zip_ref.extractall(temp_train_dir)
+        zip_ref.extractall(args.training_data_zip)
 
     # Find the accelerate executable path.
     accelerate_exec = get_executable_path("accelerate")
@@ -93,11 +93,11 @@ def train_flux(args: argparse.Namespace) -> None:
 if __name__ == "__main__":
     # Start training script.
 
-    log.info("Beginning Flux.1 [dev] Dreambooth training.")
-
     # Set up the parser.
     parser_train = setup_parser()
     train_args = parser_train.parse_args()
+
+    log.info("Beginning Flux.1 [dev] Dreambooth training.")
 
     # Check if the base models are in the correct directory.
     are_models_verified_flux(log=log)
