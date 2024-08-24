@@ -83,7 +83,7 @@ def accelerate_config_cmd(run_cmd: list) -> list:
     run_cmd.append("1")
 
     run_cmd.append("--num_machines")
-    run_cmd.append("8")
+    run_cmd.append("1")
 
     run_cmd.append("--num_cpu_threads_per_process")
     run_cmd.append("2")
