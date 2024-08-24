@@ -70,14 +70,14 @@ def get_executable_path(name: str) -> str:
 def accelerate_config_cmd(run_cmd: list) -> list:
     # Lay out accelerate arguments for the run command.
 
-    run_cmd.append("--dynamo_backend")
-    run_cmd.append("no")
+    # run_cmd.append("--dynamo_backend")
+    # run_cmd.append("no")
 
-    run_cmd.append("--dynamo_mode")
-    run_cmd.append("default")
+    # run_cmd.append("--dynamo_mode")
+    # run_cmd.append("default")
 
-    run_cmd.append("--mixed_precision")
-    run_cmd.append("bf16")
+    # run_cmd.append("--mixed_precision")
+    # run_cmd.append("bf16")
 
     # run_cmd.append("--num_processes")
     # run_cmd.append("1")

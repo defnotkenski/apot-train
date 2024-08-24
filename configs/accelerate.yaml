@@ -2,7 +2,7 @@ command_file: null
 commands: null
 compute_environment: LOCAL_MACHINE
 deepspeed_config: {}
-distributed_type: 'MULTI_GPU'
+distributed_type: 'NO'
 downcast_bf16: 'no'
 dynamo_backend: 'NO'
 fsdp_config: {}
@@ -14,7 +14,7 @@ main_training_function: main
 megatron_lm_config: {}
 mixed_precision: 'no'
 num_machines: 1
-num_processes: 8
+num_processes: 1
 rdzv_backend: static
 same_network: true
 tpu_name: null
