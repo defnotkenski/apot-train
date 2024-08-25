@@ -157,6 +157,7 @@
   "zero3_save_16bit_model": "",
   "zero_stage": "",
   "zero_terminal_snr": "",
+  
   "clip_l": "",
   "t5xxl": "",
   "ae": "",
@@ -174,5 +175,6 @@
   "timestep_sampling": "sigma",
   "sigmoid_scale": 1.0,
   "model_prediction_type": "sigma_scaled",
-  "discrete_flow_shift": 3.0
+  "discrete_flow_shift": 3.0,
+  "split_mode": false
 }
