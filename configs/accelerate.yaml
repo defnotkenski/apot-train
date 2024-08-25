@@ -12,7 +12,7 @@ main_process_ip: null
 main_process_port: null
 main_training_function: main
 megatron_lm_config: {}
-mixed_precision: 'no'
+mixed_precision: 'bf16'
 num_machines: 1
 num_processes: 1
 rdzv_backend: static

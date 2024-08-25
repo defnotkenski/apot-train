@@ -37,7 +37,7 @@
   "flip_aug": "",
   "fp16_master_weights_and_gradients": "",
   "fp8_base": "",
-  "full_bf16": "",
+  "full_bf16": true,
   "full_fp16": "",
   "fused_backward_pass": "",
   "gradient_accumulation_steps": "",
