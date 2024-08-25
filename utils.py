@@ -114,8 +114,3 @@ def sort_json(json_path, output_name):
         json.dump({k: json_dict[k] for k in sorted(json_dict)}, json_write, indent=2)
 
     return f"Saved file as {output_name}.json"
-
-
-if __name__ == "__main__":
-    # Sorting JSON file by keyname
-    pass

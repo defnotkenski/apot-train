@@ -32,7 +32,7 @@ def setup_parser() -> argparse.ArgumentParser:
 
 
 def train_flux(args: argparse.Namespace) -> None:
-    # Begin training of the Flux model using Dreambooth.
+    # Begin training of the Flux model Lora.
 
     # Create appropriate paths to files.
     path_to_base_flux_model = script_dir.joinpath("models", "flux_base_models", BASE_FLUX_DEV_MODEL_NAME)
@@ -100,7 +100,7 @@ if __name__ == "__main__":
     parser_train = setup_parser()
     train_args = parser_train.parse_args()
 
-    log.info("Beginning Flux.1 [dev] Dreambooth training.")
+    log.info("Beginning Flux.1 [dev] Lora training.")
 
     # Check if the base models are in the correct directory.
     model_status = are_models_verified_flux(log=log)
