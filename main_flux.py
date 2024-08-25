@@ -24,10 +24,6 @@ def setup_parser() -> argparse.ArgumentParser:
     parser.add_argument("--output_dir", default=None, required=True, help="Path to the local output directory.")
     parser.add_argument("--flux_config", default=None, required=True, help="Configuration JSON file for Flux training.")
 
-    parser.add_argument("--clip_l", default=None, required=True, help="Path to the clip_large model for Flux.")
-    parser.add_argument("--t5xxl", default=None, required=True, help="Path to the t5 model for Flux.")
-    parser.add_argument("--ae", default=None, required=True, help="Path to the ae model for Flux.")
-
     return parser
 
 
@@ -36,7 +32,7 @@ def train_flux(args: argparse.Namespace) -> None:
 
     # Create appropriate paths to files.
     path_to_base_flux_model = script_dir.joinpath("models", "flux_base_models", BASE_FLUX_DEV_MODEL_NAME)
-    path_to_script = script_dir.joinpath("sd_scripts_flux", "flux_train.py")
+    path_to_script = script_dir.joinpath("sd_scripts_flux", "flux_train_network.py")
     path_to_accelerate_config = script_dir.joinpath("configs", "accelerate.yaml")
 
     # Unzip file and store in temp directory.
@@ -51,13 +47,13 @@ def train_flux(args: argparse.Namespace) -> None:
         log.error("Accelerate executable not found.")
         return
 
-    # Formulate the run command.
+    # Configure accelerate launch command.
     run_cmd = [accelerate_exec, "launch", "--config_file", str(path_to_accelerate_config)]
     run_cmd = accelerate_config_cmd(run_cmd=run_cmd)
     run_cmd.append(str(path_to_script))
 
-    run_cmd.append("--mixed_precision")
-    run_cmd.append("bf16")
+    # run_cmd.append("--mixed_precision")
+    # run_cmd.append("bf16")
 
     # Add TOML config argument.
     toml_config_path = begin_json_config(args.flux_config)
@@ -65,21 +61,14 @@ def train_flux(args: argparse.Namespace) -> None:
     run_cmd.append(toml_config_path)
 
     # Add extra Flux script arguments.
+    run_cmd.append("--output_name")
+    run_cmd.append(f"{args.session_name}_flux_lora")
     run_cmd.append("--pretrained_model_name_or_path")
     run_cmd.append(str(path_to_base_flux_model))
     run_cmd.append("--train_data_dir")
     run_cmd.append(temp_train_dir)
     run_cmd.append("--output_dir")
     run_cmd.append(args.output_dir)
-    run_cmd.append("--output_name")
-    run_cmd.append(f"{args.session_name}_flux_dreambooth")
-
-    run_cmd.append("--clip_l")
-    run_cmd.append(args.clip_l)
-    run_cmd.append("--t5xxl")
-    run_cmd.append(args.t5xxl)
-    run_cmd.append("--ae")
-    run_cmd.append(args.ae)
 
     # Execute the command.
     executed_subprocess = execute_cmd(run_cmd=run_cmd)
