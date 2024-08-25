@@ -73,6 +73,9 @@ def train_flux(args: argparse.Namespace) -> None:
     run_cmd.append("--output_dir")
     run_cmd.append(args.output_dir)
 
+    run_cmd.append("--network_module")
+    run_cmd.append("")
+
     run_cmd.append("--pretrained_model_name_or_path")
     run_cmd.append(str(script_dir.joinpath("models", "flux_base_models", BASE_FLUX_DEV_MODEL_NAME)))
     run_cmd.append("--clip_l")
