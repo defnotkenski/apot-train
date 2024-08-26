@@ -33,12 +33,12 @@ def setup_parser() -> argparse.ArgumentParser:
 
 
 def train_flux(args: argparse.Namespace) -> None:
-    # Begin training of the Flux model Lora.
+    # Begin training of the Flux Dreambooth model.
 
     # Create appropriate paths to files.
-    path_to_script = script_dir.joinpath("sd_scripts_flux", "flux_train_network.py")
+    path_to_script = script_dir.joinpath("sd_scripts_flux", "flux_train.py")
     path_to_accelerate_config = script_dir.joinpath("configs", "accelerate.yaml")
-    path_to_flux_config = script_dir.joinpath("configs", "flux_lora.json")
+    path_to_flux_config = script_dir.joinpath("configs", "flux_dreambooth.json")
 
     # Unzip file and store in temp directory.
     temp_train_dir = tempfile.mkdtemp()
@@ -57,9 +57,6 @@ def train_flux(args: argparse.Namespace) -> None:
     run_cmd = accelerate_config_cmd(run_cmd=run_cmd)
     run_cmd.append(str(path_to_script))
 
-    # run_cmd.append("--mixed_precision")
-    # run_cmd.append("bf16")
-
     # Add TOML config argument.
     toml_config_path = begin_json_config(str(path_to_flux_config))
     run_cmd.append("--config_file")
@@ -67,7 +64,7 @@ def train_flux(args: argparse.Namespace) -> None:
 
     # Add extra Flux script arguments.
     run_cmd.append("--output_name")
-    run_cmd.append(args.session_name)
+    run_cmd.append(f"{args.session_name}_dreambooth")
     run_cmd.append("--train_data_dir")
     run_cmd.append(temp_train_dir)
     run_cmd.append("--output_dir")
@@ -101,7 +98,7 @@ if __name__ == "__main__":
     parser_train = setup_parser()
     train_args = parser_train.parse_args()
 
-    log.info("Beginning Flux.1 [dev] Lora training.")
+    log.info("Beginning Flux.1 [dev] Dreambooth training.")
 
     # Check if the base models are in the correct directory.
     model_status = are_models_verified_flux(log=log)
