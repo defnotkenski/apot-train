@@ -67,7 +67,7 @@ def train_flux(args: argparse.Namespace) -> None:
 
     # Add extra Flux script arguments.
     run_cmd.append("--output_name")
-    run_cmd.append(f"{args.session_name}_flux_lora")
+    run_cmd.append(args.session_name)
     run_cmd.append("--train_data_dir")
     run_cmd.append(temp_train_dir)
     run_cmd.append("--output_dir")
