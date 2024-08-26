@@ -41,7 +41,7 @@
   "full_fp16": "",
   "fused_backward_pass": "",
   "gradient_accumulation_steps": "",
-  "gradient_checkpointing": true,
+  "gradient_checkpointing": false,
   "highvram": true,
   "huber_c": "",
   "huber_schedule": "",
