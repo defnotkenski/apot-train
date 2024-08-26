@@ -12,7 +12,7 @@ script_dir = Path.cwd()
 python = sys.executable
 
 # Add sd_scripts_flux submodule to python's path.
-sys.path.insert(0, str(script_dir.joinpath("sd_scripts_flux")))
+sys.path.insert(0, str(script_dir.joinpath("sd_scripts")))
 
 
 def setup_parser() -> argparse.ArgumentParser:
@@ -36,7 +36,7 @@ def train_flux(args: argparse.Namespace) -> None:
     # Begin training of the Flux Dreambooth model.
 
     # Create appropriate paths to files.
-    path_to_script = script_dir.joinpath("sd_scripts_flux", "flux_train.py")
+    path_to_script = script_dir.joinpath("sd_scripts", "flux_train.py")
     path_to_accelerate_config = script_dir.joinpath("configs", "accelerate.yaml")
     path_to_flux_config = script_dir.joinpath("configs", "flux_dreambooth.json")
 
