@@ -32,12 +32,12 @@ def setup_parser() -> argparse.ArgumentParser:
 
 
 def train_flux(args: argparse.Namespace) -> None:
-    # Begin training of the Flux Lora model.
+    # Begin training of the Flux model.
 
     # Create appropriate paths to files.
-    path_to_script = script_dir.joinpath("sd_scripts", "flux_train.py")
+    path_to_script = script_dir.joinpath("sd_scripts", "flux_train_network.py")
     path_to_accelerate_config = script_dir.joinpath("configs", "accelerate.yaml")
-    path_to_flux_config = script_dir.joinpath("configs", "flux_dreambooth.json")
+    path_to_flux_config = script_dir.joinpath("configs", "flux_lora.json")
 
     # Unzip file and store in temp directory.
     temp_train_dir = tempfile.mkdtemp()
@@ -92,15 +92,15 @@ def train_flux(args: argparse.Namespace) -> None:
 
 if __name__ == "__main__":
     # Start training script.
+    log.info("Beginning Flux.1 [dev] training.")
 
     # Set up the parser.
     parser_train = setup_parser()
     train_args = parser_train.parse_args()
 
-    log.info("Beginning Flux.1 [dev] Lora training.")
-
     # Clear GPU memory.
     log.info("Clearing GPU memory for training.")
+
     torch.cuda.empty_cache()
     gc.collect()
 
@@ -108,11 +108,10 @@ if __name__ == "__main__":
     model_status = are_models_verified_flux(log=log)
 
     if not model_status:
-        log.info("Exiting due to a complication.")
         sys.exit()
 
     # Begin training.
     train_flux(args=train_args)
 
     # Training has compeleted.
-    log.info("Training of Flux model using Dreambooth has been completed.")
+    log.info("Training of Flux model has been completed.")
