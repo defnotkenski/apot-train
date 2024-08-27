@@ -33,9 +33,9 @@ def train_flux(args: argparse.Namespace) -> None:
     # Begin training of the Flux Lora model.
 
     # Create appropriate paths to files.
-    path_to_script = script_dir.joinpath("sd_scripts", "flux_train_network.py")
+    path_to_script = script_dir.joinpath("sd_scripts", "flux_train.py")
     path_to_accelerate_config = script_dir.joinpath("configs", "accelerate.yaml")
-    path_to_flux_config = script_dir.joinpath("configs", "flux_lora.json")
+    path_to_flux_config = script_dir.joinpath("configs", "flux_dreambooth.json")
 
     # Unzip file and store in temp directory.
     temp_train_dir = tempfile.mkdtemp()
