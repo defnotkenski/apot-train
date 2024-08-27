@@ -4,11 +4,14 @@ import zipfile
 import torch.cuda
 import gc
 from utils import *
+from huggingface_hub import HfApi
 
 # Some variable setups to be commonly used throughout this script. Varibles in UPPERCASE are subject to change by the user.
 log = setup_logging()
 script_dir = Path.cwd()
 python = sys.executable
+
+REPLICATE_REPO_ID = "notkenski/apothecary-dev"
 
 # Add sd_scripts_flux submodule to python's path.
 sys.path.insert(0, str(script_dir.joinpath("sd_scripts")))
@@ -112,6 +115,22 @@ if __name__ == "__main__":
 
     # Begin training.
     train_flux(args=train_args)
+
+    # Upload to Huggingface Repository.
+    try:
+        if train_args.upload is not None:
+            log.info("[reverse cyan1]Starting upload to Huggingface Hub.", extra={"markup": True})
+
+            hf_api = HfApi()
+            upload_output_path = Path(train_args.output_dir).joinpath(f"{train_args.session_name}_lora.safetensors")
+            hf_api.upload_file(
+                token=train_args.upload,
+                path_or_fileobj=upload_output_path,
+                path_in_repo=upload_output_path.name,
+                repo_id=REPLICATE_REPO_ID
+            )
+    except Exception as e:
+        log.error(f"Exception during Huggingface upload: {e}")
 
     # Training has compeleted.
     log.info("Training of Flux model has been completed.")
