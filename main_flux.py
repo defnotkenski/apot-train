@@ -25,7 +25,7 @@ def setup_parser() -> argparse.ArgumentParser:
     parser.add_argument("--training_dir", default=None, required=True, help="Path of training data in zip format.")
     parser.add_argument("--output_dir", default=None, required=True, help="Path to the local output directory.")
     parser.add_argument("--upload", default=None, required=False, help="Whether or not to upload to Huggingface Repo using token.")
-    parser.add_argument("--type", default=None, required=False, help="Whether to train Lora or Dreambooth.")
+    parser.add_argument("--type", default=None, required=True, choices=["lora", "dreambooth"], help="Whether to train Lora or Dreambooth.")
 
     # Automatically set, but can be user-defined in the CLI.
     # parser.add_argument("--flux_config", default=None, required=True, help="Configuration JSON file for Flux training.")
