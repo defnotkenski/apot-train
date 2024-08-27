@@ -25,6 +25,7 @@ def setup_parser() -> argparse.ArgumentParser:
     parser.add_argument("--training_dir", default=None, required=True, help="Path of training data in zip format.")
     parser.add_argument("--output_dir", default=None, required=True, help="Path to the local output directory.")
     parser.add_argument("--upload", default=None, required=False, help="Whether or not to upload to Huggingface Repo using token.")
+    parser.add_argument("--type", default=None, required=False, help="Whether to train Lora or Dreambooth.")
 
     # Automatically set, but can be user-defined in the CLI.
     # parser.add_argument("--flux_config", default=None, required=True, help="Configuration JSON file for Flux training.")
@@ -37,11 +38,17 @@ def setup_parser() -> argparse.ArgumentParser:
 
 def train_flux(args: argparse.Namespace) -> None:
     # Begin training of the Flux model.
+    if args.type == "lora":
+        script_name = "flux_train_network.py"
+        script_config = "flux_lora.json"
+    else:
+        script_name = "flux_train.py"
+        script_config = "flux_dreambooth.json"
 
     # Create appropriate paths to files.
-    path_to_script = script_dir.joinpath("sd_scripts", "flux_train_network.py")
+    path_to_script = script_dir.joinpath("sd_scripts", script_name)
     path_to_accelerate_config = script_dir.joinpath("configs", "accelerate.yaml")
-    path_to_flux_config = script_dir.joinpath("configs", "flux_lora.json")
+    path_to_flux_config = script_dir.joinpath("configs", script_config)
 
     # Unzip file and store in temp directory.
     temp_train_dir = tempfile.mkdtemp()
@@ -67,7 +74,7 @@ def train_flux(args: argparse.Namespace) -> None:
 
     # Add extra Flux script arguments.
     run_cmd.append("--output_name")
-    run_cmd.append(f"{args.session_name}_lora")
+    run_cmd.append(f"{args.session_name}_{args.type}")
     run_cmd.append("--train_data_dir")
     run_cmd.append(temp_train_dir)
     run_cmd.append("--output_dir")
@@ -100,7 +107,7 @@ if __name__ == "__main__":
     train_args = parser_train.parse_args()
 
     # Start training script.
-    log.info("Beginning Flux.1 [dev] training.")
+    log.info(f"Beginning Flux.1 [dev] {train_args.type} training.")
 
     # Clear GPU memory.
     log.info("Clearing GPU memory for training.")
@@ -123,7 +130,7 @@ if __name__ == "__main__":
             log.info("[reverse cyan1]Starting upload to Huggingface Hub.", extra={"markup": True})
 
             hf_api = HfApi()
-            upload_output_path = Path(train_args.output_dir).joinpath(f"{train_args.session_name}_lora.safetensors")
+            upload_output_path = Path(train_args.output_dir).joinpath(f"{train_args.session_name}_{train_args.type}.safetensors")
             hf_api.upload_file(
                 token=train_args.upload,
                 path_or_fileobj=upload_output_path,
