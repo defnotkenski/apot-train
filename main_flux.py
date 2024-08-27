@@ -39,7 +39,7 @@ def train_flux(args: argparse.Namespace) -> None:
 
     # Unzip file and store in temp directory.
     temp_train_dir = tempfile.mkdtemp()
-    with zipfile.ZipFile(args.training_data_zip, "r") as zip_ref:
+    with zipfile.ZipFile(args.training_dir, "r") as zip_ref:
         zip_ref.extractall(temp_train_dir)
 
     # Find the accelerate executable path.
