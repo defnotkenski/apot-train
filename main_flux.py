@@ -95,12 +95,12 @@ def train_flux(args: argparse.Namespace) -> None:
 
 
 if __name__ == "__main__":
-    # Start training script.
-    log.info("Beginning Flux.1 [dev] training.")
-
     # Set up the parser.
     parser_train = setup_parser()
     train_args = parser_train.parse_args()
+
+    # Start training script.
+    log.info("Beginning Flux.1 [dev] training.")
 
     # Clear GPU memory.
     log.info("Clearing GPU memory for training.")
