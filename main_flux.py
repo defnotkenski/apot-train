@@ -24,6 +24,7 @@ def setup_parser() -> argparse.ArgumentParser:
     parser.add_argument("--session_name", default=None, required=True, help="Name of this training session (Will appear as file names).")
     parser.add_argument("--training_dir", default=None, required=True, help="Path of training data in zip format.")
     parser.add_argument("--output_dir", default=None, required=True, help="Path to the local output directory.")
+    parser.add_argument("--upload", default=None, required=False, help="Whether or not to upload to Huggingface Repo using token.")
 
     # Automatically set, but can be user-defined in the CLI.
     # parser.add_argument("--flux_config", default=None, required=True, help="Configuration JSON file for Flux training.")
