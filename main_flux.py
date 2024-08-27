@@ -1,10 +1,7 @@
 import argparse
 import sys
-from utils import setup_logging, BASE_FLUX_DEV_MODEL_NAME, are_models_verified_flux, BASE_FLUX_DEV_CLIP_NAME, BASE_FLUX_DEV_T5_NAME, BASE_FLUX_DEV_AE_NAME
-from pathlib import Path
-import tempfile
 import zipfile
-from main_sdxl import get_executable_path, accelerate_config_cmd, begin_json_config, execute_cmd, is_finished_training, terminate_subprocesses
+from utils import *
 
 # Some variable setups to be commonly used throughout this script. Varibles in UPPERCASE are subject to change by the user.
 log = setup_logging()
@@ -33,12 +30,12 @@ def setup_parser() -> argparse.ArgumentParser:
 
 
 def train_flux(args: argparse.Namespace) -> None:
-    # Begin training of the Flux Dreambooth model.
+    # Begin training of the Flux Lora model.
 
     # Create appropriate paths to files.
-    path_to_script = script_dir.joinpath("sd_scripts", "flux_train.py")
+    path_to_script = script_dir.joinpath("sd_scripts", "flux_train_network.py")
     path_to_accelerate_config = script_dir.joinpath("configs", "accelerate.yaml")
-    path_to_flux_config = script_dir.joinpath("configs", "flux_dreambooth.json")
+    path_to_flux_config = script_dir.joinpath("configs", "flux_lora.json")
 
     # Unzip file and store in temp directory.
     temp_train_dir = tempfile.mkdtemp()
@@ -64,7 +61,7 @@ def train_flux(args: argparse.Namespace) -> None:
 
     # Add extra Flux script arguments.
     run_cmd.append("--output_name")
-    run_cmd.append(f"{args.session_name}_dreambooth")
+    run_cmd.append(f"{args.session_name}_lora")
     run_cmd.append("--train_data_dir")
     run_cmd.append(temp_train_dir)
     run_cmd.append("--output_dir")
@@ -80,13 +77,13 @@ def train_flux(args: argparse.Namespace) -> None:
     run_cmd.append(str(script_dir.joinpath("models", "flux_base_models", BASE_FLUX_DEV_AE_NAME)))
 
     # Execute the command.
-    executed_subprocess = execute_cmd(run_cmd=run_cmd)
+    executed_subprocess = execute_cmd(run_cmd=run_cmd, log=log)
 
     # Check to see if it has finished training.
-    is_finished_training(process=executed_subprocess)
+    is_finished_training(process=executed_subprocess, log=log)
 
     # Once training has finished, ensure that subprocesses are killed.
-    terminate_subprocesses(process=executed_subprocess)
+    terminate_subprocesses(process=executed_subprocess, log=log)
 
     return
 
@@ -98,7 +95,7 @@ if __name__ == "__main__":
     parser_train = setup_parser()
     train_args = parser_train.parse_args()
 
-    log.info("Beginning Flux.1 [dev] Dreambooth training.")
+    log.info("Beginning Flux.1 [dev] Lora training.")
 
     # Check if the base models are in the correct directory.
     model_status = are_models_verified_flux(log=log)

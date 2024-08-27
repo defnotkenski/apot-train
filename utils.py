@@ -1,9 +1,15 @@
+import time
+import tempfile
+import toml
 import json
 import logging
 from rich.logging import RichHandler
 from rich.console import Console
 from rich.theme import Theme
 from pathlib import Path
+import shutil
+import subprocess
+import psutil
 
 BASE_SDXL_MODEL_NAME = "sdxl_base_1.0_0.9_vae.safetensors"
 BASE_FINE_TUNED_NAME = "epicrealism_v8.safetensors"
@@ -12,6 +18,114 @@ BASE_FLUX_DEV_MODEL_NAME = "flux1-dev.safetensors"
 BASE_FLUX_DEV_CLIP_NAME = "clip_l.safetensors"
 BASE_FLUX_DEV_T5_NAME = "t5xxl_fp16.safetensors"
 BASE_FLUX_DEV_AE_NAME = "ae.safetensors"
+
+
+def terminate_subprocesses(process: subprocess.Popen, log: logging.Logger) -> None:
+    # Kill all processes that are currently running
+
+    if process.poll() is None:
+        try:
+            parent = psutil.Process(process.pid)
+            for child in parent.children(recursive=True):
+                child.kill()
+            parent.kill()
+            log.info("Running process has been killed.")
+        except psutil.NoSuchProcess:
+            log.info("This process does not exist anymore.")
+        except Exception as e:
+            log.error(f"Error terminating process: {e}")
+    else:
+        log.info("There is no process to kill.")
+
+    return
+
+
+def is_finished_training(process: subprocess.Popen, log: logging.Logger) -> None:
+    # Continuously check if subprocesses are finished
+
+    while process.poll() is None:
+        time.sleep(2)
+
+    log.info("Training has ended.")
+
+    return
+
+
+def begin_json_config(config_path) -> str:
+    # Remove blank lines from JSON config and convert to a TOML file
+
+    _, tmp_toml_path = tempfile.mkstemp(suffix=".toml")
+
+    with open(config_path, "r") as json_config_read, open(tmp_toml_path, "w", encoding="utf-8") as toml_write:
+        json_dict = json.load(json_config_read)
+        # print(json_dict)
+
+        cleaned_json_dict = {
+            key: json_dict[key] for key in json_dict if json_dict[key] not in [""]
+        }
+        # print(f"Parsed JSON:\n{cleaned_json_dict}")
+
+        toml.dump(cleaned_json_dict, toml_write)
+
+    return tmp_toml_path
+
+
+def execute_cmd(run_cmd: list[str], log: logging.Logger) -> subprocess.Popen:
+    # Execute the training command
+
+    # Reformat for user friendly display
+    command_to_run = " ".join(run_cmd)
+    log.info(f"Executing command: {command_to_run}")
+
+    # Execute the command
+    process = subprocess.Popen(run_cmd)
+
+    # while True:
+    #     line = process.stdout.readline()
+    #     if not line and process.poll() is not None:
+    #         break
+    #     print(line.decode(), end="")
+
+    # Remember, a return of None means the child process has not been terminated (wtf)
+    if process.poll() is not None:
+        log.error("Command could not be executed.")
+
+    log.info("Command executed & running.")
+    return process
+
+
+def accelerate_config_cmd(run_cmd: list) -> list:
+    # Lay out accelerate arguments for the run command.
+
+    # run_cmd.append("--dynamo_backend")
+    # run_cmd.append("no")
+
+    # run_cmd.append("--dynamo_mode")
+    # run_cmd.append("default")
+
+    # run_cmd.append("--mixed_precision")
+    # run_cmd.append("bf16")
+
+    # run_cmd.append("--num_processes")
+    # run_cmd.append("1")
+
+    # run_cmd.append("--num_machines")
+    # run_cmd.append("1")
+
+    # run_cmd.append("--num_cpu_threads_per_process")
+    # run_cmd.append("2")
+
+    return run_cmd
+
+
+def get_executable_path(name: str) -> str:
+    # Get path for accelerate executable.
+
+    executable_path = shutil.which(name)
+    if executable_path is None:
+        return ""
+
+    return executable_path
 
 
 def are_models_verified_flux(log: logging.Logger) -> bool:

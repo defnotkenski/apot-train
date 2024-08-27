@@ -1,14 +1,8 @@
-import shutil
-import subprocess
 import sys
 import argparse
-import time
 import zipfile
-import tempfile
-import json
-import psutil
-import toml
-from utils import setup_logging, are_models_verified, BASE_SDXL_MODEL_NAME, BASE_FINE_TUNED_NAME
+from utils import *
+import utils
 from pathlib import Path
 from huggingface_hub import HfApi
 
@@ -17,7 +11,7 @@ from huggingface_hub import HfApi
 # Done: Add lora extraction.
 # Done: Add lora merging.
 # Done: Add Huggingface support.
-# TODO: Add Flux.1 [dev] Dreambooth support.
+# TODO: Add Flux.1 [dev] Lora support.
 
 # TODO List ========================
 
@@ -57,114 +51,6 @@ def setup_parser() -> argparse.ArgumentParser:
     return parser
 
 
-def get_executable_path(name: str) -> str:
-    # Get path for accelerate executable.
-
-    executable_path = shutil.which(name)
-    if executable_path is None:
-        return ""
-
-    return executable_path
-
-
-def accelerate_config_cmd(run_cmd: list) -> list:
-    # Lay out accelerate arguments for the run command.
-
-    # run_cmd.append("--dynamo_backend")
-    # run_cmd.append("no")
-
-    # run_cmd.append("--dynamo_mode")
-    # run_cmd.append("default")
-
-    # run_cmd.append("--mixed_precision")
-    # run_cmd.append("bf16")
-
-    # run_cmd.append("--num_processes")
-    # run_cmd.append("1")
-
-    # run_cmd.append("--num_machines")
-    # run_cmd.append("1")
-
-    # run_cmd.append("--num_cpu_threads_per_process")
-    # run_cmd.append("2")
-
-    return run_cmd
-
-
-def execute_cmd(run_cmd: list[str]) -> subprocess.Popen:
-    # Execute the training command
-
-    # Reformat for user friendly display
-    command_to_run = " ".join(run_cmd)
-    log.info(f"Executing command: {command_to_run}")
-
-    # Execute the command
-    process = subprocess.Popen(run_cmd)
-
-    # while True:
-    #     line = process.stdout.readline()
-    #     if not line and process.poll() is not None:
-    #         break
-    #     print(line.decode(), end="")
-
-    # Remember, a return of None means the child process has not been terminated (wtf)
-    if process.poll() is not None:
-        log.error("Command could not be executed.")
-
-    log.info("Command executed & running.")
-    return process
-
-
-def begin_json_config(config_path) -> str:
-    # Remove blank lines from JSON config and convert to a TOML file
-
-    _, tmp_toml_path = tempfile.mkstemp(suffix=".toml")
-
-    with open(config_path, "r") as json_config_read, open(tmp_toml_path, "w", encoding="utf-8") as toml_write:
-        json_dict = json.load(json_config_read)
-        # print(json_dict)
-
-        cleaned_json_dict = {
-            key: json_dict[key] for key in json_dict if json_dict[key] not in [""]
-        }
-        # print(f"Parsed JSON:\n{cleaned_json_dict}")
-
-        toml.dump(cleaned_json_dict, toml_write)
-
-    return tmp_toml_path
-
-
-def is_finished_training(process: subprocess.Popen) -> None:
-    # Continuously check if subprocesses are finished
-
-    while process.poll() is None:
-        time.sleep(2)
-
-    log.info("Training has ended.")
-
-    return
-
-
-def terminate_subprocesses(process: subprocess.Popen) -> None:
-    # Kill all processes that are currently running
-
-    if process.poll() is None:
-        try:
-            parent = psutil.Process(process.pid)
-            for child in parent.children(recursive=True):
-                child.kill()
-            parent.kill()
-            log.info("Running process has been killed.")
-        except psutil.NoSuchProcess:
-            log.info("This process does not exist anymore.")
-        except Exception as e:
-            log.error(f"Error terminating process: {e}")
-    else:
-        log.info("There is no process to kill.")
-
-    return
-
-
 def train_sdxl(args: argparse.Namespace) -> None:
     # Begin actual training.
 
@@ -179,7 +65,7 @@ def train_sdxl(args: argparse.Namespace) -> None:
         zip_ref.extractall(train_data_dir)
 
     # Find the accelerate executable path.
-    accelerate_path = get_executable_path("accelerate")
+    accelerate_path = utils.get_executable_path("accelerate")
     if accelerate_path == "":
         log.error("Accelerate executable not found.")
         return
@@ -205,13 +91,13 @@ def train_sdxl(args: argparse.Namespace) -> None:
     run_cmd.append(f"{args.session_name}_dreambooth")
 
     # Execute the command.
-    executed_subprocess = execute_cmd(run_cmd=run_cmd)
+    executed_subprocess = execute_cmd(run_cmd=run_cmd, log=log)
 
     # Check to see if subprocess is finished yet.
-    is_finished_training(executed_subprocess)
+    is_finished_training(executed_subprocess, log=log)
 
     # Once finished, make sure that all subprocesses are terminated after completion.
-    terminate_subprocesses(executed_subprocess)
+    terminate_subprocesses(executed_subprocess, log=log)
 
     return
 
@@ -254,13 +140,13 @@ def extract_lora(args: argparse.Namespace) -> None:
                 run_cmd.append(str(cleaned_xlora_config[key]))
 
     # Execute the command
-    executed_subprocess = execute_cmd(run_cmd=run_cmd)
+    executed_subprocess = execute_cmd(run_cmd=run_cmd, log=log)
 
     # Check to see if the subprocess has finished yet
-    is_finished_training(executed_subprocess)
+    is_finished_training(executed_subprocess, log=log)
 
     # Once completed, make sure all processes are terminated
-    terminate_subprocesses(executed_subprocess)
+    terminate_subprocesses(executed_subprocess, log=log)
 
     return
 
@@ -305,13 +191,13 @@ def merge_lora(args: argparse.PARSER) -> None:
                 run_cmd.append(str(cleaned_mlora_config[key]))
 
     # Execute the command.
-    executed_subprocess = execute_cmd(run_cmd=run_cmd)
+    executed_subprocess = execute_cmd(run_cmd=run_cmd, log=log)
 
     # Check to see if subprocess is still running.
-    is_finished_training(executed_subprocess)
+    is_finished_training(executed_subprocess, log=log)
 
     # Make sure all subprocesses are gone before continuing.
-    terminate_subprocesses(executed_subprocess)
+    terminate_subprocesses(executed_subprocess, log=log)
 
     return
 
