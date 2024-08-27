@@ -1,6 +1,8 @@
 import argparse
 import sys
 import zipfile
+import torch.cuda
+import gc
 from utils import *
 
 # Some variable setups to be commonly used throughout this script. Varibles in UPPERCASE are subject to change by the user.
@@ -96,6 +98,11 @@ if __name__ == "__main__":
     train_args = parser_train.parse_args()
 
     log.info("Beginning Flux.1 [dev] Lora training.")
+
+    # Clear GPU memory.
+    log.info("Clearing GPU memory for training.")
+    torch.cuda.empty_cache()
+    gc.collect()
 
     # Check if the base models are in the correct directory.
     model_status = are_models_verified_flux(log=log)
