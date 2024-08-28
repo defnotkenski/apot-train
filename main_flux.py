@@ -107,7 +107,7 @@ if __name__ == "__main__":
     train_args = parser_train.parse_args()
 
     # Start training script.
-    log.info(f"Beginning Flux.1 [dev] {train_args.type} training.")
+    log.info("[reverse cyan1]Beginning Flux.1 [dev] {train_args.type} training.", extra={"markup": True})
 
     # Clear GPU memory.
     log.info("Clearing GPU memory for training.")
