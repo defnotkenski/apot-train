@@ -3,8 +3,14 @@ import sys
 import zipfile
 import torch.cuda
 import gc
-from utils import *
+import tempfile
+from pathlib import Path
 from huggingface_hub import HfApi
+from utils import (
+    setup_logging, get_executable_path, accelerate_config_cmd, convert_to_toml_config, execute_cmd, is_finished_training,
+    terminate_subprocesses, are_models_verified_flux, BASE_FLUX_DEV_MODEL_NAME, BASE_FLUX_DEV_CLIP_NAME, BASE_FLUX_DEV_T5_NAME,
+    BASE_FLUX_DEV_AE_NAME
+)
 
 # Some variable setups to be commonly used throughout this script. Varibles in UPPERCASE are subject to change by the user.
 log = setup_logging()
@@ -25,7 +31,6 @@ def setup_parser() -> argparse.ArgumentParser:
     parser.add_argument("--training_dir", default=None, required=True, help="Path of training data in zip format.")
     parser.add_argument("--output_dir", default=None, required=True, help="Path to the local output directory.")
     parser.add_argument("--upload", default=None, required=False, help="Whether or not to upload to Huggingface Repo using token.")
-    parser.add_argument("--type", default="lora", required=True, choices=["lora", "dreambooth"], help="Whether to train Lora or Dreambooth.")
 
     # Automatically set, but can be user-defined in the CLI.
     # parser.add_argument("--flux_config", default=None, required=True, help="Configuration JSON file for Flux training.")
@@ -38,17 +43,11 @@ def setup_parser() -> argparse.ArgumentParser:
 
 def train_flux(args: argparse.Namespace) -> None:
     # Begin training of the Flux model.
-    if args.type == "lora":
-        script_name = "flux_train_network.py"
-        script_config = "flux_lora.json"
-    else:
-        script_name = "flux_train.py"
-        script_config = "flux_dreambooth.json"
 
     # Create appropriate paths to files.
-    path_to_script = script_dir.joinpath("sd_scripts", script_name)
+    path_to_script = script_dir.joinpath("sd_scripts", "flux_train.py")
     path_to_accelerate_config = script_dir.joinpath("configs", "accelerate.yaml")
-    path_to_flux_config = script_dir.joinpath("configs", script_config)
+    path_to_flux_config = script_dir.joinpath("configs", "flux_dreambooth.yaml")
 
     # Unzip file and store in temp directory.
     temp_train_dir = tempfile.mkdtemp()
@@ -67,8 +66,8 @@ def train_flux(args: argparse.Namespace) -> None:
     run_cmd = accelerate_config_cmd(run_cmd=run_cmd)
     run_cmd.append(str(path_to_script))
 
-    # Add TOML config argument.
-    toml_config_path = begin_json_config(str(path_to_flux_config))
+    # Convert the YAML file into a TOML config argument.
+    toml_config_path = convert_to_toml_config(str(path_to_flux_config))
     run_cmd.append("--config_file")
     run_cmd.append(toml_config_path)
 

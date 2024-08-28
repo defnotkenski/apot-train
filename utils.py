@@ -9,6 +9,7 @@ from rich.theme import Theme
 from pathlib import Path
 import shutil
 import subprocess
+import yaml
 import psutil
 
 BASE_SDXL_MODEL_NAME = "sdxl_base_1.0_0.9_vae.safetensors"
@@ -51,21 +52,21 @@ def is_finished_training(process: subprocess.Popen, log: logging.Logger) -> None
     return
 
 
-def begin_json_config(config_path) -> str:
-    # Remove blank lines from JSON config and convert to a TOML file
+def convert_to_toml_config(config_path: str) -> str:
+    # Remove blank lines from YAML config and convert to a TOML file
 
     _, tmp_toml_path = tempfile.mkstemp(suffix=".toml")
 
-    with open(config_path, "r") as json_config_read, open(tmp_toml_path, "w", encoding="utf-8") as toml_write:
-        json_dict = json.load(json_config_read)
-        # print(json_dict)
+    with open(config_path, "r") as config_read, open(tmp_toml_path, "w", encoding="utf-8") as toml_write:
+        config_dict = yaml.safe_load(config_read)
+        # log.debug(config_dict)
 
-        cleaned_json_dict = {
-            key: json_dict[key] for key in json_dict if json_dict[key] not in [""]
+        cleaned_dict = {
+            key: config_dict[key] for key in config_dict if config_dict[key] not in [""]
         }
-        # print(f"Parsed JSON:\n{cleaned_json_dict}")
+        # log.debug(cleaned_dict)
 
-        toml.dump(cleaned_json_dict, toml_write)
+        toml.dump(cleaned_dict, toml_write)
 
     return tmp_toml_path
 
