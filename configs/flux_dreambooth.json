@@ -27,7 +27,7 @@
   "console_log_file": "",
   "console_log_level": "",
   "console_log_simple": "",
-  "cpu_offload_checkpointing": true,
+  "cpu_offload_checkpointing": "",
   "dataset_class": "",
   "dataset_config": "",
   "dataset_repeats": "",
