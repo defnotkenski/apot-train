@@ -170,7 +170,7 @@ if __name__ == "__main__":
     # Extract the lora from the fine-tuned model.
     log.info("[reverse wheat1]Beginning Flux-Dev Lora extraction.", extra={"markup": True})
 
-    if not temp_output_dir.joinpath(f"{train_args}_dreambooth.safetensors").exists():
+    if not temp_output_dir.joinpath(f"{train_args.session_name}_dreambooth.safetensors").exists():
         log.error("The fine-tuned Flux model is not found.")
         sys.exit()
 
