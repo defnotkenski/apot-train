@@ -150,7 +150,7 @@ if __name__ == "__main__":
     train_args = parser_train.parse_args()
 
     # Start training script.
-    log.info("[reverse cyan1]Beginning Flux [dev] training.", extra={"markup": True})
+    log.info("[reverse cyan1]Beginning Flux-Dev training.", extra={"markup": True})
 
     # Clear GPU memory.
     log.info("Clearing GPU memory for training.")
@@ -168,7 +168,7 @@ if __name__ == "__main__":
     train_flux(args=train_args)
 
     # Extract the lora from the fine-tuned model.
-    log.info("[reverse cyan1]Beginning Flux [dev] Lora extraction.", extra={"markup": True})
+    log.info("[reverse cyan1]Beginning Flux-Dev Lora extraction.", extra={"markup": True})
     extract_flux_lora(args=train_args)
 
     # Upload to Huggingface Repository.
@@ -188,4 +188,4 @@ if __name__ == "__main__":
         log.error(f"Exception during Huggingface upload: {e}")
 
     # Training has compeleted.
-    log.info("[reverse pale_green3]Training of Flux model has been completed.", extra={"markup": True})
+    log.info("[reverse pale_green3]Training of Flux-Dev model has been completed.", extra={"markup": True})
