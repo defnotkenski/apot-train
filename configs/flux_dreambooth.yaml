@@ -51,8 +51,7 @@ full_fp16: ''
 fused_backward_pass: ''
 fused_optimizer_groups: ''
 gradient_accumulation_steps: ''
-# None
-gradient_checkpointing: true
+gradient_checkpointing: ''
 guidance_scale: 1.0
 highvram: ''
 huber_c: ''
@@ -78,11 +77,9 @@ logit_mean: ''
 logit_std: ''
 loss_type: ''
 lowram: ''
-# constant
-lr_scheduler: 'cosine_with_restarts'
+lr_scheduler: 'constant'
 lr_scheduler_args: ''
-# None
-lr_scheduler_num_cycles: 3
+lr_scheduler_num_cycles: ''
 lr_scheduler_power: ''
 lr_scheduler_type: ''
 lr_warmup_steps: ''
@@ -92,7 +89,6 @@ max_data_loader_n_workers: 2
 max_grad_norm: ''
 max_timestep: ''
 max_token_length: ''
-# 150
 max_train_epochs: 150
 max_train_steps: 0
 mem_eff_attn: ''
@@ -111,10 +107,8 @@ offload_optimizer_device: ''
 offload_optimizer_nvme_path: ''
 offload_param_device: ''
 offload_param_nvme_path: ''
-# ["relative_step=False", "scale_parameter=False", "warmup_init=False"]
-optimizer_args: ["weight_decay=0.01", "eps=0.00000001", "betas=(0.9, 0.999)"]
-# adafactor
-optimizer_type: 'adamw8bit'
+optimizer_args: ["relative_step=False", "scale_parameter=False", "warmup_init=False"]
+optimizer_type: 'adafactor'
 output_config: ''
 output_dir: ''
 output_name: ''
