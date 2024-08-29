@@ -98,7 +98,8 @@ max_token_length: ''
 max_train_epochs: 150
 max_train_steps: 0
 mem_eff_attn: ''
-mem_eff_save: ''
+# None
+mem_eff_save: true
 min_bucket_reso: ''
 min_snr_gamma: 5
 min_timestep: ''
