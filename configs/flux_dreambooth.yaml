@@ -51,8 +51,7 @@ fp16_master_weights_and_gradients: ''
 fp8_base: ''
 full_bf16: true
 full_fp16: ''
-# CHANGED
-fused_backward_pass: true
+fused_backward_pass: ''
 fused_optimizer_groups: ''
 gradient_accumulation_steps: ''
 # CHANGED
