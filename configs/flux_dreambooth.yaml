@@ -107,7 +107,7 @@ offload_optimizer_device: ''
 offload_optimizer_nvme_path: ''
 offload_param_device: ''
 offload_param_nvme_path: ''
-optimizer_args: ["decouple=True" "weight_decay=0.01" "d_coef=0.8" "use_bias_correction=True" "safeguard_warmup=True" "betas=0.9,0.99"]
+optimizer_args: ["decouple=True", "weight_decay=0.01", "d_coef=0.8", "use_bias_correction=True", "safeguard_warmup=True", "betas=0.9,0.99"]
 optimizer_type: 'prodigy'
 output_config: ''
 output_dir: ''
