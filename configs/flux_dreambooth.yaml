@@ -27,7 +27,7 @@ config_file: ''
 console_log_file: ''
 console_log_level: ''
 console_log_simple: ''
-# CHANGED
+# None
 cpu_offload_checkpointing: true
 dataset_class: ''
 dataset_config: ''
@@ -39,9 +39,10 @@ debiased_estimation_loss: ''
 debug_dataset: ''
 deepspeed: ''
 disable_mmap_load_safetensors: ''
-# CHANGED
+# None
 discrete_flow_shift: 3.1582
-double_blocks_to_swap: ''
+# None
+double_blocks_to_swap: 6
 dynamo_backend: ''
 enable_bucket: true
 enable_wildcard: ''
@@ -51,11 +52,10 @@ fp16_master_weights_and_gradients: ''
 fp8_base: ''
 full_bf16: true
 full_fp16: ''
-# None
-fused_backward_pass: true
+fused_backward_pass: ''
 fused_optimizer_groups: ''
 gradient_accumulation_steps: ''
-# CHANGED
+# None
 gradient_checkpointing: true
 guidance_scale: 1.0
 highvram: ''
@@ -82,7 +82,7 @@ logit_mean: ''
 logit_std: ''
 loss_type: ''
 lowram: ''
-# CHANGED
+# Constant
 lr_scheduler: 'cosine'
 lr_scheduler_args: ''
 lr_scheduler_num_cycles: ''
@@ -115,7 +115,7 @@ offload_param_device: ''
 offload_param_nvme_path: ''
 # CHANGED
 optimizer_args: ["decouple=True", "weight_decay=0.01", "d_coef=0.8", "use_bias_correction=True", "safeguard_warmup=True", "betas=0.9,0.99"]
-# CHANGED
+# Adafactor
 optimizer_type: 'prodigy'
 output_config: ''
 output_dir: ''
