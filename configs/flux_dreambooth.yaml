@@ -26,7 +26,8 @@ config_file: ''
 console_log_file: ''
 console_log_level: ''
 console_log_simple: ''
-cpu_offload_checkpointing: ''
+# CHANGED
+cpu_offload_checkpointing: true
 dataset_class: ''
 dataset_config: ''
 dataset_repeats: ''
@@ -37,8 +38,10 @@ debiased_estimation_loss: ''
 debug_dataset: ''
 deepspeed: ''
 disable_mmap_load_safetensors: ''
-discrete_flow_shift: ''
-double_blocks_to_swap: ''
+# CHANGED
+discrete_flow_shift: 3.1582
+# CHANGED
+double_blocks_to_swap: 6
 dynamo_backend: ''
 enable_bucket: true
 enable_wildcard: ''
@@ -48,10 +51,12 @@ fp16_master_weights_and_gradients: ''
 fp8_base: ''
 full_bf16: true
 full_fp16: ''
-fused_backward_pass: ''
+# CHANGED
+fused_backward_pass: true
 fused_optimizer_groups: ''
 gradient_accumulation_steps: ''
-gradient_checkpointing: ''
+# CHANGED
+gradient_checkpointing: true
 guidance_scale: 1.0
 highvram: ''
 huber_c: ''
