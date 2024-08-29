@@ -3,8 +3,7 @@ ae: ''
 alpha_mask: ''
 apply_t5_attn_mask: ''
 async_upload: ''
-# None
-blockwise_fused_optimizers: true
+blockwise_fused_optimizers: ''
 bucket_no_upscale: true
 bucket_reso_steps: ''
 cache_info: ''
@@ -27,8 +26,7 @@ config_file: ''
 console_log_file: ''
 console_log_level: ''
 console_log_simple: ''
-# None
-cpu_offload_checkpointing: true
+cpu_offload_checkpointing: ''
 dataset_class: ''
 dataset_config: ''
 dataset_repeats: ''
@@ -41,8 +39,7 @@ deepspeed: ''
 disable_mmap_load_safetensors: ''
 # None
 discrete_flow_shift: 3.1582
-# None
-double_blocks_to_swap: 6
+double_blocks_to_swap: ''
 dynamo_backend: ''
 enable_bucket: true
 enable_wildcard: ''
@@ -55,8 +52,7 @@ full_fp16: ''
 fused_backward_pass: ''
 fused_optimizer_groups: ''
 gradient_accumulation_steps: ''
-# None
-gradient_checkpointing: true
+gradient_checkpointing: ''
 guidance_scale: 1.0
 highvram: ''
 huber_c: ''
@@ -71,7 +67,7 @@ ip_noise_gamma: ''
 ip_noise_gamma_random_strength: ''
 keep_tokens: ''
 keep_tokens_separator: ''
-learning_rate: 1
+learning_rate: 0.0005
 log_config: ''
 log_prefix: ''
 log_tracker_config: ''
@@ -82,10 +78,11 @@ logit_mean: ''
 logit_std: ''
 loss_type: ''
 lowram: ''
-# Constant
-lr_scheduler: 'cosine'
+# constant
+lr_scheduler: 'cosine_with_restarts'
 lr_scheduler_args: ''
-lr_scheduler_num_cycles: ''
+# None
+lr_scheduler_num_cycles: 3
 lr_scheduler_power: ''
 lr_scheduler_type: ''
 lr_warmup_steps: ''
@@ -98,8 +95,7 @@ max_token_length: ''
 max_train_epochs: 150
 max_train_steps: 0
 mem_eff_attn: ''
-# None
-mem_eff_save: true
+mem_eff_save: ''
 min_bucket_reso: ''
 min_snr_gamma: 5
 min_timestep: ''
@@ -114,10 +110,10 @@ offload_optimizer_device: ''
 offload_optimizer_nvme_path: ''
 offload_param_device: ''
 offload_param_nvme_path: ''
-# CHANGED
-optimizer_args: ["decouple=True", "weight_decay=0.01", "d_coef=0.8", "use_bias_correction=True", "safeguard_warmup=True", "betas=0.9,0.99"]
-# Adafactor
-optimizer_type: 'prodigy'
+# ["relative_step=False", "scale_parameter=False", "warmup_init=False"]
+optimizer_args: ["weight_decay=0.01", "eps=0.00000001", "betas=(0.9, 0.999)"]
+# adafactor
+optimizer_type: 'adamw8bit'
 output_config: ''
 output_dir: ''
 output_name: ''
