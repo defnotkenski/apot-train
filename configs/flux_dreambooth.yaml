@@ -3,7 +3,8 @@ ae: ''
 alpha_mask: ''
 apply_t5_attn_mask: ''
 async_upload: ''
-blockwise_fused_optimizers: ''
+# None
+blockwise_fused_optimizers: true
 bucket_no_upscale: true
 bucket_reso_steps: ''
 cache_info: ''
@@ -50,7 +51,8 @@ fp16_master_weights_and_gradients: ''
 fp8_base: ''
 full_bf16: true
 full_fp16: ''
-fused_backward_pass: ''
+# None
+fused_backward_pass: true
 fused_optimizer_groups: ''
 gradient_accumulation_steps: ''
 # CHANGED
