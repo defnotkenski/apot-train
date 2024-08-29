@@ -39,8 +39,7 @@ deepspeed: ''
 disable_mmap_load_safetensors: ''
 # CHANGED
 discrete_flow_shift: 3.1582
-# CHANGED
-double_blocks_to_swap: 6
+double_blocks_to_swap: ''
 dynamo_backend: ''
 enable_bucket: true
 enable_wildcard: ''

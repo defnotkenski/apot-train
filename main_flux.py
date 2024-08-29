@@ -150,7 +150,7 @@ if __name__ == "__main__":
     train_args = parser_train.parse_args()
 
     # Start training script.
-    log.info("[reverse light_salmon1]Beginning Flux-Dev training.", extra={"markup": True})
+    log.info("[reverse honeydew2]Beginning Flux-Dev training.", extra={"markup": True})
 
     # Clear GPU memory.
     log.info("Clearing GPU memory for training.")
@@ -168,13 +168,13 @@ if __name__ == "__main__":
     train_flux(args=train_args)
 
     # Extract the lora from the fine-tuned model.
-    log.info("[reverse light_salmon1]Beginning Flux-Dev Lora extraction.", extra={"markup": True})
+    log.info("[reverse honeydew2]Beginning Flux-Dev Lora extraction.", extra={"markup": True})
     extract_flux_lora(args=train_args)
 
     # Upload to Huggingface Repository.
     try:
         if train_args.upload is not None:
-            log.info("[reverse light_salmon1]Starting upload to Huggingface Hub.", extra={"markup": True})
+            log.info("[reverse honeydew2]Starting upload to Huggingface Hub.", extra={"markup": True})
 
             hf_api = HfApi()
             upload_output_path = temp_output_dir.joinpath(f"{train_args.session_name}_xlora.safetensors")
