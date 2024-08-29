@@ -1,17 +1,22 @@
 import sys
 import argparse
 import zipfile
-from utils import *
 import utils
 from pathlib import Path
 from huggingface_hub import HfApi
+import tempfile
+import yaml
+from utils import (
+    setup_logging, accelerate_config_cmd, convert_to_toml_config, execute_cmd, is_finished_training, terminate_subprocesses,
+    are_models_verified, BASE_SDXL_MODEL_NAME, BASE_FINE_TUNED_NAME
+)
 
 # TODO List ========================
 
 # Done: Add lora extraction.
 # Done: Add lora merging.
 # Done: Add Huggingface support.
-# TODO: Add Flux.1 [dev] Lora support.
+# Done: Add Flux.1 [dev] Lora support.
 
 # TODO List ========================
 
@@ -39,13 +44,8 @@ def setup_parser() -> argparse.ArgumentParser:
     parser.add_argument("--session_name", default=None, required=True, help="Name of this training session.")
 
     # Dreambooth arguments
-    parser.add_argument("--dream_config", default=None, required=True, help="JSON configuration file path for Dreambooth.")
     parser.add_argument("--train_data_zip", default=None, required=True, help="Path or training data in zip format.")
     parser.add_argument("--output_dir", default=None, required=True, help="Path of output directory.")
-
-    # Lora Extraction arguments
-    parser.add_argument("--xlora_config", default=None, required=True, help="JSON configuration file path for lora extraction.")
-    parser.add_argument("--mlora_config", default=None, required=True, help="JSON configuration file path for lora merging.")
     parser.add_argument("--upload", default=None, help="Whether or not to upload to Huggingface Hub or save locally using token.")
 
     return parser
@@ -58,6 +58,7 @@ def train_sdxl(args: argparse.Namespace) -> None:
     base_sdxl_file_path = script_dir.joinpath("models", BASE_SDXL_MODEL_NAME)
     script_file_path = script_dir.joinpath("sd_scripts", "sdxl_train.py")
     accelerate_config_path = script_dir.joinpath("configs", "accelerate.yaml")
+    path_to_sdxl_config = script_dir.joinpath("configs", "sdxl_dreambooth.yaml")
 
     # Extract zip file contents and empty into temp directory.
     train_data_dir = tempfile.mkdtemp()
@@ -76,7 +77,7 @@ def train_sdxl(args: argparse.Namespace) -> None:
     run_cmd.append(str(script_file_path))
 
     # Add TOML config argument.
-    toml_config_path = begin_json_config(args.dream_config)
+    toml_config_path = convert_to_toml_config(config_path=str(path_to_sdxl_config))
     run_cmd.append("--config_file")
     run_cmd.append(toml_config_path)
 
@@ -106,14 +107,12 @@ def extract_lora(args: argparse.Namespace) -> None:
     # Extract lora from trained SDXL model
 
     # Load lora extraction config into variable
-    with open(args.xlora_config, "r") as read_xlora:
-        xlora_config = json.load(read_xlora)
-    # log.debug(xlora_config)
+    with open("configs/sdxl_xlora.yaml", "r") as read_xlora:
+        xlora_config = yaml.safe_load(read_xlora)
 
     cleaned_xlora_config = {
         key: xlora_config[key] for key in xlora_config if xlora_config[key] not in [""]
     }
-    # log.debug(cleaned_xlora_config)
 
     # Create paths to appropriate files
     base_sdxl_file_path = script_dir.joinpath("models", BASE_SDXL_MODEL_NAME)
@@ -155,15 +154,13 @@ def merge_lora(args: argparse.PARSER) -> None:
     # Merge lora into SDXL base fine-tuned model.
 
     # Load JSON configuration to a dictionary.
-    with open(args.mlora_config, "r") as read_xlora_config:
-        mlora_config = json.load(read_xlora_config)
-        # log.debug(mlora_config)
+    with open("configs/sdxl_mlora.yaml", "r") as read_xlora_config:
+        mlora_config = yaml.safe_load(read_xlora_config)
 
     # Remove unset lines in configuration.
     cleaned_mlora_config = {
         key: mlora_config[key] for key in mlora_config if mlora_config[key] not in [""]
     }
-    # log.debug(cleaned_mlora_config)
 
     # Create appropriate paths for files.
     base_fine_tuned_model = script_dir.joinpath("models", BASE_FINE_TUNED_NAME)
