@@ -156,7 +156,7 @@ vae_batch_size: ''
 wandb_api_key: ''
 wandb_run_name: ''
 weighted_captions: ''
-xformers: true
+xformers: ''
 zero3_init_flag: ''
 zero3_save_16bit_model: ''
 zero_stage: ''
