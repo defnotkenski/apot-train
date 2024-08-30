@@ -76,7 +76,8 @@ max_data_loader_n_workers: ''
 max_grad_norm: ''
 max_timestep: ''
 max_token_length: 225
-max_train_epochs: 130
+# 130
+max_train_epochs: 150
 max_train_steps: 0
 mem_eff_attn: ''
 metadata_author: ''
