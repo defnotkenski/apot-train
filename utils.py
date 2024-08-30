@@ -1,3 +1,4 @@
+import argparse
 import time
 import tempfile
 import toml
@@ -11,6 +12,7 @@ import shutil
 import subprocess
 import yaml
 import psutil
+from huggingface_hub import HfApi
 
 BASE_SDXL_MODEL_NAME = "sdxl_base_1.0_0.9_vae.safetensors"
 BASE_FINE_TUNED_NAME = "epicrealism_v8.safetensors"
@@ -19,6 +21,26 @@ BASE_FLUX_DEV_MODEL_NAME = "flux1-dev.safetensors"
 BASE_FLUX_DEV_CLIP_NAME = "clip_l.safetensors"
 BASE_FLUX_DEV_T5_NAME = "t5xxl_fp16.safetensors"
 BASE_FLUX_DEV_AE_NAME = "ae.safetensors"
+REPLICATE_REPO_ID = "notkenski/apothecary-dev"
+
+
+def upload_to_huggingface(model_path: Path, log: logging.Logger, train_args: argparse.PARSER) -> None:
+    # Upload provided model to the Huggingface Repository.
+
+    try:
+        if train_args.upload is not None:
+            log.info("[reverse wheat1]Starting upload to Huggingface Hub.", extra={"markup": True})
+
+            hf_api = HfApi()
+            upload_output_path = model_path
+            hf_api.upload_file(
+                token=train_args.upload,
+                path_or_fileobj=upload_output_path,
+                path_in_repo=upload_output_path.name,
+                repo_id=REPLICATE_REPO_ID
+            )
+    except Exception as e:
+        log.error(f"Exception during Huggingface upload: {e}")
 
 
 def terminate_subprocesses(process: subprocess.Popen, log: logging.Logger) -> None:

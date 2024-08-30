@@ -9,8 +9,8 @@ from huggingface_hub import HfApi
 import yaml
 from utils import (
     setup_logging, get_executable_path, accelerate_config_cmd, convert_to_toml_config, execute_cmd, is_finished_training,
-    terminate_subprocesses, are_models_verified_flux, BASE_FLUX_DEV_MODEL_NAME, BASE_FLUX_DEV_CLIP_NAME, BASE_FLUX_DEV_T5_NAME,
-    BASE_FLUX_DEV_AE_NAME
+    terminate_subprocesses, are_models_verified_flux, upload_to_huggingface, BASE_FLUX_DEV_MODEL_NAME, BASE_FLUX_DEV_CLIP_NAME, BASE_FLUX_DEV_T5_NAME,
+    BASE_FLUX_DEV_AE_NAME, REPLICATE_REPO_ID
 )
 
 # Some variable setups to be commonly used throughout this script. Varibles in UPPERCASE are subject to change by the user.
@@ -21,8 +21,6 @@ temp_output_dir = Path(tempfile.mkdtemp(prefix="output_"))
 
 path_to_accelerate_config = script_dir.joinpath("configs", "accelerate.yaml")
 path_to_accelerate_exec = get_executable_path("accelerate")
-
-REPLICATE_REPO_ID = "notkenski/apothecary-dev"
 
 # Add sd_scripts_flux submodule to python's path.
 sys.path.insert(0, str(script_dir.joinpath("sd_scripts")))
@@ -178,20 +176,8 @@ if __name__ == "__main__":
     extract_flux_lora(args=train_args)
 
     # Upload to Huggingface Repository.
-    try:
-        if train_args.upload is not None:
-            log.info("[reverse wheat1]Starting upload to Huggingface Hub.", extra={"markup": True})
-
-            hf_api = HfApi()
-            upload_output_path = temp_output_dir.joinpath(f"{train_args.session_name}_xlora.safetensors")
-            hf_api.upload_file(
-                token=train_args.upload,
-                path_or_fileobj=upload_output_path,
-                path_in_repo=upload_output_path.name,
-                repo_id=REPLICATE_REPO_ID
-            )
-    except Exception as e:
-        log.error(f"Exception during Huggingface upload: {e}")
+    path_to_upload_model = temp_output_dir.joinpath(f"{train_args.session_name}_xlora.safetensors")
+    upload_to_huggingface(model_path=path_to_upload_model, log=log, train_args=train_args)
 
     # Training has compeleted.
     log.info("[reverse honeydew2]Training of Flux-Dev model has been completed.", extra={"markup": True})
