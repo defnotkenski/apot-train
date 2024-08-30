@@ -29,6 +29,7 @@ temp_output_dir = Path(tempfile.mkdtemp(prefix="outputs_"))
 # Get the absolute path of the DIRECTORY containing THIS script.
 script_dir = Path.cwd()
 path_to_accelerate_executable = get_executable_path("accelerate")
+path_to_accelerate_config = script_dir.joinpath("configs", "accelerate.yaml")
 PYTHON = sys.executable
 REPLICATE_REPO_ID = "notkenski/apothecary-dev"
 
@@ -58,7 +59,6 @@ def train_sdxl(args: argparse.Namespace) -> None:
     # Create paths to files.
     base_sdxl_file_path = script_dir.joinpath("models", BASE_SDXL_MODEL_NAME)
     script_file_path = script_dir.joinpath("sd_scripts", "sdxl_train.py")
-    accelerate_config_path = script_dir.joinpath("configs", "accelerate.yaml")
     path_to_sdxl_config = script_dir.joinpath("configs", "sdxl_dreambooth.yaml")
 
     # Extract zip file contents and empty into temp directory.
@@ -73,7 +73,7 @@ def train_sdxl(args: argparse.Namespace) -> None:
         return
 
     # Begin formulating the run command.
-    run_cmd = [accelerate_path, "launch", "--config_file", str(accelerate_config_path)]
+    run_cmd = [accelerate_path, "launch", "--config_file", str(path_to_accelerate_config)]
     run_cmd = accelerate_config_cmd(run_cmd=run_cmd)
     run_cmd.append(str(script_file_path))
 
@@ -125,6 +125,8 @@ def extract_lora(args: argparse.Namespace) -> None:
     run_cmd = [
         path_to_accelerate_executable,
         "launch",
+        "--config_file",
+        str(path_to_accelerate_config),
         str(path_to_script),
         "--model_org",
         str(base_sdxl_file_path),
@@ -174,6 +176,8 @@ def merge_lora(args: argparse.PARSER) -> None:
     run_cmd = [
         path_to_accelerate_executable,
         "launch",
+        "--config_file",
+        str(path_to_accelerate_config),
         str(path_to_script),
         rf"--sd_model",
         str(base_fine_tuned_model),
