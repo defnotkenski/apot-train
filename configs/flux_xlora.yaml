@@ -3,7 +3,7 @@ model_org: ""
 model_tuned: ""
 mem_eff_safe_open: ""
 save_to: ""
-dim: 6
+dim: 4
 device: "cuda"
 clamp_quantile: 0.99
 no_metadata: true
