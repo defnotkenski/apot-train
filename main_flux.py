@@ -10,7 +10,7 @@ import yaml
 from utils import (
     setup_logging, get_executable_path, accelerate_config_cmd, convert_to_toml_config, execute_cmd, is_finished_training,
     terminate_subprocesses, are_models_verified_flux, upload_to_huggingface, BASE_FLUX_DEV_MODEL_NAME, BASE_FLUX_DEV_CLIP_NAME, BASE_FLUX_DEV_T5_NAME,
-    BASE_FLUX_DEV_AE_NAME, REPLICATE_REPO_ID
+    BASE_FLUX_DEV_AE_NAME
 )
 
 # Some variable setups to be commonly used throughout this script. Varibles in UPPERCASE are subject to change by the user.
@@ -32,8 +32,8 @@ def setup_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser()
     parser.add_argument("--session_name", default=None, required=True, help="Name of this training session (Will appear as file names).")
     parser.add_argument("--training_dir", default=None, required=True, help="Path of training data in zip format.")
-    parser.add_argument("--upload", default=None, required=False, help="Whether or not to upload to Huggingface Repo using token.")
     parser.add_argument("--output_dir", default=None, required=True, help="Path to the local output directory.")
+    parser.add_argument("--upload", default=None, required=False, help="Whether or not to upload to Huggingface Repo using token.")
 
     # Automatically set, but can be user-defined in the CLI.
     # parser.add_argument("--flux_config", default=None, required=True, help="Configuration JSON file for Flux training.")

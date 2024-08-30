@@ -1,0 +1,9 @@
+concat: ''
+models: ''
+no_metadata: ''
+precision: float
+ratios: 1.0
+save_precision: float
+save_to: ''
+sd_model: ''
+shuffle: true

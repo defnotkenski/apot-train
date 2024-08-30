@@ -8,7 +8,7 @@ import tempfile
 import yaml
 from utils import (
     setup_logging, accelerate_config_cmd, convert_to_toml_config, execute_cmd, is_finished_training, terminate_subprocesses,
-    are_models_verified, BASE_SDXL_MODEL_NAME, BASE_FINE_TUNED_NAME
+    are_models_verified, get_executable_path, BASE_SDXL_MODEL_NAME, BASE_FINE_TUNED_NAME
 )
 
 # TODO List ========================
@@ -28,6 +28,7 @@ temp_output_dir = Path(tempfile.mkdtemp(prefix="outputs_"))
 
 # Get the absolute path of the DIRECTORY containing THIS script.
 script_dir = Path.cwd()
+path_to_accelerate_executable = get_executable_path("accelerate")
 PYTHON = sys.executable
 REPLICATE_REPO_ID = "notkenski/apothecary-dev"
 
@@ -104,9 +105,9 @@ def train_sdxl(args: argparse.Namespace) -> None:
 
 
 def extract_lora(args: argparse.Namespace) -> None:
-    # Extract lora from trained SDXL model
+    # Extract lora from trained SDXL model.
 
-    # Load lora extraction config into variable
+    # Load lora extraction config into variable.
     with open("configs/sdxl_xlora.yaml", "r") as read_xlora:
         xlora_config = yaml.safe_load(read_xlora)
 
@@ -114,15 +115,17 @@ def extract_lora(args: argparse.Namespace) -> None:
         key: xlora_config[key] for key in xlora_config if xlora_config[key] not in [""]
     }
 
-    # Create paths to appropriate files
+    # Create paths to appropriate files.
+    path_to_script = script_dir.joinpath("sd_scripts", "networks", "extract_lora_from_models.py")
     base_sdxl_file_path = script_dir.joinpath("models", BASE_SDXL_MODEL_NAME)
     dreambooth_file_path = temp_output_dir.joinpath(f"{args.session_name}_dreambooth.safetensors")
     save_to_path = temp_output_dir.joinpath(f"{args.session_name}_xlora.safetensors")
 
-    # Establish argument paths in run command
+    # Establish argument paths in run command.
     run_cmd = [
-        rf"{PYTHON}",
-        str(script_dir.joinpath("sd_scripts", "networks", "extract_lora_from_models.py")),
+        path_to_accelerate_executable,
+        "launch",
+        str(path_to_script),
         "--model_org",
         str(base_sdxl_file_path),
         "--model_tuned",
@@ -131,20 +134,19 @@ def extract_lora(args: argparse.Namespace) -> None:
         str(save_to_path),
     ]
 
-    # add_run_cmd = []
     for key in cleaned_xlora_config:
         if key not in ["model_org", "model_tuned", "save_to"]:
             run_cmd.append(f"--{key}")
             if cleaned_xlora_config[key] is not True:
                 run_cmd.append(str(cleaned_xlora_config[key]))
 
-    # Execute the command
+    # Execute the command.
     executed_subprocess = execute_cmd(run_cmd=run_cmd, log=log)
 
-    # Check to see if the subprocess has finished yet
+    # Check to see if the subprocess has finished yet.
     is_finished_training(executed_subprocess, log=log)
 
-    # Once completed, make sure all processes are terminated
+    # Once completed, make sure all processes are terminated.
     terminate_subprocesses(executed_subprocess, log=log)
 
     return
@@ -163,14 +165,16 @@ def merge_lora(args: argparse.PARSER) -> None:
     }
 
     # Create appropriate paths for files.
+    path_to_script = script_dir.joinpath("sd_scripts", "networks", "sdxl_merge_lora.py")
     base_fine_tuned_model = script_dir.joinpath("models", BASE_FINE_TUNED_NAME)
     extracted_lora_model = temp_output_dir.joinpath(f"{args.session_name}_xlora.safetensors")
     output_path = Path(args.output_dir).joinpath(f"{args.session_name}_final.safetensors")
 
     # Create the run command to be executed with paths as the foundation.
     run_cmd = [
-        rf"{PYTHON}",
-        str(script_dir.joinpath("sd_scripts", "networks", "sdxl_merge_lora.py")),
+        path_to_accelerate_executable,
+        "launch",
+        str(path_to_script),
         rf"--sd_model",
         str(base_fine_tuned_model),
         rf"--model",
@@ -205,7 +209,7 @@ if __name__ == "__main__":
     parsed_args = configured_parser.parse_args()
 
     # Now begin training pipeline.
-    log.info("[reverse cyan1]Starting training session.", extra={"markup": True})
+    log.info("[reverse wheat1]Starting training session.", extra={"markup": True})
 
     # Check if the correct base models are in the models directory.
     if not are_models_verified(log):
@@ -219,19 +223,19 @@ if __name__ == "__main__":
         log.info("Temporary output directory verified.")
 
     # Begin training script executions.
-    log.info("[reverse cyan1]Starting Dreambooth training.", extra={"markup": True})
+    log.info("[reverse wheat1]Starting Dreambooth training.", extra={"markup": True})
     train_sdxl(args=parsed_args)
 
-    log.info("[reverse cyan1]Starting lora extraction.", extra={"markup": True})
+    log.info("[reverse wheat1]Starting lora extraction.", extra={"markup": True})
     extract_lora(args=parsed_args)
 
-    log.info("[reverse cyan1]Starting lora merging.", extra={"markup": True})
+    log.info("[reverse wheat1]Starting lora merging.", extra={"markup": True})
     merge_lora(args=parsed_args)
 
     # Upload file to Huggingface Hub if set in CLI.
     try:
         if parsed_args.upload is not None:
-            log.info("[reverse cyan1]Starting upload to Huggingface Hub.", extra={"markup": True})
+            log.info("[reverse wheat1]Starting upload to Huggingface Hub.", extra={"markup": True})
 
             hf_api = HfApi()
             upload_output_path = Path(parsed_args.output_dir).joinpath(f"{parsed_args.session_name}_final.safetensors")
@@ -245,4 +249,4 @@ if __name__ == "__main__":
         log.error(f"Exception during Huggingface upload: {e}")
 
     # Training session complete.
-    log.info("[reverse cyan1]Training session is now complete.", extra={"markup": True})
+    log.info("[reverse honeydew2]Training session is now complete.", extra={"markup": True})

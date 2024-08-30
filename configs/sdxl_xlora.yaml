@@ -1,0 +1,16 @@
+clamp_quantile: 0.99
+conv_dim: 256
+device: cuda
+dim: 128
+load_original_model_to: cuda
+load_precision: float
+load_tuned_model_to: cuda
+min_diff: 0.0001
+model_org: ''
+model_tuned: ''
+no_metadata: ''
+save_precision: float
+save_to: ''
+sdxl: true
+v2: ''
+v_parameterization: ''
