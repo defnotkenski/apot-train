@@ -243,5 +243,5 @@ if __name__ == "__main__":
     # Training session complete.
     log.info("[reverse honeydew2]Training session is now complete.", extra={"markup": True})
 
-    notification_message = f"Dreambooth training has completed for {parsed_args.session_name} ✨🦖"
-    notify_slack(channel_id="C07KEP1PE5S", msg=notification_message, log=log)
+    # notification_message = f"Dreambooth training has completed for {parsed_args.session_name} ✨🦖"
+    # notify_slack(channel_id="C07KEP1PE5S", msg=notification_message, log=log)

@@ -25,11 +25,13 @@ BASE_FLUX_DEV_T5_NAME = "t5xxl_fp16.safetensors"
 BASE_FLUX_DEV_AE_NAME = "ae.safetensors"
 REPLICATE_REPO_ID = "notkenski/apothecary-dev"
 
+SLACK_TOKEN = ""
+
 
 def notify_slack(channel_id: str, msg: str, log: logging.Logger) -> None:
     # Notify a specific Slack channel on training updates.
 
-    client = WebClient(token="xoxb-7658290261650-7660832887732-sYISLsVbS6w3ntMkCzgLkib3")
+    client = WebClient(token=SLACK_TOKEN)
 
     try:
         response = client.chat_postMessage(
