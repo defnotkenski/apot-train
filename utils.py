@@ -13,15 +13,32 @@ import subprocess
 import yaml
 import psutil
 from huggingface_hub import HfApi
+from slack_sdk import WebClient
+from slack_sdk.errors import SlackApiError
 
 BASE_SDXL_MODEL_NAME = "sdxl_base_1.0_0.9_vae.safetensors"
-BASE_FINE_TUNED_NAME = "epicrealism_v8.safetensors"
+BASE_FINE_TUNED_NAME = "epicrealism_v7.safetensors"
 
 BASE_FLUX_DEV_MODEL_NAME = "flux1-dev.safetensors"
 BASE_FLUX_DEV_CLIP_NAME = "clip_l.safetensors"
 BASE_FLUX_DEV_T5_NAME = "t5xxl_fp16.safetensors"
 BASE_FLUX_DEV_AE_NAME = "ae.safetensors"
 REPLICATE_REPO_ID = "notkenski/apothecary-dev"
+
+
+def notify_slack(channel_id: str, msg: str, log: logging.Logger) -> None:
+    # Notify a specific Slack channel on training updates.
+
+    client = WebClient(token="xoxb-7658290261650-7660832887732-sYISLsVbS6w3ntMkCzgLkib3")
+
+    try:
+        response = client.chat_postMessage(
+            channel=channel_id,
+            text=msg
+        )
+        log.debug(response)
+    except SlackApiError as e:
+        log.error(f"Error with slack: {e}")
 
 
 def upload_to_huggingface(model_path: Path, log: logging.Logger, train_args: argparse.PARSER) -> None:
@@ -32,11 +49,10 @@ def upload_to_huggingface(model_path: Path, log: logging.Logger, train_args: arg
             log.info("[reverse wheat1]Starting upload to Huggingface Hub.", extra={"markup": True})
 
             hf_api = HfApi()
-            upload_output_path = model_path
             hf_api.upload_file(
                 token=train_args.upload,
-                path_or_fileobj=upload_output_path,
-                path_in_repo=upload_output_path.name,
+                path_or_fileobj=model_path,
+                path_in_repo=model_path.name,
                 repo_id=REPLICATE_REPO_ID
             )
     except Exception as e:

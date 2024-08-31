@@ -8,7 +8,7 @@ import tempfile
 import yaml
 from utils import (
     setup_logging, accelerate_config_cmd, convert_to_toml_config, execute_cmd, is_finished_training, terminate_subprocesses,
-    are_models_verified, get_executable_path, BASE_SDXL_MODEL_NAME, BASE_FINE_TUNED_NAME
+    are_models_verified, notify_slack, upload_to_huggingface, get_executable_path, BASE_SDXL_MODEL_NAME, BASE_FINE_TUNED_NAME
 )
 
 # TODO List ========================
@@ -237,20 +237,11 @@ if __name__ == "__main__":
     merge_lora(args=parsed_args)
 
     # Upload file to Huggingface Hub if set in CLI.
-    try:
-        if parsed_args.upload is not None:
-            log.info("[reverse wheat1]Starting upload to Huggingface Hub.", extra={"markup": True})
-
-            hf_api = HfApi()
-            upload_output_path = Path(parsed_args.output_dir).joinpath(f"{parsed_args.session_name}_final.safetensors")
-            hf_api.upload_file(
-                token=parsed_args.upload,
-                path_or_fileobj=upload_output_path,
-                path_in_repo=upload_output_path.name,
-                repo_id=REPLICATE_REPO_ID
-            )
-    except Exception as e:
-        log.error(f"Exception during Huggingface upload: {e}")
+    path_to_final_model = Path(parsed_args.output_dir).joinpath(f"{parsed_args.session_name}_final.safetensors")
+    upload_to_huggingface(model_path=path_to_final_model, log=log, train_args=parsed_args)
 
     # Training session complete.
     log.info("[reverse honeydew2]Training session is now complete.", extra={"markup": True})
+
+    notification_message = f"Dreambooth training has completed for {parsed_args.session_name} ✨🦖"
+    notify_slack(channel_id="C07KEP1PE5S", msg=notification_message, log=log)
