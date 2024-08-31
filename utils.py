@@ -17,7 +17,7 @@ from slack_sdk import WebClient
 from slack_sdk.errors import SlackApiError
 
 BASE_SDXL_MODEL_NAME = "sdxl_base_1.0_0.9_vae.safetensors"
-BASE_FINE_TUNED_NAME = "epicrealism_v7.safetensors"
+BASE_FINE_TUNED_NAME = "epicrealism_v8.safetensors"
 
 BASE_FLUX_DEV_MODEL_NAME = "flux1-dev.safetensors"
 BASE_FLUX_DEV_CLIP_NAME = "clip_l.safetensors"
