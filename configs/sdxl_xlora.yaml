@@ -1,6 +1,5 @@
 clamp_quantile: 0.99
-# 256
-conv_dim: 64
+conv_dim: 128
 device: cuda
 dim: 128
 load_original_model_to: cuda
