@@ -166,6 +166,10 @@ if __name__ == "__main__":
     # Begin training the Flux.1 [Dev] model.
     train_flux(args=train_args)
 
+    if train_args.notify is not None:
+        notify_msg = f"Dreambooth for {train_args.session_name} has been completed! ✨🦖"
+        notify_slack(channel_id="C07KEP1PE5S", msg=notify_msg, log=log, train_args=train_args)
+
     # Extract the lora from the fine-tuned model.
     log.info("[reverse wheat1]Beginning Flux-Dev Lora extraction.", extra={"markup": True})
 

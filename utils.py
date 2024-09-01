@@ -25,8 +25,6 @@ BASE_FLUX_DEV_T5_NAME = "t5xxl_fp16.safetensors"
 BASE_FLUX_DEV_AE_NAME = "ae.safetensors"
 REPLICATE_REPO_ID = "notkenski/apothecary-dev"
 
-SLACK_TOKEN = ""
-
 
 def notify_slack(channel_id: str, msg: str, log: logging.Logger, train_args: argparse.PARSER) -> None:
     # Notify a specific Slack channel on training updates.
