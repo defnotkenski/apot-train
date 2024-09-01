@@ -3,7 +3,6 @@ import argparse
 import zipfile
 import utils
 from pathlib import Path
-from huggingface_hub import HfApi
 import tempfile
 import yaml
 from utils import (

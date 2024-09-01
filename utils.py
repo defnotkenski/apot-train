@@ -28,10 +28,10 @@ REPLICATE_REPO_ID = "notkenski/apothecary-dev"
 SLACK_TOKEN = ""
 
 
-def notify_slack(channel_id: str, msg: str, log: logging.Logger) -> None:
+def notify_slack(channel_id: str, msg: str, log: logging.Logger, train_args: argparse.PARSER) -> None:
     # Notify a specific Slack channel on training updates.
 
-    client = WebClient(token=SLACK_TOKEN)
+    client = WebClient(token=train_args.notify)
 
     try:
         response = client.chat_postMessage(

@@ -5,11 +5,10 @@ import torch.cuda
 import gc
 import tempfile
 from pathlib import Path
-from huggingface_hub import HfApi
 import yaml
 from utils import (
     setup_logging, get_executable_path, accelerate_config_cmd, convert_to_toml_config, execute_cmd, is_finished_training,
-    terminate_subprocesses, are_models_verified_flux, upload_to_huggingface, BASE_FLUX_DEV_MODEL_NAME, BASE_FLUX_DEV_CLIP_NAME, BASE_FLUX_DEV_T5_NAME,
+    terminate_subprocesses, are_models_verified_flux, notify_slack, upload_to_huggingface, BASE_FLUX_DEV_MODEL_NAME, BASE_FLUX_DEV_CLIP_NAME, BASE_FLUX_DEV_T5_NAME,
     BASE_FLUX_DEV_AE_NAME
 )
 
@@ -34,6 +33,8 @@ def setup_parser() -> argparse.ArgumentParser:
     parser.add_argument("--training_dir", default=None, required=True, help="Path of training data in zip format.")
     parser.add_argument("--output_dir", default=None, required=True, help="Path to the local output directory.")
     parser.add_argument("--upload", default=None, required=False, help="Whether or not to upload to Huggingface Repo using token.")
+
+    parser.add_argument("--notify", default=None, required=False, help="Whether or not you want to be notfied via Slack.")
 
     # Automatically set, but can be user-defined in the CLI.
     # parser.add_argument("--flux_config", default=None, required=True, help="Configuration JSON file for Flux training.")
@@ -179,5 +180,9 @@ if __name__ == "__main__":
     path_to_upload_model = temp_output_dir.joinpath(f"{train_args.session_name}_xlora.safetensors")
     upload_to_huggingface(model_path=path_to_upload_model, log=log, train_args=train_args)
 
-    # Training has compeleted.
+    # Training has completed.
     log.info("[reverse honeydew2]Training of Flux-Dev model has been completed.", extra={"markup": True})
+
+    if train_args.notify is not None:
+        notify_msg = f"Training for {train_args.session_name} has been completed! ✨🦖"
+        notify_slack(channel_id="C07KEP1PE5S", msg=notify_msg, log=log, train_args=train_args)
