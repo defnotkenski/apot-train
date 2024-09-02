@@ -23,8 +23,8 @@ BASE_FLUX_DEV_MODEL_NAME = "flux1-dev.safetensors"
 BASE_FLUX_DEV_CLIP_NAME = "clip_l.safetensors"
 BASE_FLUX_DEV_T5_NAME = "t5xxl_fp16.safetensors"
 BASE_FLUX_DEV_AE_NAME = "ae.safetensors"
-REPLICATE_REPO_ID = "notkenski/apothecary-dev"
 
+REPLICATE_REPO_ID = "notkenski/apothecary-dev"
 SLACK_CHANNEL_ID = "C07KEP1PE5S"
 
 

@@ -7,7 +7,8 @@ import tempfile
 import yaml
 from utils import (
     setup_logging, accelerate_config_cmd, convert_to_toml_config, execute_cmd, is_finished_training, terminate_subprocesses,
-    are_models_verified, notify_slack, upload_to_huggingface, get_executable_path, BASE_SDXL_MODEL_NAME, BASE_FINE_TUNED_NAME
+    are_models_verified, notify_slack, upload_to_huggingface, get_executable_path, BASE_SDXL_MODEL_NAME, BASE_FINE_TUNED_NAME,
+    SLACK_CHANNEL_ID
 )
 
 # TODO List ========================
@@ -45,7 +46,7 @@ def setup_parser() -> argparse.ArgumentParser:
     parser.add_argument("--session_name", default=None, required=True, help="Name of this training session.")
 
     # Dreambooth arguments
-    parser.add_argument("--train_data_zip", default=None, required=True, help="Path or training data in zip format.")
+    parser.add_argument("--train_dir", default=None, required=True, help="Path or training data in zip format.")
     parser.add_argument("--output_dir", default=None, required=True, help="Path of output directory.")
     parser.add_argument("--upload", default=None, help="Whether or not to upload to Huggingface Hub or save locally using token.")
 
@@ -61,9 +62,9 @@ def train_sdxl(args: argparse.Namespace) -> None:
     path_to_sdxl_config = script_dir.joinpath("configs", "sdxl_dreambooth.yaml")
 
     # Extract zip file contents and empty into temp directory.
-    train_data_dir = tempfile.mkdtemp()
-    with zipfile.ZipFile(args.train_data_zip, "r") as zip_ref:
-        zip_ref.extractall(train_data_dir)
+    temp_train_dir = tempfile.mkdtemp()
+    with zipfile.ZipFile(args.train_dir, "r") as zip_ref:
+        zip_ref.extractall(temp_train_dir)
 
     # Find the accelerate executable path.
     accelerate_path = utils.get_executable_path("accelerate")
@@ -83,7 +84,7 @@ def train_sdxl(args: argparse.Namespace) -> None:
 
     # Add extra SDXL script arguments.
     run_cmd.append("--train_data_dir")
-    run_cmd.append(train_data_dir)
+    run_cmd.append(temp_train_dir)
     run_cmd.append("--pretrained_model_name_or_path")
     run_cmd.append(str(base_sdxl_file_path))
     run_cmd.append("--output_dir")
@@ -209,7 +210,7 @@ def merge_lora(args: argparse.PARSER) -> None:
 if __name__ == "__main__":
     # Set up parser for CLI.
     configured_parser = setup_parser()
-    parsed_args = configured_parser.parse_args()
+    train_args = configured_parser.parse_args()
 
     # Now begin training pipeline.
     log.info("[reverse wheat1]Starting training session.", extra={"markup": True})
@@ -227,20 +228,21 @@ if __name__ == "__main__":
 
     # Begin training script executions.
     log.info("[reverse wheat1]Starting Dreambooth training.", extra={"markup": True})
-    train_sdxl(args=parsed_args)
+    train_sdxl(args=train_args)
 
     log.info("[reverse wheat1]Starting lora extraction.", extra={"markup": True})
-    extract_lora(args=parsed_args)
+    extract_lora(args=train_args)
 
     log.info("[reverse wheat1]Starting lora merging.", extra={"markup": True})
-    merge_lora(args=parsed_args)
+    merge_lora(args=train_args)
 
     # Upload file to Huggingface Hub if set in CLI.
-    path_to_final_model = Path(parsed_args.output_dir).joinpath(f"{parsed_args.session_name}_final.safetensors")
-    upload_to_huggingface(model_path=path_to_final_model, log=log, train_args=parsed_args)
+    path_to_final_model = Path(train_args.output_dir).joinpath(f"{train_args.session_name}_final.safetensors")
+    upload_to_huggingface(model_path=path_to_final_model, log=log, train_args=train_args)
 
     # Training session complete.
     log.info("[reverse honeydew2]Training session is now complete.", extra={"markup": True})
 
-    # notification_message = f"Dreambooth training has completed for {parsed_args.session_name} ✨🦖"
-    # notify_slack(channel_id="C07KEP1PE5S", msg=notification_message, log=log)
+    if train_args.notify is not None:
+        notification_message = f"Dreambooth training has completed for {train_args.session_name} ✨🦖"
+        notify_slack(channel_id=SLACK_CHANNEL_ID, msg=notification_message, log=log, train_args=train_args)
