@@ -49,8 +49,9 @@ def train_flux(args: argparse.Namespace) -> None:
     # Begin training of the Flux model.
 
     # Create appropriate paths to files.
-    path_to_script = script_dir.joinpath("sd_scripts", "flux_train.py")
-    path_to_flux_config = script_dir.joinpath("configs", "flux_dreambooth.yaml")
+    # TODO: Modified to test Lora.
+    path_to_script = script_dir.joinpath("sd_scripts", "flux_train_network.py")
+    path_to_flux_config = script_dir.joinpath("configs", "flux_lora.yaml")
 
     # Unzip file and store in temp directory.
     temp_train_dir = tempfile.mkdtemp()
@@ -171,18 +172,18 @@ if __name__ == "__main__":
         notify_slack(channel_id=SLACK_CHANNEL_ID, msg=notify_msg, log=log, train_args=train_args)
 
     # Extract the lora from the fine-tuned model.
-    log.info("[reverse wheat1]Beginning Flux-Dev Lora extraction.", extra={"markup": True})
+    # log.info("[reverse wheat1]Beginning Flux-Dev Lora extraction.", extra={"markup": True})
 
-    if not temp_output_dir.joinpath(f"{train_args.session_name}_dreambooth.safetensors").exists():
-        log.error("The fine-tuned Flux model is not found.")
-        sys.exit()
+    # if not temp_output_dir.joinpath(f"{train_args.session_name}_dreambooth.safetensors").exists():
+    #     log.error("The fine-tuned Flux model is not found.")
+    #     sys.exit()
 
-    log.info("Fine-tuned Flux model verified.")
-    extract_flux_lora(args=train_args)
+    # log.info("Fine-tuned Flux model verified.")
+    # extract_flux_lora(args=train_args)
 
     # Upload to Huggingface Repository.
-    path_to_upload_model = temp_output_dir.joinpath(f"{train_args.session_name}_xlora.safetensors")
-    upload_to_huggingface(model_path=path_to_upload_model, log=log, train_args=train_args)
+    # path_to_upload_model = temp_output_dir.joinpath(f"{train_args.session_name}_xlora.safetensors")
+    # upload_to_huggingface(model_path=path_to_upload_model, log=log, train_args=train_args)
 
     # Training has completed.
     log.info("[reverse honeydew2]Training of Flux-Dev model has been completed.", extra={"markup": True})
