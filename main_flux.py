@@ -9,7 +9,7 @@ import yaml
 from utils import (
     setup_logging, get_executable_path, accelerate_config_cmd, convert_to_toml_config, execute_cmd, is_finished_training,
     terminate_subprocesses, are_models_verified_flux, notify_slack, upload_to_huggingface, BASE_FLUX_DEV_MODEL_NAME, BASE_FLUX_DEV_CLIP_NAME, BASE_FLUX_DEV_T5_NAME,
-    BASE_FLUX_DEV_AE_NAME
+    BASE_FLUX_DEV_AE_NAME, SLACK_CHANNEL_ID
 )
 
 # Some variable setups to be commonly used throughout this script. Varibles in UPPERCASE are subject to change by the user.
@@ -168,7 +168,7 @@ if __name__ == "__main__":
 
     if train_args.notify is not None:
         notify_msg = f"Dreambooth for {train_args.session_name} has been completed! ✨🦖"
-        notify_slack(channel_id="C07KEP1PE5S", msg=notify_msg, log=log, train_args=train_args)
+        notify_slack(channel_id=SLACK_CHANNEL_ID, msg=notify_msg, log=log, train_args=train_args)
 
     # Extract the lora from the fine-tuned model.
     log.info("[reverse wheat1]Beginning Flux-Dev Lora extraction.", extra={"markup": True})
@@ -189,4 +189,4 @@ if __name__ == "__main__":
 
     if train_args.notify is not None:
         notify_msg = f"Training for {train_args.session_name} has been completed! ✨🦖"
-        notify_slack(channel_id="C07KEP1PE5S", msg=notify_msg, log=log, train_args=train_args)
+        notify_slack(channel_id=SLACK_CHANNEL_ID, msg=notify_msg, log=log, train_args=train_args)
