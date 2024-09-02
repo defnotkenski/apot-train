@@ -113,7 +113,7 @@ network_dim: 4
 network_dropout: ''
 network_module: 'networks.lora_flux'
 network_train_text_encoder_only: ''
-network_train_unet_only: ''
+network_train_unet_only: true
 network_weights: ''
 no_half_vae: ''
 no_metadata: ''
