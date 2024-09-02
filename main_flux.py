@@ -182,8 +182,9 @@ if __name__ == "__main__":
     # extract_flux_lora(args=train_args)
 
     # Upload to Huggingface Repository.
-    # path_to_upload_model = temp_output_dir.joinpath(f"{train_args.session_name}_xlora.safetensors")
-    # upload_to_huggingface(model_path=path_to_upload_model, log=log, train_args=train_args)
+    # TODO: Modified to test Lora.
+    path_to_upload_model = temp_output_dir.joinpath(f"{train_args.session_name}_dreambooth.safetensors")
+    upload_to_huggingface(model_path=path_to_upload_model, log=log, train_args=train_args)
 
     # Training has completed.
     log.info("[reverse honeydew2]Training of Flux-Dev model has been completed.", extra={"markup": True})
