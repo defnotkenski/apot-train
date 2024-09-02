@@ -1,5 +1,6 @@
 # Custom
 experimental.py
+/templates/experimental.txt
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
