@@ -52,8 +52,7 @@ full_bf16: ''
 full_fp16: ''
 fused_backward_pass: ''
 gradient_accumulation_steps: ''
-# None
-gradient_checkpointing: true
+gradient_checkpointing: ''
 guidance_scale: 1.0
 highvram: ''
 huber_c: ''
@@ -104,8 +103,7 @@ metadata_title: ''
 min_bucket_reso: ''
 min_snr_gamma: 5
 min_timestep: ''
-# bf16
-mixed_precision: ''
+mixed_precision: 'bf16'
 mode_scale: ''
 model_prediction_type: 'raw'
 multires_noise_discount: ''
