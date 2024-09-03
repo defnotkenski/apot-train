@@ -27,5 +27,4 @@ pyyaml==6.*
 numpy==1.*
 slack_sdk==3.*
 
-git+https://github.com/kohya-ss/sd-scripts.git@sd3
 -e sd_scripts
