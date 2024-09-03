@@ -52,8 +52,7 @@ full_bf16: ''
 full_fp16: ''
 fused_backward_pass: ''
 gradient_accumulation_steps: ''
-# None
-gradient_checkpointing: true
+gradient_checkpointing: ''
 guidance_scale: 1.0
 highvram: ''
 huber_c: ''
@@ -88,7 +87,6 @@ lr_scheduler_power: ''
 lr_scheduler_type: ''
 lr_warmup_steps: ''
 masked_loss: ''
-# 2048
 max_bucket_reso: ''
 max_data_loader_n_workers: 2
 max_grad_norm: ''
@@ -153,15 +151,13 @@ save_last_n_steps: ''
 save_last_n_steps_state: ''
 save_model_as: ''
 save_n_epoch_ratio: ''
-# bf16
-save_precision: 'float'
+save_precision: 'bf16'
 save_state: ''
 save_state_on_train_end: ''
 save_state_to_huggingface: ''
 scale_v_pred_loss_like_noise_pred: ''
 scale_weight_norms: ''
-# None
-sdpa: true
+sdpa: ''
 secondary_separator: ''
 seed: ''
 shuffle_caption: ''
