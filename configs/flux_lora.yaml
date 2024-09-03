@@ -52,7 +52,8 @@ full_bf16: ''
 full_fp16: ''
 fused_backward_pass: ''
 gradient_accumulation_steps: ''
-gradient_checkpointing: ''
+# None
+gradient_checkpointing: true
 guidance_scale: 1.0
 highvram: ''
 huber_c: ''
@@ -160,7 +161,7 @@ save_state_to_huggingface: ''
 scale_v_pred_loss_like_noise_pred: ''
 scale_weight_norms: ''
 # None
-sdpa: ''
+sdpa: true
 secondary_separator: ''
 seed: ''
 shuffle_caption: ''
