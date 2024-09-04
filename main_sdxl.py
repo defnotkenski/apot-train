@@ -238,7 +238,8 @@ if __name__ == "__main__":
 
     # Upload file to Huggingface Hub if set in CLI.
     path_to_final_model = Path(train_args.output_dir).joinpath(f"{train_args.session_name}_final.safetensors")
-    upload_to_huggingface(model_path=path_to_final_model, log=log, train_args=train_args)
+    path_to_yaml_upload = script_dir.joinpath("configs", "sdxl_dreambooth.yaml")
+    upload_to_huggingface(model_path=path_to_final_model, yaml_path=path_to_yaml_upload, log=log, train_args=train_args)
 
     # Training session complete.
     log.info("[reverse honeydew2]Training session is now complete.", extra={"markup": True})
