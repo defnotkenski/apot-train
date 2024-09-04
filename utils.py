@@ -25,6 +25,7 @@ BASE_FLUX_DEV_T5_NAME = "t5xxl_fp16.safetensors"
 BASE_FLUX_DEV_AE_NAME = "ae.safetensors"
 
 REPLICATE_REPO_ID = "notkenski/apothecary-dev"
+HF_REPO_ID = "notkenski/apothecary-dev"
 SLACK_CHANNEL_ID = "C07KEP1PE5S"
 
 
@@ -43,19 +44,26 @@ def notify_slack(channel_id: str, msg: str, log: logging.Logger, train_args: arg
         log.error(f"Error with slack: {e}")
 
 
-def upload_to_huggingface(model_path: Path, log: logging.Logger, train_args: argparse.PARSER) -> None:
-    # Upload provided model to the Huggingface Repository.
+def upload_to_huggingface(model_path: Path, yaml_path: Path, log: logging.Logger, train_args: argparse.PARSER) -> None:
+    # Upload provided model to the Huggingface Repository including the config file.
 
     try:
         if train_args.upload is not None:
             log.info("[reverse wheat1]Starting upload to Huggingface Hub.", extra={"markup": True})
 
             hf_api = HfApi()
+
             hf_api.upload_file(
                 token=train_args.upload,
                 path_or_fileobj=model_path,
-                path_in_repo=model_path.name,
-                repo_id=REPLICATE_REPO_ID
+                path_in_repo=f"{str(model_path.stem)}/{str(model_path.name)}",
+                repo_id=HF_REPO_ID
+            )
+            hf_api.upload_file(
+                token=train_args.upload,
+                path_or_fileobj=yaml_path,
+                path_in_repo=f"{str(model_path.stem)}/{str(model_path.stem)}.yaml",
+                repo_id=HF_REPO_ID
             )
     except Exception as e:
         log.error(f"Exception during Huggingface upload: {e}")

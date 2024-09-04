@@ -69,8 +69,9 @@ def train_flux(args: argparse.Namespace) -> None:
     run_cmd.append(toml_config_path)
 
     # Add extra Flux script arguments.
+    # TODO: Modified to test Lora.
     run_cmd.append("--output_name")
-    run_cmd.append(f"{args.session_name}_dreambooth")
+    run_cmd.append(f"{args.session_name}")
     run_cmd.append("--train_data_dir")
     run_cmd.append(temp_train_dir)
     run_cmd.append("--output_dir")
@@ -183,8 +184,9 @@ if __name__ == "__main__":
 
     # Upload to Huggingface Repository.
     # TODO: Modified to test Lora.
-    path_to_upload_model = temp_output_dir.joinpath(f"{train_args.session_name}_dreambooth.safetensors")
-    upload_to_huggingface(model_path=path_to_upload_model, log=log, train_args=train_args)
+    path_to_upload_model = temp_output_dir.joinpath(f"{train_args.session_name}.safetensors")
+    path_to_upload_yaml = script_dir.joinpath("configs", "flux_lora.yaml")
+    upload_to_huggingface(model_path=path_to_upload_model, yaml_path=path_to_upload_yaml, log=log, train_args=train_args)
 
     # Training has completed.
     log.info("[reverse honeydew2]Training of Flux-Dev model has been completed.", extra={"markup": True})
