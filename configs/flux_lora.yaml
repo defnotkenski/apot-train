@@ -47,8 +47,7 @@ face_crop_aug_range: ''
 flip_aug: ''
 fp16_master_weights_and_gradients: ''
 fp8_base: ''
-# true
-full_bf16: ''
+full_bf16: true
 full_fp16: ''
 fused_backward_pass: ''
 gradient_accumulation_steps: ''
@@ -156,7 +155,7 @@ save_state_on_train_end: ''
 save_state_to_huggingface: ''
 scale_v_pred_loss_like_noise_pred: ''
 scale_weight_norms: ''
-sdpa: ''
+sdpa: true
 secondary_separator: ''
 seed: ''
 shuffle_caption: ''
