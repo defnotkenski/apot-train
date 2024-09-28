@@ -60,6 +60,13 @@ class Predictor(BasePredictor):
         log.info("Running training script.")
         train_flux(args=args)
 
+        # Check to see if safetensor output exists.
+        log.info("Validating safetensors output.")
+
+        if not path_output_safetensors.exists():
+            log.error("Safetensors output does not exist in the output directory. Exiting...")
+            sys.exit()
+
         # Clean shit up and free up resources.
         log.info("Cleaning shit up.")
         gc.collect()
@@ -69,6 +76,13 @@ class Predictor(BasePredictor):
         log.info("Zipping safetensors file.")
         with zipfile.ZipFile(path_output_zip, "w") as zip_write:
             zip_write.write(path_output_safetensors)
+
+        # Check to see if zip file exists now.
+        log.info("Validating ZIP files exists.")
+
+        if not path_output_zip.exists():
+            log.error("The output zip does not exist in the output dir. Exiting...")
+            sys.exit()
 
         log.info(f"Training of {session_name} has been completed.")
 
