@@ -18,6 +18,5 @@ build:
   # commands run after the environment is set up
   run:
     - pip install "numpy<2"
-    - pip install -e sd_scripts
 
 predict: "predict.py:Predictor"
