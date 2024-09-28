@@ -16,7 +16,6 @@ from utils import (
 log = setup_logging()
 script_dir = Path.cwd()
 python = sys.executable
-temp_output_dir = Path(tempfile.mkdtemp(prefix="output_"))
 
 path_to_accelerate_config = script_dir.joinpath("configs", "accelerate.yaml")
 path_to_accelerate_exec = get_executable_path("accelerate")
@@ -32,8 +31,8 @@ def setup_parser() -> argparse.ArgumentParser:
     parser.add_argument("--session_name", default=None, required=True, help="Name of this training session (Will appear as file names).")
     parser.add_argument("--training_dir", default=None, required=True, help="Path of training data in zip format.")
     parser.add_argument("--output_dir", default=None, required=True, help="Path to the local output directory.")
-    parser.add_argument("--upload", default=None, required=False, help="Whether or not to upload to Huggingface Repo using token.")
 
+    parser.add_argument("--upload", default=None, required=False, help="Whether or not to upload to Huggingface Repo using token.")
     parser.add_argument("--notify", default=None, required=False, help="Whether or not you want to be notfied via Slack.")
 
     # Automatically set, but can be user-defined in the CLI.
@@ -69,11 +68,11 @@ def train_flux(args: argparse.Namespace) -> None:
 
     # Add extra Flux script arguments.
     run_cmd.append("--output_name")
-    run_cmd.append(f"{args.session_name}")
+    run_cmd.append(args.session_name)
     run_cmd.append("--train_data_dir")
     run_cmd.append(temp_train_dir)
     run_cmd.append("--output_dir")
-    run_cmd.append(str(temp_output_dir))
+    run_cmd.append(args.output_dir)
 
     run_cmd.append("--pretrained_model_name_or_path")
     run_cmd.append(str(script_dir.joinpath("models", "flux_base_models", BASE_FLUX_DEV_MODEL_NAME)))
@@ -109,10 +108,12 @@ def extract_flux_lora(args: argparse.Namespace) -> None:
     }
 
     # Creat paths to the appropriate files.
+    output_dir = Path(args.output_dir)
+
     path_to_script = script_dir.joinpath("sd_scripts", "networks", "flux_extract_lora.py")
     path_to_original_model = script_dir.joinpath("models", "flux_base_models", "flux1-dev.safetensors")
-    path_to_finetuned_model = temp_output_dir.joinpath(f"{args.session_name}_dreambooth.safetensors")
-    path_to_save = temp_output_dir.joinpath(f"{args.session_name}_xlora.safetensors")
+    path_to_finetuned_model = output_dir.joinpath(f"{args.session_name}_dreambooth.safetensors")
+    path_to_save = output_dir.joinpath(f"{args.session_name}_xlora.safetensors")
 
     # Formulate the run command.
     run_cmd = [path_to_accelerate_exec, "launch", "--config_file", str(path_to_accelerate_config)]
@@ -181,7 +182,9 @@ if __name__ == "__main__":
     # extract_flux_lora(args=train_args)
 
     # Upload to Huggingface Repository.
-    path_to_upload_model = temp_output_dir.joinpath(f"{train_args.session_name}.safetensors")
+    output_dir = Path(train_args.output_dir)
+
+    path_to_upload_model = output_dir.joinpath(f"{train_args.session_name}.safetensors")
     path_to_upload_yaml = script_dir.joinpath("configs", "flux_lora.yaml")
     upload_to_huggingface(model_path=path_to_upload_model, yaml_path=path_to_upload_yaml, log=log, train_args=train_args)
 

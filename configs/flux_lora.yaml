@@ -91,8 +91,8 @@ max_data_loader_n_workers: 2
 max_grad_norm: ''
 max_timestep: ''
 max_token_length: ''
-# 165
-max_train_epochs: 150
+# Old: 165, Updated: 150
+max_train_epochs: 2
 max_train_steps: ''
 mem_eff_attn: ''
 metadata_author: ''
