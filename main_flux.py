@@ -49,7 +49,6 @@ def train_flux(args: argparse.Namespace) -> None:
     # Begin training of the Flux model.
 
     # Create appropriate paths to files.
-    # TODO: Modified to test Lora.
     path_to_script = script_dir.joinpath("sd_scripts", "flux_train_network.py")
     path_to_flux_config = script_dir.joinpath("configs", "flux_lora.yaml")
 
@@ -69,7 +68,6 @@ def train_flux(args: argparse.Namespace) -> None:
     run_cmd.append(toml_config_path)
 
     # Add extra Flux script arguments.
-    # TODO: Modified to test Lora.
     run_cmd.append("--output_name")
     run_cmd.append(f"{args.session_name}")
     run_cmd.append("--train_data_dir")
@@ -183,7 +181,6 @@ if __name__ == "__main__":
     # extract_flux_lora(args=train_args)
 
     # Upload to Huggingface Repository.
-    # TODO: Modified to test Lora.
     path_to_upload_model = temp_output_dir.joinpath(f"{train_args.session_name}.safetensors")
     path_to_upload_yaml = script_dir.joinpath("configs", "flux_lora.yaml")
     upload_to_huggingface(model_path=path_to_upload_model, yaml_path=path_to_upload_yaml, log=log, train_args=train_args)

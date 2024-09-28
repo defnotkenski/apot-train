@@ -1,25 +1,22 @@
-# Prediction interface for Cog ⚙️
-# https://cog.run/python
+import sys
 import time
-
 from cog import BasePredictor, Input, Path as cogPath
 from pathlib import Path
 import tempfile
 import zipfile
-from main_sdxl import train_sdxl
+from main_flux import train_flux
 import torch
 from subprocess import check_call
 from argparse import Namespace
 import gc
-from utils import setup_logging
+from utils import setup_logging, are_models_verified_flux
 
 log = setup_logging()
 
 
 class Predictor(BasePredictor):
     def setup(self):
-        # Wait a little bit for instance to be ready and run set up
-
+        # Wait a little bit for instance to be ready and run set up.
         log.info("Starting setup.")
 
         time.sleep(10)
@@ -28,52 +25,51 @@ class Predictor(BasePredictor):
 
     def predict(
             self,
-            json_config: cogPath = Input(default=None, description="JSON Config for training."),
-            train_data_zip: cogPath = Input(default=None, description="Training data in zip format.")
+            session_name: str = Input(default=None, description="Name of training session."),
+            train_zip: cogPath = Input(default=None, description="Training data in zip format.")
     ) -> cogPath:
-        # Run model training
+        # Run model training and clear GPU memory.
+        log.info("Starting training...")
 
-        log.info("Starting model training nigga.")
+        torch.cuda.empty_cache()
+        gc.collect()
 
-        # Extract zipped training data contents into a temp directory
-        log.info("Extracting zip file contents into a temp dir.")
-        train_data_dir = tempfile.mkdtemp()
-        with zipfile.ZipFile(train_data_zip, 'r') as zip_ref:
-            zip_ref.extractall(train_data_dir)
+        # Check to make sure correct models are already in the appropriate dir.
+        if not are_models_verified_flux(log=log):
+            sys.exit()
 
-        # Create temporary output directory
-        log.info("Creating the output directory.")
-        output_dir = tempfile.mkdtemp()
+        # Create temporary output directory to store output.
+        log.info("Creating the temp output directory.")
+        temp_output_dir = tempfile.mkdtemp()
 
-        # Add paths to the safetensors file and zip by appending output directory
+        # Create paths to the output safetensors file and zip by appending output directory.
         log.info("Creating path to safetensors and zipfile.")
-        output_tensors = Path(output_dir).joinpath("oberg_dreambooth.safetensors")
-        output_zip = Path(output_dir).joinpath("oberg_dreambooth.zip")
+        path_output_safetensors = Path(temp_output_dir).joinpath(f"{session_name}.safetensors")
+        path_output_zip = Path(temp_output_dir).joinpath(f"{session_name}.zip")
 
-        # Assign args to argparse Namespace
+        # Assign args to Namespace in order to pass to the imported training function.
         args = {
-            "json_config": json_config,
-            "train_data_zip": train_data_zip,
-            "output_dir": output_dir
+            "session_name": session_name,
+            "training_dir": str(train_zip),
+            "output_dir": temp_output_dir,
         }
 
         args = Namespace(**args)
 
-        # Run training script from submodule
-        try:
-            log.info("Running training script from submodule.")
-            train_sdxl(args=args)
-        except Exception as e:
-            log.info(f"An exception occured when running training script: {e}")
+        # Run training script.
+        log.info("Running training script.")
+        train_flux(args=args)
 
-        # Clean shit up and free up resources
+        # Clean shit up and free up resources.
         log.info("Cleaning shit up.")
         gc.collect()
         torch.cuda.empty_cache()
 
-        # Zip the safetensors file
+        # Zip the safetensors file and return to Replicate.
         log.info("Zipping safetensors file.")
-        with zipfile.ZipFile(output_zip, "w") as zip_write:
-            zip_write.write(output_tensors)
+        with zipfile.ZipFile(path_output_zip, "w") as zip_write:
+            zip_write.write(path_output_safetensors)
 
-        return output_zip
+        log.info(f"Training of {session_name} has been completed.")
+
+        return path_output_zip
