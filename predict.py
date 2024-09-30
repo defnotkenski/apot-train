@@ -54,11 +54,11 @@ class Predictor(BasePredictor):
             "output_dir": temp_output_dir,
         }
 
-        args = Namespace(**args)
+        args_namespace = Namespace(**args)
 
         # Run training script.
         log.info("Running training script.")
-        train_flux(args=args)
+        train_flux(args=args_namespace)
 
         # Check to see if safetensor output exists.
         log.info("Validating safetensors output.")
