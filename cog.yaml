@@ -17,6 +17,6 @@ build:
 
   # commands run after the environment is set up
   run:
-    - pip install "numpy<2"
+    - huggingface-cli download black-forest-labs/FLUX.1-dev flux1-dev.safetensors --local_dir models/flux_base_models --token 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
 
 predict: "deploy_replicate.py:Predictor"
