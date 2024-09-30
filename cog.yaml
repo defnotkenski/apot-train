@@ -19,4 +19,4 @@ build:
   run:
     - pip install "numpy<2"
 
-predict: "predict.py:Predictor"
+predict: "deploy_replicate.py:Predictor"
