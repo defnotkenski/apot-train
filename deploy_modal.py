@@ -61,6 +61,7 @@ apot_image = (
     ],
     mounts=[
         modal.Mount.from_local_dir(Path.cwd().joinpath("configs"), remote_path="/root/configs", recursive=True),
+        modal.Mount.from_local_dir(Path.cwd().joinpath("models"), remote_path="/root/models", recursive=True)
     ])
 class ApotTrain:
     temp_output_dir: Path = Path(tempfile.mkdtemp())
@@ -74,11 +75,11 @@ class ApotTrain:
         weights_folder = Path.cwd().joinpath("models", "flux_base_models")
         os.makedirs(weights_folder, exist_ok=True)
 
-        hf_hub_download(repo_id="black-forest-labs/FLUX.1-dev", filename="flux1-dev.safetensors", local_dir=weights_folder)
-        hf_hub_download(repo_id="black-forest-labs/FLUX.1-dev", filename="ae.safetensors", local_dir=weights_folder)
+        # hf_hub_download(repo_id="black-forest-labs/FLUX.1-dev", filename="flux1-dev.safetensors", local_dir=weights_folder)
+        # hf_hub_download(repo_id="black-forest-labs/FLUX.1-dev", filename="ae.safetensors", local_dir=weights_folder)
 
-        hf_hub_download(repo_id="comfyanonymous/flux_text_encoders", filename="t5xxl_fp16.safetensors", local_dir=weights_folder)
-        hf_hub_download(repo_id="comfyanonymous/flux_text_encoders", filename="clip_l.safetensors", local_dir=weights_folder)
+        # hf_hub_download(repo_id="comfyanonymous/flux_text_encoders", filename="t5xxl_fp16.safetensors", local_dir=weights_folder)
+        # hf_hub_download(repo_id="comfyanonymous/flux_text_encoders", filename="clip_l.safetensors", local_dir=weights_folder)
 
         return
 
@@ -127,7 +128,7 @@ class ApotTrain:
 
         path_model = self.temp_output_dir.joinpath(f"{session_name}.safetensors")
         path_model_yaml = Path.cwd().joinpath("configs", "flux_lora.yaml")
-        upload_to_huggingface(model_path=path_model, yaml_path=path_model_yaml, train_args=train_namespace, log=self.log)
+        upload_to_huggingface(model_path=path_model, yaml_path=path_model_yaml, base_path="flux/loras", train_args=train_namespace, log=self.log)
 
         return
 
@@ -135,6 +136,6 @@ class ApotTrain:
 @app.local_entrypoint()
 def main():
     apot = ApotTrain()
-    result = apot.train.remote(session_name="modal_pliopa_3600", training_images_name="pliopa_3_sw1ft_woman.zip")
+    result = apot.train.remote(session_name="modal_pokimane_3600", training_images_name="datasets/pokimane_3_sw1ft_woman.zip")
 
     print(result)

@@ -44,7 +44,7 @@ def notify_slack(channel_id: str, msg: str, log: logging.Logger, train_args: arg
         log.error(f"Error with slack: {e}")
 
 
-def upload_to_huggingface(model_path: Path, yaml_path: Path, log: logging.Logger, train_args: argparse.PARSER) -> None:
+def upload_to_huggingface(model_path: Path, yaml_path: Path, base_path: str, log: logging.Logger, train_args: argparse.PARSER) -> None:
     # Upload provided model to the Huggingface Repository including the config file.
 
     try:
@@ -56,13 +56,13 @@ def upload_to_huggingface(model_path: Path, yaml_path: Path, log: logging.Logger
             hf_api.upload_file(
                 token=train_args.upload,
                 path_or_fileobj=model_path,
-                path_in_repo=f"{str(model_path.stem)}/{str(model_path.name)}",
+                path_in_repo=f"{base_path}/{str(model_path.stem)}/{str(model_path.name)}",
                 repo_id=HF_REPO_ID
             )
             hf_api.upload_file(
                 token=train_args.upload,
                 path_or_fileobj=yaml_path,
-                path_in_repo=f"{str(model_path.stem)}/{str(model_path.stem)}.yaml",
+                path_in_repo=f"{base_path}/{str(model_path.stem)}/{str(model_path.stem)}.yaml",
                 repo_id=HF_REPO_ID
             )
     except Exception as e:
