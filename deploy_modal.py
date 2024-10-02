@@ -4,10 +4,11 @@ import sys
 import tempfile
 from pathlib import Path
 import modal
-from main_flux import train_flux
 import subprocess
 from argparse import Namespace
-from utils import upload_to_huggingface, setup_logging
+from utils import setup_logging, upload_to_huggingface
+from main_flux import train_flux
+from huggingface_hub import hf_hub_download
 
 app = modal.App("apot")
 
@@ -97,8 +98,6 @@ class ApotTrainClass:
 
     @modal.method()
     def train(self, session_name: str, training_images_name: str):
-        from huggingface_hub import hf_hub_download
-
         print("Training model!")
 
         print(f"The current working directory is: {str(Path.cwd())}")
@@ -134,7 +133,7 @@ class ApotTrainClass:
         return
 
 
-@app.function(image=modal.Image.debian_slim(python_version="3.10"))
+@app.function(image=apot_image)
 @modal.web_endpoint(method="POST")
 def submit_job(payload: dict):
     # ====== Add a job to the queue. ====== #
@@ -148,7 +147,7 @@ def submit_job(payload: dict):
     return call.object_id
 
 
-@app.function(image=modal.Image.debian_slim(python_version="3.10"))
+@app.function(image=apot_image)
 @modal.web_endpoint(method="POST")
 def job_status(payload: dict):
     # ====== Check job status via call_id returned from submit_job. ====== #
