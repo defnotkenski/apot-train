@@ -55,7 +55,7 @@ apot_image = (
 @app.cls(
     image=apot_image,
     timeout=7200,
-    gpu=["H100"],
+    gpu=modal.gpu.A100(size="80GB"),
     secrets=[
         modal.Secret.from_name("huggingface-secret")
     ],
