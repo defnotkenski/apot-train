@@ -4,13 +4,12 @@ import sys
 import tempfile
 from pathlib import Path
 import modal
-from huggingface_hub import hf_hub_download
 from main_flux import train_flux
 import subprocess
 from argparse import Namespace
 from utils import upload_to_huggingface, setup_logging
 
-app = modal.App("apot-train-flux")
+app = modal.App("apot")
 
 apot_image = (
     modal.Image.debian_slim(python_version="3.10")
@@ -63,7 +62,7 @@ apot_image = (
         modal.Mount.from_local_dir(Path.cwd().joinpath("configs"), remote_path="/root/configs", recursive=True),
         modal.Mount.from_local_dir(Path.cwd().joinpath("models"), remote_path="/root/models", recursive=True)
     ])
-class ApotTrain:
+class ApotTrainClass:
     temp_output_dir: Path = Path(tempfile.mkdtemp())
     temp_input_dir: Path = Path(tempfile.mkdtemp())
     log: logging.Logger = setup_logging()
@@ -98,6 +97,8 @@ class ApotTrain:
 
     @modal.method()
     def train(self, session_name: str, training_images_name: str):
+        from huggingface_hub import hf_hub_download
+
         print("Training model!")
 
         print(f"The current working directory is: {str(Path.cwd())}")
@@ -124,7 +125,7 @@ class ApotTrain:
 
         train_flux(args=train_namespace)
 
-        # ====== Upload to Huggingface ====== #
+        # ====== Upload to Huggingface. ====== #
 
         path_model = self.temp_output_dir.joinpath(f"{session_name}.safetensors")
         path_model_yaml = Path.cwd().joinpath("configs", "flux_lora.yaml")
@@ -133,9 +134,46 @@ class ApotTrain:
         return
 
 
+@app.function(image=modal.Image.debian_slim(python_version="3.10"))
+@modal.web_endpoint(method="POST")
+def submit_job(payload: dict):
+    # ====== Add a job to the queue. ====== #
+
+    session_name = payload["session_name"]
+    training_images_name = payload["training_images_name"]
+
+    process_job = modal.Function.lookup("apot", "ApotTrainClass.train")
+    call = process_job.spawn(session_name=session_name, training_images_name=training_images_name)
+
+    return call.object_id
+
+
+@app.function(image=modal.Image.debian_slim(python_version="3.10"))
+@modal.web_endpoint(method="POST")
+def job_status(payload: dict):
+    # ====== Check job status via call_id returned from submit_job. ====== #
+
+    call_id = payload["call_id"]
+    fn_call = modal.functions.FunctionCall.from_id(call_id)
+
+    try:
+        result = fn_call.get(timeout=10)
+    except modal.exception.OutputExpiredError:
+        result = {"result": "expired"}
+    except TimeoutError:
+        result = {"result": "pending"}
+
+    return result
+
+
 @app.local_entrypoint()
 def main():
-    apot = ApotTrain()
-    result = apot.train.remote(session_name="modal_pokimane_3600", training_images_name="datasets/pokimane_3_sw1ft_woman.zip")
+    # ====== For local development. ====== #
 
-    print(result)
+    apot = ApotTrainClass()
+    data = {
+        "session_name": "modal_test",
+        "training_images_name": "datasets/pokimane_3_sw1ft_woman"
+    }
+
+    return
