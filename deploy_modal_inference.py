@@ -5,13 +5,10 @@ from pathlib import Path
 import modal
 from typing import Dict
 import uuid
-from utils import setup_logging
 
 # ====== Constants. ====== #
 
-log = setup_logging()
-
-MOUNT_WORKFLOW_NAME = "apot_v4e_api_test.json"
+MOUNT_WORKFLOW_NAME = "apot_v4e-prod_api.json"
 SCRIPT_DIR = Path.cwd()
 
 # ====== Build functions. ====== #
@@ -28,6 +25,7 @@ def download_foundation_models():
         local_dir=SCRIPT_DIR.joinpath("comfy", "ComfyUI", "models", "unet"),
         token=os.environ["HF_TOKEN"]
     )
+    print(f"Finished downloading UNETs.")
 
     # ====== Encoders. ====== #
 
@@ -37,6 +35,7 @@ def download_foundation_models():
         local_dir=SCRIPT_DIR.joinpath("comfy", "ComfyUI", "models", "vae"),
         token=os.environ["HF_TOKEN"]
     )
+    print(f"Finished downloading encoders.")
 
     # ====== CLIPs. ====== #
 
@@ -53,6 +52,7 @@ def download_foundation_models():
         local_dir=SCRIPT_DIR.joinpath("comfy", "ComfyUI", "models", "clip"),
         token=os.environ["HF_TOKEN"]
     )
+    print(f"Finished downloading CLIPs.")
 
     # ====== LORAs. ====== #
 
@@ -62,6 +62,7 @@ def download_foundation_models():
         local_dir=SCRIPT_DIR.joinpath("comfy", "ComfyUI", "models", "loras"),
         token=os.environ["HF_TOKEN"]
     )
+    print(f"Finished downloading LORAs.")
 
     # ====== Upscalers. ====== #
 
@@ -78,6 +79,7 @@ def download_foundation_models():
         local_dir=SCRIPT_DIR.joinpath("comfy", "ComfyUI", "models", "upscale_models"),
         token=os.environ["HF_TOKEN"]
     )
+    print(f"Finished downloading upscalers.")
 
     return
 
@@ -108,9 +110,23 @@ app = modal.App(name="apot-inference", image=apot_image)
     allow_concurrent_inputs=10,
     concurrency_limit=1,
     container_idle_timeout=10,
+    secrets=[modal.Secret.from_name("huggingface-secret")]
 )
 @modal.web_server(port=8080, startup_timeout=60)
 def ui():
+    from huggingface_hub import hf_hub_download
+
+    # ====== Download LORA for development. ====== #
+
+    hf_hub_download(
+        repo_id="notkenski/flux-loras",
+        filename="modal_pokimane_3600.safetensors",
+        local_dir=Path.cwd().joinpath("comfy", "ComfyUI", "models", "loras"),
+        token=os.environ["HF_TOKEN"]
+    )
+
+    # ====== Launch Comfy. ====== #
+
     subprocess.Popen("comfy launch -- --listen 0.0.0.0 --port 8080", shell=True)
 
 
@@ -178,25 +194,32 @@ class InferenceClass:
             token=os.environ["HF_TOKEN"]
         )
 
-        log.info(f"Downloaded {apot_lora_name} from Hugging Face Repo.")
+        print(f"Downloaded {apot_lora_name} from Hugging Face Repo.")
 
         current_dir = Path.cwd()
         workflow_data = json.loads(current_dir.joinpath(f"{MOUNT_WORKFLOW_NAME}").read_text())
 
         # ====== Add params to workflow. ====== #
 
-        workflow_data["85"]["inputs"]["lora_1"]["lora"] = apot_lora_name
+        # LoraLoaderMain.
+        workflow_data["83"]["inputs"]["lora_1"]["lora"] = apot_lora_name
 
+        # LoraLoaderUpscale.
+        workflow_data["84"]["inputs"]["lora_1"]["lora"] = apot_lora_name
+
+        # Prompt.
         workflow_data["6"]["inputs"]["text"] = payload["pos_prompt"]
+
+        # Batch count.
         workflow_data["51"]["inputs"]["batch_size"] = payload["count"]
 
         # ====== Give the output image a unique id. ====== #
 
         client_id = uuid.uuid4().hex
-        log.debug(f"The client_id is {client_id}")
+        print(f"The client_id is {client_id}")
 
-        # workflow_data["83"]["inputs"]["filename_prefix"] = client_id
-        workflow_data["84"]["inputs"]["filename_prefix"] = client_id
+        # SaveImage.
+        workflow_data["85"]["inputs"]["filename_prefix"] = client_id
 
         # ====== Save this workflow to a new file. ====== #
 

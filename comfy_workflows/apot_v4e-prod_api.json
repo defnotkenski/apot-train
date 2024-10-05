@@ -36,7 +36,7 @@
       "width": 832,
       "height": 1216,
       "model": [
-        "76",
+        "83",
         0
       ]
     },
@@ -65,7 +65,7 @@
     "inputs": {
       "text": "Most importantly, a photo-realistic portrait of sw1ft woman in the foreground. Standing while wearing a sundress with soft lighting and rainbow lens flares. Lastly, in a photography studio.",
       "clip": [
-        "76",
+        "83",
         1
       ]
     },
@@ -246,7 +246,7 @@
     "inputs": {
       "text": "blurry",
       "clip": [
-        "76",
+        "83",
         1
       ]
     },
@@ -273,18 +273,6 @@
     "class_type": "EmptySD3LatentImage",
     "_meta": {
       "title": "EmptySD3LatentImage"
-    }
-  },
-  "56": {
-    "inputs": {
-      "images": [
-        "63",
-        0
-      ]
-    },
-    "class_type": "PreviewImage",
-    "_meta": {
-      "title": "Preview Image"
     }
   },
   "63": {
@@ -341,41 +329,6 @@
       "title": "Ultimate SD Upscale"
     }
   },
-  "66": {
-    "inputs": {
-      "PowerLoraLoaderHeaderWidget": {
-        "type": "PowerLoraLoaderHeaderWidget"
-      },
-      "lora_1": {
-        "on": true,
-        "lora": "antoci_3600steps.safetensors",
-        "strength": 1
-      },
-      "lora_2": {
-        "on": true,
-        "lora": "FLUX-dev-lora-add_details.safetensors",
-        "strength": 0.3
-      },
-      "lora_3": {
-        "on": false,
-        "lora": "FLUX-dev-lora-AntiBlur.safetensors",
-        "strength": 1
-      },
-      "➕ Add Lora": "",
-      "model": [
-        "1",
-        0
-      ],
-      "clip": [
-        "2",
-        0
-      ]
-    },
-    "class_type": "Power Lora Loader (rgthree)",
-    "_meta": {
-      "title": "Power Lora Loader (rgthree)"
-    }
-  },
   "67": {
     "inputs": {
       "max_shift": 0.1,
@@ -383,53 +336,13 @@
       "width": 832,
       "height": 1216,
       "model": [
-        "66",
+        "84",
         0
       ]
     },
     "class_type": "ModelSamplingFlux",
     "_meta": {
       "title": "ModelSamplingFlux"
-    }
-  },
-  "76": {
-    "inputs": {
-      "PowerLoraLoaderHeaderWidget": {
-        "type": "PowerLoraLoaderHeaderWidget"
-      },
-      "lora_1": {
-        "on": true,
-        "lora": "antoci_3600steps.safetensors",
-        "strength": 1
-      },
-      "lora_2": {
-        "on": true,
-        "lora": "FLUX-dev-lora-add_details.safetensors",
-        "strength": 0.15
-      },
-      "lora_3": {
-        "on": false,
-        "lora": "FLUX-dev-lora-AntiBlur.safetensors",
-        "strength": 1
-      },
-      "lora_4": {
-        "on": false,
-        "lora": "epicphoto_flux_standarddim1024.safetensors",
-        "strength": 0.3
-      },
-      "➕ Add Lora": "",
-      "model": [
-        "1",
-        0
-      ],
-      "clip": [
-        "2",
-        0
-      ]
-    },
-    "class_type": "Power Lora Loader (rgthree)",
-    "_meta": {
-      "title": "Power Lora Loader (rgthree)"
     }
   },
   "79": {
@@ -444,46 +357,6 @@
       "title": "Preview Image"
     }
   },
-  "80": {
-    "inputs": {
-      "rgthree_comparer": {
-        "images": [
-          {
-            "name": "A1",
-            "selected": true,
-            "url": "/api/view?filename=rgthree.compare._temp_xlmhd_00025_.png&type=temp&subfolder=&rand=0.7060282342983601"
-          },
-          {
-            "name": "A2",
-            "selected": false,
-            "url": "/api/view?filename=rgthree.compare._temp_xlmhd_00026_.png&type=temp&subfolder=&rand=0.9116514493092508"
-          },
-          {
-            "name": "B1",
-            "selected": true,
-            "url": "/api/view?filename=rgthree.compare._temp_xlmhd_00027_.png&type=temp&subfolder=&rand=0.45496745711239883"
-          },
-          {
-            "name": "B2",
-            "selected": false,
-            "url": "/api/view?filename=rgthree.compare._temp_xlmhd_00028_.png&type=temp&subfolder=&rand=0.34799092685135635"
-          }
-        ]
-      },
-      "image_a": [
-        "13",
-        0
-      ],
-      "image_b": [
-        "16",
-        0
-      ]
-    },
-    "class_type": "Image Comparer (rgthree)",
-    "_meta": {
-      "title": "Image Comparer (rgthree)"
-    }
-  },
   "82": {
     "inputs": {
       "model_name": "4x_NMKD-Siax_200k.pth"
@@ -494,6 +367,66 @@
     }
   },
   "83": {
+    "inputs": {
+      "PowerLoraLoaderHeaderWidget": {
+        "type": "PowerLoraLoaderHeaderWidget"
+      },
+      "lora_1": {
+        "on": true,
+        "lora": "modal_pokimane_3600.safetensors",
+        "strength": 1
+      },
+      "lora_2": {
+        "on": true,
+        "lora": "FLUX-dev-lora-add_details.safetensors",
+        "strength": 0.15
+      },
+      "➕ Add Lora": "",
+      "model": [
+        "1",
+        0
+      ],
+      "clip": [
+        "2",
+        0
+      ]
+    },
+    "class_type": "Power Lora Loader (rgthree)",
+    "_meta": {
+      "title": "LoraLoaderMain"
+    }
+  },
+  "84": {
+    "inputs": {
+      "PowerLoraLoaderHeaderWidget": {
+        "type": "PowerLoraLoaderHeaderWidget"
+      },
+      "lora_1": {
+        "on": true,
+        "lora": "modal_pokimane_3600.safetensors",
+        "strength": 1
+      },
+      "lora_2": {
+        "on": true,
+        "lora": "FLUX-dev-lora-add_details.safetensors",
+        "strength": 0.3
+      },
+      "➕ Add Lora": "",
+      "model": [
+        "1",
+        0
+      ],
+      "clip": [
+        "2",
+        0
+      ]
+    },
+    "class_type": "Power Lora Loader (rgthree)",
+    "_meta": {
+      "title": "LoraLoaderUpscaling"
+    }
+  },
+  "85": {
     "inputs": {
       "filename_prefix": "apot",
       "images": [
