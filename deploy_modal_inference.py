@@ -6,41 +6,101 @@ import modal
 from typing import Dict
 import uuid
 
+# ====== Constants. ====== #
+
+MOUNT_WORKFLOW_NAME = "apot_v4e_api_test.json"
+SCRIPT_DIR = Path.cwd()
+
+# ====== Build functions. ====== #
+
+
+def download_unet_ae():
+    from huggingface_hub import hf_hub_download
+
+    repo_id = "black-forest-labs/FLUX.1-dev"
+    unet_name = "flux1-dev.safetensors"
+    ae_name = "ae.safetensors"
+
+    hf_unet_res = hf_hub_download(
+        repo_id=repo_id,
+        filename=unet_name,
+        local_dir=SCRIPT_DIR.joinpath("comfy", "ComfyUI", "models", "unet"),
+        token=os.environ["HF_TOKEN"]
+    )
+    print(f"Unet download response: {hf_unet_res}")
+
+    hf_ae_res = hf_hub_download(
+        repo_id=repo_id,
+        filename=ae_name,
+        local_dir=SCRIPT_DIR.joinpath("comfy", "ComfyUI", "models", "vae"),
+        token=os.environ["HF_TOKEN"]
+    )
+    print(f"Encoder download response: {hf_ae_res}")
+
+    return
+
+
+def download_clip():
+    from huggingface_hub import hf_hub_download
+
+    repo_id = "comfyanonymous/flux_text_encoders"
+    clip_l_name = "clip_l.safetensors"
+    t5xxl_name = "t5xxl_fp16.safetensors"
+
+    hf_clip_res = hf_hub_download(
+        repo_id=repo_id,
+        filename=clip_l_name,
+        local_dir=SCRIPT_DIR.joinpath("comfy", "ComfyUI", "models", "clip"),
+        token=os.environ["HF_TOKEN"]
+    )
+    print(f"Clip_l download response: {hf_clip_res}")
+
+    hf_t5_res = hf_hub_download(
+        repo_id=repo_id,
+        filename=t5xxl_name,
+        local_dir=SCRIPT_DIR.joinpath("comfy", "ComfyUI", "models", "clip"),
+        token=os.environ["HF_TOKEN"]
+    )
+    print(f"Clip_l download response: {hf_t5_res}")
+
 # ====== Modal Images. ====== #
 
-app = modal.App(name="apot-inference")
 
 apot_image = (
-    modal.Image.debian_slim(python_version="3.10", force_build=False)
+    modal.Image.debian_slim(python_version="3.11")
     .apt_install("git", "wget")
-    .pip_install("comfy-cli==1.1.8")
+    .pip_install("comfy-cli==1.1.8", "huggingface_hub")
     .run_commands("comfy --skip-prompt install --nvidia")
-    .run_commands(
-        "comfy node install ComfyUI_UltimateSDUpscale",
-        "comfy node install rgthree-comfy",
-        "comfy node install ComfyUI-SUPIR"
+    .run_commands("comfy node install ComfyUI_UltimateSDUpscale", "comfy node install rgthree-comfy")
+    # ====== UNET & Encoders. ====== #
+    .run_function(
+        download_unet_ae, secrets=[modal.Secret.from_name("huggingface-secret")]
     )
-    .run_commands(
-        "wget --content-disposition --no-verbose 'https://huggingface.co/Shakker-Labs/FLUX.1-dev-LoRA-add-details/resolve/main/FLUX-dev-lora-add_details.safetensors?download=true' -P /root/comfy/ComfyUI/models/loras",
-        "wget --content-disposition --no-verbose 'https://huggingface.co/notkenski/apothecary-dev/resolve/main/flux/loras/modal_pokimane_3600/modal_pokimane_3600.safetensors?download=true' -P /root/comfy/ComfyUI/models/loras"
+    # ====== CLIPs. ====== #
+    .run_function(
+        download_clip, secrets=[modal.Secret.from_name("huggingface-secret")]
     )
-    # .copy_local_file(local_path="models/flux_base_models/flux1-dev.safetensors", remote_path="root/comfy/comfyui/models/unet")
+    # ====== LORAs. ====== #
+    .run_commands(
+        "huggingface-cli download Shakker-Labs/FLUX.1-dev-LoRA-add-details FLUX-dev-lora-add_details.safetensors --local-dir root/comfy/ComfyUI/models/loras"
+    )
+    # ====== Upscale models. ====== #
+    .run_commands(
+        "huggingface-cli download notkenski/apot-upscalers 4x_NMKD-Siax_200k.pth --local-dir root/comfy/ComfyUI/models/upscale_models",
+        "huggingface-cli download notkenski/apot-upscalers 8x_NMKD-Faces_160000_G.pth --local-dir root/comfy/ComfyUI/models/upscale_models"
+    )
 )
+
+app = modal.App(name="apot-inference", image=apot_image)
 
 # ====== Modal Functions & Classes. ====== #
 
 
 @app.function(
-    image=apot_image,
-    gpu="A100",
+    gpu="A10G",
     allow_concurrent_inputs=10,
     concurrency_limit=1,
-    mounts=[
-        modal.Mount.from_local_file(local_path="models/flux_base_models/flux1-dev.safetensors", remote_path="root/comfy/ComfyUI/models/unet/flux1-dev.safetensors"),
-        modal.Mount.from_local_file(local_path="models/flux_base_models/ae.safetensors", remote_path="root/comfy/ComfyUI/models/vae/ae.safetensors"),
-        modal.Mount.from_local_file(local_path="models/flux_base_models/clip_l.safetensors", remote_path="root/comfy/ComfyUI/models/clip/clip_l.safetensors"),
-        modal.Mount.from_local_file(local_path="models/flux_base_models/t5xxl_fp16.safetensors", remote_path="root/comfy/ComfyUI/models/clip/t5xxl_fp16.safetensors")
-    ]
+    container_idle_timeout=10,
 )
 @modal.web_server(port=8080, startup_timeout=60)
 def ui():
@@ -48,16 +108,12 @@ def ui():
 
 
 @app.cls(
-    image=apot_image,
-    gpu=modal.gpu.A100(size="80GB"),
+    gpu="H100",
     allow_concurrent_inputs=10,
-    # container_idle_timeout=300,
+    concurrency_limit=1,
+    container_idle_timeout=10,
     mounts=[
-        modal.Mount.from_local_file(local_path=Path.cwd().joinpath("models", "flux_base_models", "flux1-dev.safetensors"), remote_path="/root/comfy/ComfyUI/models/unet/flux1-dev.safetensors"),
-        modal.Mount.from_local_file(local_path="models/flux_base_models/ae.safetensors", remote_path="/root/comfy/ComfyUI/models/vae/ae.safetensors"),
-        modal.Mount.from_local_file(local_path="models/flux_base_models/clip_l.safetensors", remote_path="/root/comfy/ComfyUI/models/clip/clip_l.safetensors"),
-        modal.Mount.from_local_file(local_path="models/flux_base_models/t5xxl_fp16.safetensors", remote_path="/root/comfy/ComfyUI/models/clip/t5xxl_fp16.safetensors"),
-        modal.Mount.from_local_file(local_path="comfy_workflows/flux_v4e_api.json", remote_path="/root/flux_v4e_api.json")
+        modal.Mount.from_local_file(local_path=f"comfy_workflows/{MOUNT_WORKFLOW_NAME}", remote_path=f"/root/{MOUNT_WORKFLOW_NAME}")
     ]
 )
 class InferenceClass:
@@ -71,13 +127,19 @@ class InferenceClass:
         cmd = f"comfy run --workflow {str(workflow_path)} --wait --timeout 1200"
         subprocess.run(cmd, shell=True, check=True)
 
-        output_dir = "root/comfy/ComfyUI/output"
+        output_dir = Path.cwd().joinpath("comfy", "ComfyUI", "output")
 
-        workflow = json.loads(Path(workflow_path).read_text())
-        save_image_node = [node.get("inputs") for node in workflow.values() if node.get("class_type") == "SaveImage"]
-        file_prefix = save_image_node[0]["filename_prefix"]
+        workflow = json.loads(workflow_path.read_text())
+        file_prefix = [node.get("inputs") for node in workflow.values() if node.get("class_type") == "SaveImage"][0]["filename_prefix"]
 
-        for file in Path(output_dir).iterdir():
+        print(f"Looking for files with the prefix: {file_prefix}")
+
+        ls_output = [files for files in os.listdir(output_dir)]
+        print(ls_output)
+        ls_temp = [files for files in os.listdir(Path.cwd().joinpath("comfy", "ComfyUI", "temp"))]
+        print(ls_temp)
+
+        for file in output_dir.iterdir():
             if file.name.startswith(file_prefix):
                 return file.read_bytes()
 
@@ -86,27 +148,32 @@ class InferenceClass:
         from fastapi import Response
 
         current_dir = Path.cwd()
-        workflow_data = json.loads(current_dir.joinpath("flux_v4e_api.json").read_text())
+        workflow_data = json.loads(current_dir.joinpath(f"{MOUNT_WORKFLOW_NAME}").read_text())
 
         # ====== Add params to workflow. ====== #
 
         workflow_data["6"]["inputs"]["text"] = payload["pos_prompt"]
-        # workflow_data["51"]["inputs"]["batch_size"] = payload["count"]
-        workflow_data["66"]["inputs"]["lora_1"]["lora"] = "modal_pokimane_3600.safetensors"
+        workflow_data["51"]["inputs"]["batch_size"] = payload["count"]
+        # workflow_data["85"]["inputs"]["lora_1"]["lora"] = payload["lora_name"]
 
         # ====== Give the output image a unique id. ====== #
 
         client_id = uuid.uuid4().hex
-        workflow_data["83"]["inputs"]["filename_prefix"] = client_id
+        print(f"The client_id is {client_id}")
+
+        # workflow_data["83"]["inputs"]["filename_prefix"] = client_id
+        workflow_data["84"]["inputs"]["filename_prefix"] = client_id
 
         # ====== Save this workflow to a new file. ====== #
 
-        new_workflow_filename = f"{client_id}_api.json"
+        new_workflow_filename = f"wf_{client_id}.json"
         new_wf_path = Path.cwd().joinpath(new_workflow_filename)
+
         json.dump(workflow_data, new_wf_path.open("w"))
+        # print(workflow_data["83"])
 
         # ====== Run inference. ====== #
 
-        img_bytes = self.inference.local(Path.cwd().joinpath("flux_v4e_api.json"))
+        img_bytes = self.inference.local(new_wf_path)
 
         return Response(img_bytes, media_type="image/jpeg")
