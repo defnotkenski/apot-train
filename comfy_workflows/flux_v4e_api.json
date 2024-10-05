@@ -1,0 +1,509 @@
+{
+  "1": {
+    "inputs": {
+      "unet_name": "flux1-dev.safetensors",
+      "weight_dtype": "default"
+    },
+    "class_type": "UNETLoader",
+    "_meta": {
+      "title": "Load Diffusion Model"
+    }
+  },
+  "2": {
+    "inputs": {
+      "clip_name1": "clip_l.safetensors",
+      "clip_name2": "t5xxl_fp16.safetensors",
+      "type": "flux"
+    },
+    "class_type": "DualCLIPLoader",
+    "_meta": {
+      "title": "DualCLIPLoader"
+    }
+  },
+  "3": {
+    "inputs": {
+      "vae_name": "ae.safetensors"
+    },
+    "class_type": "VAELoader",
+    "_meta": {
+      "title": "Load VAE"
+    }
+  },
+  "4": {
+    "inputs": {
+      "max_shift": 0.1,
+      "base_shift": 0.5,
+      "width": 832,
+      "height": 1216,
+      "model": [
+        "76",
+        0
+      ]
+    },
+    "class_type": "ModelSamplingFlux",
+    "_meta": {
+      "title": "ModelSamplingFlux"
+    }
+  },
+  "5": {
+    "inputs": {
+      "model": [
+        "4",
+        0
+      ],
+      "conditioning": [
+        "7",
+        0
+      ]
+    },
+    "class_type": "BasicGuider",
+    "_meta": {
+      "title": "BasicGuider"
+    }
+  },
+  "6": {
+    "inputs": {
+      "text": "Most importantly, a photo-realistic portrait of sw1ft woman in the foreground. Standing while wearing a sundress with soft lighting and rainbow lens flares. Lastly, in a photography studio.",
+      "clip": [
+        "76",
+        1
+      ]
+    },
+    "class_type": "CLIPTextEncode",
+    "_meta": {
+      "title": "CLIP Text Encode (Prompt)"
+    }
+  },
+  "7": {
+    "inputs": {
+      "guidance": 2.7,
+      "conditioning": [
+        "6",
+        0
+      ]
+    },
+    "class_type": "FluxGuidance",
+    "_meta": {
+      "title": "FluxGuidance"
+    }
+  },
+  "8": {
+    "inputs": {
+      "noise": [
+        "11",
+        0
+      ],
+      "guider": [
+        "5",
+        0
+      ],
+      "sampler": [
+        "9",
+        0
+      ],
+      "sigmas": [
+        "10",
+        0
+      ],
+      "latent_image": [
+        "51",
+        0
+      ]
+    },
+    "class_type": "SamplerCustomAdvanced",
+    "_meta": {
+      "title": "SamplerCustomAdvanced"
+    }
+  },
+  "9": {
+    "inputs": {
+      "sampler_name": "euler"
+    },
+    "class_type": "KSamplerSelect",
+    "_meta": {
+      "title": "KSamplerSelect"
+    }
+  },
+  "10": {
+    "inputs": {
+      "scheduler": "normal",
+      "steps": 30,
+      "denoise": 1,
+      "model": [
+        "4",
+        0
+      ]
+    },
+    "class_type": "BasicScheduler",
+    "_meta": {
+      "title": "BasicScheduler"
+    }
+  },
+  "11": {
+    "inputs": {
+      "noise_seed": [
+        "23",
+        0
+      ]
+    },
+    "class_type": "RandomNoise",
+    "_meta": {
+      "title": "RandomNoise"
+    }
+  },
+  "13": {
+    "inputs": {
+      "samples": [
+        "8",
+        0
+      ],
+      "vae": [
+        "3",
+        0
+      ]
+    },
+    "class_type": "VAEDecode",
+    "_meta": {
+      "title": "VAE Decode"
+    }
+  },
+  "14": {
+    "inputs": {
+      "images": [
+        "13",
+        0
+      ]
+    },
+    "class_type": "PreviewImage",
+    "_meta": {
+      "title": "Preview Image"
+    }
+  },
+  "16": {
+    "inputs": {
+      "upscale_by": 2,
+      "seed": [
+        "23",
+        0
+      ],
+      "steps": 30,
+      "cfg": 4,
+      "sampler_name": "euler",
+      "scheduler": "normal",
+      "denoise": 0.3,
+      "mode_type": "Linear",
+      "tile_width": 1024,
+      "tile_height": 1024,
+      "mask_blur": 16,
+      "tile_padding": 32,
+      "seam_fix_mode": "None",
+      "seam_fix_denoise": 1,
+      "seam_fix_width": 64,
+      "seam_fix_mask_blur": 8,
+      "seam_fix_padding": 16,
+      "force_uniform_tiles": true,
+      "tiled_decode": false,
+      "image": [
+        "13",
+        0
+      ],
+      "model": [
+        "67",
+        0
+      ],
+      "positive": [
+        "6",
+        0
+      ],
+      "negative": [
+        "18",
+        0
+      ],
+      "vae": [
+        "3",
+        0
+      ],
+      "upscale_model": [
+        "17",
+        0
+      ]
+    },
+    "class_type": "UltimateSDUpscale",
+    "_meta": {
+      "title": "Ultimate SD Upscale"
+    }
+  },
+  "17": {
+    "inputs": {
+      "model_name": "8x_NMKD-Faces_160000_G.pth"
+    },
+    "class_type": "UpscaleModelLoader",
+    "_meta": {
+      "title": "Load Upscale Model"
+    }
+  },
+  "18": {
+    "inputs": {
+      "text": "blurry",
+      "clip": [
+        "76",
+        1
+      ]
+    },
+    "class_type": "CLIPTextEncode",
+    "_meta": {
+      "title": "CLIP Text Encode (Prompt)"
+    }
+  },
+  "23": {
+    "inputs": {
+      "seed": -1
+    },
+    "class_type": "Seed (rgthree)",
+    "_meta": {
+      "title": "Seed (rgthree)"
+    }
+  },
+  "51": {
+    "inputs": {
+      "width": 832,
+      "height": 1216,
+      "batch_size": 2
+    },
+    "class_type": "EmptySD3LatentImage",
+    "_meta": {
+      "title": "EmptySD3LatentImage"
+    }
+  },
+  "56": {
+    "inputs": {
+      "images": [
+        "63",
+        0
+      ]
+    },
+    "class_type": "PreviewImage",
+    "_meta": {
+      "title": "Preview Image"
+    }
+  },
+  "63": {
+    "inputs": {
+      "upscale_by": 1.5,
+      "seed": [
+        "23",
+        0
+      ],
+      "steps": 30,
+      "cfg": 1,
+      "sampler_name": "euler",
+      "scheduler": "normal",
+      "denoise": 0.3,
+      "mode_type": "Linear",
+      "tile_width": 1024,
+      "tile_height": 1024,
+      "mask_blur": 8,
+      "tile_padding": 32,
+      "seam_fix_mode": "None",
+      "seam_fix_denoise": 1,
+      "seam_fix_width": 64,
+      "seam_fix_mask_blur": 8,
+      "seam_fix_padding": 16,
+      "force_uniform_tiles": true,
+      "tiled_decode": false,
+      "image": [
+        "16",
+        0
+      ],
+      "model": [
+        "4",
+        0
+      ],
+      "positive": [
+        "6",
+        0
+      ],
+      "negative": [
+        "18",
+        0
+      ],
+      "vae": [
+        "3",
+        0
+      ],
+      "upscale_model": [
+        "82",
+        0
+      ]
+    },
+    "class_type": "UltimateSDUpscale",
+    "_meta": {
+      "title": "Ultimate SD Upscale"
+    }
+  },
+  "66": {
+    "inputs": {
+      "PowerLoraLoaderHeaderWidget": {
+        "type": "PowerLoraLoaderHeaderWidget"
+      },
+      "lora_1": {
+        "on": true,
+        "lora": "antoci_3600steps.safetensors",
+        "strength": 1
+      },
+      "lora_2": {
+        "on": true,
+        "lora": "FLUX-dev-lora-add_details.safetensors",
+        "strength": 0.3
+      },
+      "lora_3": {
+        "on": false,
+        "lora": "FLUX-dev-lora-AntiBlur.safetensors",
+        "strength": 1
+      },
+      "➕ Add Lora": "",
+      "model": [
+        "1",
+        0
+      ],
+      "clip": [
+        "2",
+        0
+      ]
+    },
+    "class_type": "Power Lora Loader (rgthree)",
+    "_meta": {
+      "title": "Power Lora Loader (rgthree)"
+    }
+  },
+  "67": {
+    "inputs": {
+      "max_shift": 0.1,
+      "base_shift": 0.5,
+      "width": 832,
+      "height": 1216,
+      "model": [
+        "66",
+        0
+      ]
+    },
+    "class_type": "ModelSamplingFlux",
+    "_meta": {
+      "title": "ModelSamplingFlux"
+    }
+  },
+  "76": {
+    "inputs": {
+      "PowerLoraLoaderHeaderWidget": {
+        "type": "PowerLoraLoaderHeaderWidget"
+      },
+      "lora_1": {
+        "on": true,
+        "lora": "antoci_3600steps.safetensors",
+        "strength": 1
+      },
+      "lora_2": {
+        "on": true,
+        "lora": "FLUX-dev-lora-add_details.safetensors",
+        "strength": 0.15
+      },
+      "lora_3": {
+        "on": false,
+        "lora": "FLUX-dev-lora-AntiBlur.safetensors",
+        "strength": 1
+      },
+      "lora_4": {
+        "on": false,
+        "lora": "epicphoto_flux_standarddim1024.safetensors",
+        "strength": 0.3
+      },
+      "➕ Add Lora": "",
+      "model": [
+        "1",
+        0
+      ],
+      "clip": [
+        "2",
+        0
+      ]
+    },
+    "class_type": "Power Lora Loader (rgthree)",
+    "_meta": {
+      "title": "Power Lora Loader (rgthree)"
+    }
+  },
+  "79": {
+    "inputs": {
+      "images": [
+        "16",
+        0
+      ]
+    },
+    "class_type": "PreviewImage",
+    "_meta": {
+      "title": "Preview Image"
+    }
+  },
+  "80": {
+    "inputs": {
+      "rgthree_comparer": {
+        "images": [
+          {
+            "name": "A1",
+            "selected": true,
+            "url": "/api/view?filename=rgthree.compare._temp_xlmhd_00025_.png&type=temp&subfolder=&rand=0.7060282342983601"
+          },
+          {
+            "name": "A2",
+            "selected": false,
+            "url": "/api/view?filename=rgthree.compare._temp_xlmhd_00026_.png&type=temp&subfolder=&rand=0.9116514493092508"
+          },
+          {
+            "name": "B1",
+            "selected": true,
+            "url": "/api/view?filename=rgthree.compare._temp_xlmhd_00027_.png&type=temp&subfolder=&rand=0.45496745711239883"
+          },
+          {
+            "name": "B2",
+            "selected": false,
+            "url": "/api/view?filename=rgthree.compare._temp_xlmhd_00028_.png&type=temp&subfolder=&rand=0.34799092685135635"
+          }
+        ]
+      },
+      "image_a": [
+        "13",
+        0
+      ],
+      "image_b": [
+        "16",
+        0
+      ]
+    },
+    "class_type": "Image Comparer (rgthree)",
+    "_meta": {
+      "title": "Image Comparer (rgthree)"
+    }
+  },
+  "82": {
+    "inputs": {
+      "model_name": "4x_NMKD-Siax_200k.pth"
+    },
+    "class_type": "UpscaleModelLoader",
+    "_meta": {
+      "title": "Load Upscale Model"
+    }
+  },
+  "83": {
+    "inputs": {
+      "filename_prefix": "apot",
+      "images": [
+        "63",
+        0
+      ]
+    },
+    "class_type": "SaveImage",
+    "_meta": {
+      "title": "Save Image"
+    }
+  }
+}

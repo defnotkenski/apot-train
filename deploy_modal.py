@@ -49,6 +49,7 @@ apot_image = (
         "cd root/ && git init .",
         "cd root/ && git submodule add -b sd3 https://github.com/kohya-ss/sd-scripts.git sd_scripts"
     )
+    .copy_local_dir("models", "root/models")
 )
 
 
@@ -60,8 +61,7 @@ apot_image = (
         modal.Secret.from_name("huggingface-secret")
     ],
     mounts=[
-        modal.Mount.from_local_dir(Path.cwd().joinpath("configs"), remote_path="/root/configs", recursive=True),
-        modal.Mount.from_local_dir(Path.cwd().joinpath("models"), remote_path="/root/models", recursive=True)
+        modal.Mount.from_local_dir(Path.cwd().joinpath("configs"), remote_path="/root/configs", recursive=True)
     ])
 class ApotTrainClass:
     temp_output_dir: Path = Path(tempfile.mkdtemp())
@@ -70,10 +70,10 @@ class ApotTrainClass:
 
     @modal.build()
     def download_model_weights(self):
-        print("Downloading model weights!")
+        print("Performing build setup!")
 
-        weights_folder = Path.cwd().joinpath("models", "flux_base_models")
-        os.makedirs(weights_folder, exist_ok=True)
+        # weights_folder = Path.cwd().joinpath("models", "flux_base_models")
+        # os.makedirs(weights_folder, exist_ok=True)
 
         # hf_hub_download(repo_id="black-forest-labs/FLUX.1-dev", filename="flux1-dev.safetensors", local_dir=weights_folder)
         # hf_hub_download(repo_id="black-forest-labs/FLUX.1-dev", filename="ae.safetensors", local_dir=weights_folder)
@@ -98,7 +98,7 @@ class ApotTrainClass:
 
     @modal.method()
     def train(self, session_name: str, training_images_name: str):
-        print("Training model!")
+        print("Starting model training!")
 
         print(f"The current working directory is: {str(Path.cwd())}")
         subprocess.check_call("ls -l", shell=True)
@@ -174,5 +174,7 @@ def main():
         "session_name": "modal_test",
         "training_images_name": "datasets/pokimane_3_sw1ft_woman"
     }
+
+    apot.train.remote(session_name=data["session_name"], training_images_name=data["training_images_name"])
 
     return
