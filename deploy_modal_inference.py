@@ -67,14 +67,14 @@ def download_foundation_models():
     # ====== Upscalers. ====== #
 
     hf_hub_download(
-        repo_id="notkenski/apot-upscalers",
+        repo_id="notkenski/upscalers",
         filename="4x_NMKD-Siax_200k.pth",
         local_dir=SCRIPT_DIR.joinpath("comfy", "ComfyUI", "models", "upscale_models"),
         token=os.environ["HF_TOKEN"]
     )
 
     hf_hub_download(
-        repo_id="notkenski/apot-upscalers",
+        repo_id="notkenski/upscalers",
         filename="8x_NMKD-Faces_160000_G.pth",
         local_dir=SCRIPT_DIR.joinpath("comfy", "ComfyUI", "models", "upscale_models"),
         token=os.environ["HF_TOKEN"]
@@ -106,9 +106,10 @@ app = modal.App(name="apot-inference", image=apot_image)
 
 
 @app.function(
-    gpu="A10G",
+    gpu="H100",
     allow_concurrent_inputs=10,
     concurrency_limit=1,
+    timeout=1800,
     container_idle_timeout=10,
     secrets=[modal.Secret.from_name("huggingface-secret")]
 )
@@ -151,6 +152,8 @@ class InferenceClass:
 
     @modal.method()
     def inference(self, workflow_path: Path):
+        from huggingface_hub import upload_file
+
         # ====== Execute workflow with ComfyUI CLI. ====== #
 
         cmd = f"comfy run --workflow {str(workflow_path)} --wait --timeout 1200"
@@ -172,15 +175,28 @@ class InferenceClass:
         # ls_temp = [files for files in os.listdir(Path.cwd().joinpath("comfy", "ComfyUI", "temp"))]
         # print(ls_temp)
 
-        # ====== Once found with prefix, return as bytes. ====== #
+        # ====== Once found with prefix, return as bytes, and upload to HF. ====== #
 
         for file in output_dir.iterdir():
             if file.name.startswith(file_prefix):
-                return file.read_bytes()
+                upload_file(
+                    path_or_fileobj=file.read_bytes(),
+                    repo_id="notkenski/inferences",
+                    path_in_repo=f"{file_prefix}/{file.name}",
+                    token=os.environ["HF_TOKEN"]
+                )
+
+        print(f"Successfully uploaded all outputs to Hugging Face repository.")
+
+        apot_infer_res = {
+            "status": "success",
+            "client_id": file_prefix
+        }
+
+        return apot_infer_res
 
     @modal.web_endpoint(method="POST")
     def api(self, payload: Dict):
-        from fastapi import Response
         from huggingface_hub import hf_hub_download
 
         apot_lora_name = payload["apot_lora_name"]
@@ -228,8 +244,11 @@ class InferenceClass:
 
         json.dump(workflow_data, new_wf_path.open("w"))
 
-        # ====== Run inference. ====== #
+        # ====== Submit job & run inference. ====== #
 
-        img_bytes = self.inference.local(new_wf_path)
+        # inference_res = self.inference.local(new_wf_path)
 
-        return Response(img_bytes, media_type="image/jpeg")
+        find_job = modal.Function.lookup("apot-inference", "InferenceClass.inference")
+        submit = find_job.spawn(new_wf_path)
+
+        return {"id": submit.object_id, "status": "queued"}
