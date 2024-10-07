@@ -23,4 +23,4 @@ build:
 #    - huggingface-cli download comfyanonymous/flux_text_encoders t5xxl_fp16.safetensors --local-dir models/flux_base_models --token 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
 #    - ls -l /src
 
-predict: "deploy_replicate.py:Predictor"
+predict: "replicate_train_deploy.py:Predictor"

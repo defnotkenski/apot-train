@@ -1,7 +1,5 @@
 # Custom
 experimental.py
-launch_gpu_instance.py
-/templates/experimental.txt
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

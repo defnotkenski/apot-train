@@ -4,7 +4,7 @@ from cog import BasePredictor, Input, Path as cogPath
 from pathlib import Path
 import tempfile
 import zipfile
-from main_flux import train_flux
+from flux_train import train_flux
 import torch
 from subprocess import check_call
 from argparse import Namespace

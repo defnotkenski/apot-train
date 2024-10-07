@@ -7,7 +7,7 @@ import modal
 import subprocess
 from argparse import Namespace
 from utils import setup_logging, upload_to_huggingface
-from main_flux import train_flux
+from flux_train import train_flux
 from huggingface_hub import hf_hub_download
 
 # TODO: ======
