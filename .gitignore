@@ -2,7 +2,6 @@
 experimental.py
 launch_gpu_instance.py
 /templates/experimental.txt
-/models/flux_base_models/*.safetensors
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

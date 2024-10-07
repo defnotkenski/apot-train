@@ -10,9 +10,14 @@ from utils import setup_logging, upload_to_huggingface
 from main_flux import train_flux
 from huggingface_hub import hf_hub_download
 
-app = modal.App("apot")
+# TODO: ======
+# TODO: Bake foundational models into image.
+# TODO: ======
 
-apot_image = (
+# ====== Modal image build. ====== #
+
+
+apot_training_image = (
     modal.Image.debian_slim(python_version="3.10")
     .apt_install("libglib2.0-0", "libsm6", "libxrender1", "libxext6", "ffmpeg", "libgl1", "git")
     .run_commands(
@@ -52,11 +57,14 @@ apot_image = (
     .copy_local_dir("models", "root/models")
 )
 
+app = modal.App("apot", image=apot_training_image)
+
+# ====== Modal functions & classes. ====== #
+
 
 @app.cls(
-    image=apot_image,
     timeout=7200,
-    gpu=modal.gpu.A100(size="80GB"),
+    gpu=["H100"],
     secrets=[
         modal.Secret.from_name("huggingface-secret")
     ],
@@ -67,21 +75,6 @@ class ApotTrainClass:
     temp_output_dir: Path = Path(tempfile.mkdtemp())
     temp_input_dir: Path = Path(tempfile.mkdtemp())
     log: logging.Logger = setup_logging()
-
-    @modal.build()
-    def download_model_weights(self):
-        print("Performing build setup!")
-
-        # weights_folder = Path.cwd().joinpath("models", "flux_base_models")
-        # os.makedirs(weights_folder, exist_ok=True)
-
-        # hf_hub_download(repo_id="black-forest-labs/FLUX.1-dev", filename="flux1-dev.safetensors", local_dir=weights_folder)
-        # hf_hub_download(repo_id="black-forest-labs/FLUX.1-dev", filename="ae.safetensors", local_dir=weights_folder)
-
-        # hf_hub_download(repo_id="comfyanonymous/flux_text_encoders", filename="t5xxl_fp16.safetensors", local_dir=weights_folder)
-        # hf_hub_download(repo_id="comfyanonymous/flux_text_encoders", filename="clip_l.safetensors", local_dir=weights_folder)
-
-        return
 
     @staticmethod
     def are_weights_verified() -> bool:
@@ -133,10 +126,11 @@ class ApotTrainClass:
         return
 
 
-@app.function(image=apot_image)
+# ====== Add a job to the queue. ====== #
+
+@app.function()
 @modal.web_endpoint(method="POST")
 def submit_job(payload: dict):
-    # ====== Add a job to the queue. ====== #
 
     session_name = payload["session_name"]
     training_images_name = payload["training_images_name"]
@@ -147,28 +141,10 @@ def submit_job(payload: dict):
     return call.object_id
 
 
-@app.function(image=apot_image)
-@modal.web_endpoint(method="POST")
-def job_status(payload: dict):
-    # ====== Check job status via call_id returned from submit_job. ====== #
-
-    call_id = payload["call_id"]
-    fn_call = modal.functions.FunctionCall.from_id(call_id)
-
-    try:
-        result = fn_call.get(timeout=10)
-    except modal.exception.OutputExpiredError:
-        result = {"result": "expired"}
-    except TimeoutError:
-        result = {"result": "pending"}
-
-    return result
-
+# ====== For local development. ====== #
 
 @app.local_entrypoint()
 def main():
-    # ====== For local development. ====== #
-
     apot = ApotTrainClass()
     data = {
         "session_name": "modal_test",

@@ -121,7 +121,7 @@ def ui():
 
     hf_hub_download(
         repo_id="notkenski/flux-loras",
-        filename="modal_pokimane_3600.safetensors",
+        filename="modal_pliopa_3600.safetensors",
         local_dir=Path.cwd().joinpath("comfy", "ComfyUI", "models", "loras"),
         token=os.environ["HF_TOKEN"]
     )
@@ -135,6 +135,7 @@ def ui():
     gpu="H100",
     allow_concurrent_inputs=10,
     concurrency_limit=1,
+    timeout=5400,
     container_idle_timeout=10,
     secrets=[modal.Secret.from_name("huggingface-secret")],
     mounts=[
@@ -177,6 +178,14 @@ class InferenceClass:
 
         # ====== Once found with prefix, return as bytes, and upload to HF. ====== #
 
+        for file in Path.cwd().joinpath("comfy", "ComfyUI", "temp").iterdir():
+            upload_file(
+                path_or_fileobj=file.read_bytes(),
+                repo_id="notkenski/inferences",
+                path_in_repo=f"{file_prefix}/{file.name}",
+                token=os.environ["HF_TOKEN"]
+            )
+
         for file in output_dir.iterdir():
             if file.name.startswith(file_prefix):
                 upload_file(
@@ -212,10 +221,10 @@ class InferenceClass:
 
         print(f"Downloaded {apot_lora_name} from Hugging Face Repo.")
 
+        # ====== Add params to workflow. ====== #
+
         current_dir = Path.cwd()
         workflow_data = json.loads(current_dir.joinpath(f"{MOUNT_WORKFLOW_NAME}").read_text())
-
-        # ====== Add params to workflow. ====== #
 
         # LoraLoaderMain.
         workflow_data["83"]["inputs"]["lora_1"]["lora"] = apot_lora_name
@@ -228,6 +237,21 @@ class InferenceClass:
 
         # Batch count.
         workflow_data["51"]["inputs"]["batch_size"] = payload["count"]
+
+        # Latent dimensions.
+
+        # if payload["dimensions"]:
+        #     new_width = payload["dimensions"]["width"]
+        #     new_height = payload["dimensions"]["height"]
+        #
+        #     workflow_data["4"]["inputs"]["width"] = new_width
+        #     workflow_data["4"]["inputs"]["height"] = new_height
+        #
+        #     workflow_data["51"]["inputs"]["width"] = new_width
+        #     workflow_data["51"]["inputs"]["height"] = new_height
+        #
+        #     workflow_data["67"]["inputs"]["width"] = new_width
+        #     workflow_data["67"]["inputs"]["height"] = new_height
 
         # ====== Give the output image a unique id. ====== #
 
@@ -245,8 +269,6 @@ class InferenceClass:
         json.dump(workflow_data, new_wf_path.open("w"))
 
         # ====== Submit job & run inference. ====== #
-
-        # inference_res = self.inference.local(new_wf_path)
 
         find_job = modal.Function.lookup("apot-inference", "InferenceClass.inference")
         submit = find_job.spawn(new_wf_path)
