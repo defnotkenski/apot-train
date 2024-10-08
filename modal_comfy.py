@@ -100,7 +100,7 @@ apot_image = (
     )
 )
 
-app = modal.App(name="apot-inference", image=apot_image)
+app = modal.App(name="apot-comfy", image=apot_image)
 
 # ====== Modal Functions & Classes. ====== #
 
